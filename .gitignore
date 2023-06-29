@@ -1,0 +1,65 @@
+# 一時ファイル
+*.pyc
+*~
+/.vscode
+__pycache__/
+
+# Environments
+.venv/
+
+# Django stuff:
+db.sqlite3
+
+# Docker Environment
+.env.dev
+.env.prod
+.env.prod.db
+
+/static
+.DS_Store
+projects.code-workspace
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
