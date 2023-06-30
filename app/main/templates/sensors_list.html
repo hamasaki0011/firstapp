@@ -1,0 +1,46 @@
+{% extends 'main/main_base.html' %}
+
+{% block title %}センサー一覧{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <br>
+  <div>
+    <h3>センサー一覧(登録順)</h3>
+  </div>
+  <div>  
+    <table class="table caption-top table-bordered border-dark">
+      <caption>センサー全体の一覧</caption>
+      <thead class="table-primary table-bordered border-dark">
+        <tr>
+          <th scope="col">現場</th>
+          <th scope="col">センサー名</th>
+          <th scope="col">メモ</th>
+          <th scope="col">更新日</th>
+          <th scope="col">編集</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sensors in sensors_list %}
+        <tr>
+          <td colspan="1">{{ sensors.site.name }}</td>
+          <td colspan="1"><a href="{% url 'main:sensors_detail' sensors.pk %}">{{ sensors.device}}</a></td>
+          <td colspan="1">{{ sensors.note }}</td>
+          <td colspan="1">{{ sensors.updated_date }}</td>
+          <td>
+            <a href="{% url 'main:sensors_update' sensors.pk %}" class="btn btn-primary btn-sm">更新する</a>
+            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{sensors.pk}}">削除する</button>
+            {% include 'main/sensors_delete.html' %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-3 d-flex justify-content-end">
+    <a class="form-control btn btn-primary" href="{% url 'main:sensors_create' %}"><span class="glyphicon glyphicon-log-in"></span> センサーを追加する</a>
+  </div>
+  <br>
+</div>
+{% endblock %}

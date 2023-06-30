@@ -1,0 +1,97 @@
+{% extends 'record/record_base.html' %}
+
+{% block content %}
+<div class="container">
+    <br>
+    <h3>遠隔監視システム開発に関する記録を残します。</h3>
+    <div><big>
+            <span>実験検証用に構築したサーバーは、Linux(Ubuntu)OSで構成しています。</span>
+            <br><span>なぜLinux ? ➡ 余計な費用をかけずに、低コストで実現できることが最大の理由です。 </span>
+            <br><span>また、オープンソースOSのため、無料で長期サポートのサーバーを構築できます。</span>
+    </big></div>
+    <br>
+    <div>
+        <h3>■Linuxサーバーの基本構成</h3>
+        <a href="{% url 'record:record_server' %}">Webサーバー構築</a>
+        <br>・Ubuntu 22.04.1 LTS: Linux サーバーOS (サポート期間 ~April/2027)
+        <br>・OpenSSH_8.9p1 Ubuntu-3, OpenSSL 3.0.2 15 Mar 2022: SSHサーバー機能
+        <br>・Apache2 2.4.52: Webサーバー機能
+        <br>・ProFTPD2 1.3.7c: FTPサーバー機能
+        <br>
+        <span>=参考記事=</span>
+        <br><a href="https://www.ubuntulinux.jp/home" target="_blank" rel="noopener noreferrer">ubuntu Japanese Team</a>
+        <br><a href="https://shell-mag.com/portal-linuxserver/" target="_blank" rel="noopener noreferrer">UbuntuではじめるLinuxサーバー</a>
+        <br><a href="https://www.fenet.jp/infla/column/server/linux%E3%81%A7%E3%81%AE%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E6%A7%8B%E7%AF%89%E3%81%A8%E3%81%AF%EF%BC%9F%E3%81%8A%E3%81%99%E3%81%99%E3%82%81%E3%81%AE%E3%83%87%E3%82%A3%E3%82%B9%E3%83%88%E3%83%AA" target="_blank" rel="noopener noreferrer">Linuxでのサーバー構築とは？おすすめのディストリビューション11選</a>
+    </div>
+    <br>
+    <div>        
+        <h3>■Webアプリ作成環境構築</h3>
+        <big>
+            <span>このWebアプリは、Pythonを開発言語としてDjangoフレームワークで構成しています</span>
+            <br><span>なぜPython, Django ? ➡ オープンソースのライブラリーが豊富で低コスト</span>
+            <br><span>無料かつ短期間でのWebアプリ構築が期待できる</span>
+        </big>
+        <p>・Python3 3.10.6: 開発言語</p>
+        <p>・Django 3.2.12: Webアプリフレームワーク</p>
+        <p>・VScode 1.74.1: コードエディター(Visual Studio Code)</p>
+        <span>=参考記事=</span>
+        <br><a href="https://www.itmanage.co.jp/column/web-application/" target="_blank" rel="noopener noreferrer">WEBアプリケーションとは？ 仕組みを開発やフレームワークを例に解説</a>
+        <br><a href="https://yunifusu.com/programming/webapp_make_01/" target="_blank" rel="noopener noreferrer">【Python×Django×Docker×VScode】WEBアプリ作成フロー</a>
+    </div>
+    <br>
+    <div>
+        <br>
+        <div>
+            <h3>■Webアプリ開発準備</h3>
+            ●Pyhton学習
+            <br><a href="{% url 'record:record_python' %}">Pythonの設定</a>
+            <br><a href="https://docs.python.org/ja/3/tutorial/" target="_blank" rel="noopener noreferrer">Python公式チュートリアル日本語訳「Python チュートリアル」</a>
+            <br><a href="https://qiita.com/KatsunoriNakamura/items/b465b0cf05b1b7fd4975" target="_blank" rel="noopener noreferrer">pdf版テキスト「Python」</a>
+            <br><a href="https://note.nkmk.me/python-post-summary/" target="_blank" rel="noopener noreferrer">Python関連記事まとめ</a>
+            <br>●Django学習
+            <br><a href="https://docs.djangoproject.com/ja/4.1/intro/tutorial01/" target="_blank" rel="noopener noreferrer">Django公式チュートリアル「はじめての Django アプリ作成、その 1」</a>   
+            <br><a href="https://djangogirls.org/en/" target="_blank" rel="noopener noreferrer">Django Girls, </a>
+            <a href="https://tutorial.djangogirls.org/ja/" target="_blank" rel="noopener noreferrer">Django Girls のチュートリアル日本語訳版</a>
+            <br>●HTML/CSS/Javascript学習
+            <br><a href="https://codeprep.jp/books/1" target="_blank" rel="noopener noreferrer">HTML入門 基本要素(タグ)編</a>
+            <br><a href="https://codeprep.jp/books/2" target="_blank" rel="noopener noreferrer">CSS入門 基本スタイリング編</a>
+            <br><a href="https://codeprep.jp/books/3" target="_blank" rel="noopener noreferrer">JavaScript入門 基本操作編</a>    
+        </div>
+        <br>
+        <div>
+            <h3>■Webアプリ開発</h3>
+            <a href="http://www.htmq.com/" target="_blank" rel="noopener noreferrer">HTMLクイックリファレンス</a>
+            <br><a href="https://rightcode.co.jp/blog/become-engineer/django-diary-app-make-built-environment" target="_blank" rel="noopener noreferrer">仮想環境の作成とDjangoのインストール</a>
+            <br><a href="https://qiita.com/kkkei257/items/b3292b443699ecfb148f" target="_blank" rel="noopener noreferrer">Django環境でHTMLからPythonコードを実行</a>              
+            <br><a href="https://codor.co.jp/django/" target="_blank" rel="noopener noreferrer">Code for Django</a>
+            <br><a href="https://office54.net/python/django/views-request-post" target="_blank" rel="noopener noreferrer">【Django】views.py: request.POST/GETから値を取得する方法（get、getlist）</a>
+            <br>●グラフを描く~Plotly
+            <br><a href="https://plotly.com/graphing-libraries/" target="_blank" rel="noopener noreferrer">Plotly Open Source Graphing Libraries</a>
+            <br> →JAVA Scriptによる描画
+            <br><a href="https://pyhaya.hatenablog.com/entry/2021/08/15/225829" target="_blank" rel="noopener noreferrer">【Django + Plotly.js】グラフをリアルタイム更新</a>
+            <br> →Pythonによる描画
+            <br><a href="https://classynode.com/2021/05/plotly_secondary_y/" target="_blank" rel="noopener noreferrer">【Python + Plotly】2軸の折れ線グラフを作る方法</a>
+            <br>●ユーザー管理を行う
+            <br><a href="https://kosuke-space.com/django-login-required" target="_blank" rel="noopener noreferrer">【Django】ログインを必須にする</a>
+            <br>●CSVファイルを扱う
+            <br><a href="https://intellectual-curiosity.tokyo/2018/12/18/django%E3%81%A7%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B%E6%96%B9%E6%B3%95/" target="_blank" rel="noopener noreferrer">【Django】ファイルをアップロードする方法</a>
+            <br><a href="https://intellectual-curiosity.tokyo/2018/12/19/django%E3%81%A7csv%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%97%E3%81%A6db%E3%81%AB%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89%E3%82%92%E8%BF%BD/" target="_blank" rel="noopener noreferrer">【Django】アップロードしてDBにレコードを追加する方法</a>
+            <br>●HttpreRuestについて学ぶ
+            <br><a href="https://codezine.jp/article/detail/14493" target="_blank" rel="noopener noreferrer">【Django】HttpRequestオブジェクトを徹底解説</a>                        
+            <br>●Ajax通信機能を扱う
+            <br><a href="https://www.sejuku.net/blog/25316" target="_blank" rel="noopener noreferrer">【JavaScript】reloadでページを更新する</a>            
+            <br><a href="https://office54.net/python/django/django-ajax" target="_blank" rel="noopener noreferrer">【django】Ajaxによる非同期通信：動的にページ更新する方法</a>
+            <br><a href="https://intellectual-curiosity.tokyo/2018/11/02/django%E3%81%A7ajax%E3%81%AB%E3%82%88%E3%82%8B%E3%83%87%E3%83%BC%E3%82%BF%E6%9B%B4%E6%96%B0%E3%82%92%E8%A1%8C%E3%81%86%E6%96%B9%E6%B3%95/" target="_blank" rel="noopener noreferrer">【django】DjangoでAjaxによるデータ更新を行う方法</a>
+            <br>●時間を管理する
+            <br><a href="https://ssrv.net/tech/python-file-watchdog/">【Python】フォルダ内の変更を監視する Watchdog の使用例</a>
+            <br>●トラブルシューティング
+            <br><a href="https://rurukblog.com/post/django-time-lags/" target="_blank" rel="noopener noreferrer">【Django】datetimeとDBから取得した時間がずれる</a>
+            <br>== UTCとJSTの扱いをあなどるな! ==
+            <br><a href="https://docs.python.org/ja/3/library/datetime.html?highlight=datetime%20strptime#datetime.datetime.strptime" target="_blank" rel="noopener noreferrer">【Python】datetime --- 基本的な日付型および時間型</a>
+            <br><a href="https://qiita.com/xza/items/9618e25a8cb08c44cdb0" target="_blank" rel="noopener noreferrer">【Python】日付、時刻の処理</a>
+            <br><a href="https://dateutil.readthedocs.io/en/stable/tzwin.html" target="_blank" rel="noopener noreferrer">【Python】dateutilthedoc</a>  
+        </div>
+    </div>
+    <br>
+</div>
+{% endblock %}

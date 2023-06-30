@@ -1,0 +1,10 @@
+{% extends 'record/record_base.html' %}
+{% block content %}
+
+    <h1>削除の確認</h1>
+    <form method="POST">{% csrf_token %}
+        <p>タイトル「{{ record.title }}」を削除します。よろしければ実行ボタンを押してください。</p>
+        <input type="submit" value="削除実行">
+    </form>
+
+{% endblock %}

@@ -2,7 +2,7 @@ from django.urls import path,include
 from . import views
 # from .views import LocationCreateFormView
 
-#app_name='main'
+app_name='main'
 urlpatterns=[
     # Top index view
     path('', views.IndexView.as_view(), name='main_index'),
@@ -12,7 +12,7 @@ urlpatterns=[
 #    path('detail/<int:pk>/', views.MainDetailView.as_view(), name='main_detail'),
 #    path('user/', views.MainDetailView.as_view(), name='main_user'),
     # Location list view
-#    path('location/list', views.LocationListView.as_view(), name='location_list'),
+    path('location/list', views.LocationListView.as_view(), name='location_list'),
     # Location list view
     # path('location/select', views.LocationSelectView.as_view(), name='location_select'),
     # Detail view
@@ -25,7 +25,7 @@ urlpatterns=[
 #    path('location/delete/<int:pk>/', views.LocationDeleteView.as_view(), name='location_delete'),
     
     # Sensors list view
-#    path('sensors/list', views.SensorsListView.as_view(), name='sensors_list'),
+    path('sensors/list', views.SensorsListView.as_view(), name='sensors_list'),
     # Sensors detail view
 #    path('sensors/detail/<int:pk>/', views.SensorsDetailView.as_view(), name='sensors_detail'),
     # Sensors create view

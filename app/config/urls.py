@@ -19,12 +19,13 @@ from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from upload.views import image_upload
+#23.6.30 from upload.views import image_upload
 
 #app_name='main'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
+    path('record/', include('record.urls')),
     #path("", image_upload, name="upload"),
 ]
 
