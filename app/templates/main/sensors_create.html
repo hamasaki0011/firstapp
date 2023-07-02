@@ -1,0 +1,15 @@
+{% extends 'main/main_base.html' %}
+
+{% block content %}
+<div class="container my-3" style="max-width:700px;">
+    <form method="POST"> 
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if sensors %}
+        <button class="form-control btn btn-primary" type="submit">編集結果を保存</button>
+    {% else %}
+        <button class="form-control btn btn-primary" type="submit">登録</button>
+    {% endif %}
+    </form>
+</div>
+{% endblock %}

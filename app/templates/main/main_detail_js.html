@@ -1,0 +1,243 @@
+{% extends 'main/main_base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <br>
+    <h3>{{ location.name }} 様現場</h3>
+    <table class="table caption-top table-bordered borderless">
+        <caption>各センサー毎の最新測定値</caption>
+        <thead class="table-primary table-bordered border-dark">
+            <tr>
+                <th scope="col">センサー名</th>
+                <th scope="col">測定値</th>
+                <th scope="col">測定日時</th>
+                <th scope="col">備考(メモ)</th>
+            </tr>
+        </thead>
+        <tbody class="table-warning table-bordered border-dark">
+            {% for result in results %}
+            <tr>
+                <td colspan="1">{{ result.point }}</td>
+                <td colspan="1" align="right">{{ result.measured_value }}</td>
+                <td colspan="1" align="right">{{ result.measured_date }}</td>
+                <td colspan="1">{{ result.point.note }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot class="table-bordered borderless">
+            <td colspan="1"></td>
+            <td colspan="1"></td>
+            <td colspan="2">※1分毎に更新(コーディング中は30分毎)</td>
+        </tfoot>
+    </table>
+</div>
+<div class="container">
+    <div><p>センサーポイント数：{{ k }}</p></div>
+    <div><p>凡例：{{ legend }}</p></div>
+    <!-- <img src="img/ex1.png"> -->
+    <div id="chart"><!-- ここにグラフを表示する --></div>
+    <script>
+        function drawChart(){
+            var trace1 = {
+                x: {{ x_data }},
+                y: {{ ydata0 }},
+                type: 'scatter',
+                mode: 'lines + markers',
+                connectgaps: true,
+                line: {
+                    color: 'grey',
+                    width: 2,
+                },
+                marker: {
+                    color: 'grey',
+                    size: 6,
+                },
+            };
+
+            var trace2 = {
+                x: {{ x_data }},
+                y: {{ ydata1 }},
+                type: 'scatter',
+                mode: 'lines + markers',
+                connectgaps: true,
+                line: {
+                    color: 'red', 
+                    width: 2,
+                },
+                marker: {
+                    color: 'red', 
+                    size: 6,
+                },
+            };
+              
+            var trace3 = {
+                x: {{ x_data }},
+                y: {{ ydata2 }},
+                type: 'scatter',
+                mode: 'lines + markers',
+                connectgaps: true,
+                line: {
+                    color: 'green',
+                    width: 2,
+                },
+                marker: {
+                    color: 'green',
+                    size: 6,
+                },
+            };
+            
+            var trace4 = {
+                x: {{ x_data }},
+                y: {{ ydata3 }},
+
+                type: 'scatter',
+                mode: 'lines + markers',
+                connectgaps: true,
+                line: {
+                    color: 'orange',
+                    width: 2,
+                },
+                marker: {
+                    color: 'orange',
+                    size: 6,
+                },
+            };
+            // Graph control1
+            trace1.name='trace1';
+            trace2.name='trace2';
+            trace3.name='trace3';
+            trace4.name='trace4';
+
+            // if文で軸を変更制御できそう
+            trace3.xaxis='x2';
+            trace3.yaxis='y2';
+            trace4.xaxis='x2';
+            trace4.yaxis='y2';
+
+            var data = [trace1, trace2, trace3, trace4];
+              
+            var layout = {
+                title: '(JAVAscriptで描いた)直近30分(*30)間のデータ推移',
+                
+                grid: {
+                    rows: 2,
+                    columns: 1,
+                    pattern: 'independent',
+                    roworder: 'top to bottom'
+                },
+                
+                xaxis: {
+                    title: '時間経過[minutes]',
+                    showline: true,
+                    showgrid: true,
+                    zeroline: true,
+                    showticklabels: true,   //X軸メモリ
+                    linecolor: 'rgb(204,204,204)',
+                    linewidth: 2,
+                    autotick: true,         //メモリ表示を自動調整
+                    ticks: 'outside',
+                    tickcolor: 'rgb(204,204,204)',
+                    tickwidth: 2,
+                    ticklen: 5,             //メモリ間隔
+                    tickfont: {
+                        family: 'Arial',
+                        size: 12,
+                        color: 'rgb(82, 82, 82)'
+                    }
+                },
+                
+                yaxis: {
+                    title: '温度[℃]',
+                    showline: true,
+                    showgrid: true,
+                    zeroline: false,
+                    showticklabels: true,
+                    linecolor: 'rgb(204,204,204)',
+                    linewidth: 2,
+                    autotick: true,         //メモリ表示を自動調整
+                    ticks: 'outside',
+                    tickcolor: 'rgb(204,204,204)',
+                    tickwidth: 2,
+                    ticklen: 5,             //メモリ間隔
+                    tickfont: {
+                        family: 'Arial',
+                        size: 12,
+                        color: 'rgb(82, 82, 82)'
+                    }
+                },
+                
+                xaxis2: {
+                    title: '時間経過[minutes]',
+                    showline: true,
+                    showgrid: true,
+                    zeroline: true,
+                    showticklabels: true,   //X軸メモリ
+                    linecolor: 'rgb(204,204,204)',
+                    linewidth: 2,
+                    autotick: true,         //メモリ表示を自動調整
+                    ticks: 'outside',
+                    tickcolor: 'rgb(204,204,204)',
+                    tickwidth: 2,
+                    ticklen: 5,             //メモリ間隔
+                    tickfont: {
+                        family: 'Arial',
+                        size: 12,
+                        color: 'rgb(82, 82, 82)'
+                    }
+                },
+                
+                yaxis2: {
+                    title: '圧力[Pa]',
+                    showline: true,
+                    showgrid: true,
+                    zeroline: false,
+                    showticklabels: true,
+                    linecolor: 'rgb(204,204,204)',
+                    linewidth: 2,
+                    autotick: true,         //メモリ表示を自動調整
+                    ticks: 'outside',
+                    tickcolor: 'rgb(204,204,204)',
+                    tickwidth: 2,
+                    ticklen: 5,             //メモリ間隔
+                    tickfont: {
+                        family: 'Arial',
+                        size: 12,
+                        color: 'rgb(82, 82, 82)'
+                    }
+                },
+
+                hovermode:'closest',
+                autosize: true,
+                showlegend: true,
+                legend: {
+                    x: 0.02,
+                    y: 1.09,
+                    xanchor: 'left',
+                    yanchor: 'top',
+                    orientation: 'h',
+                    // title: 'legend',
+                }, 
+            };
+
+            Plotly.newPlot('chart', data, layout);
+        }
+        drawChart();
+        setInterval('drawChart()', 30000); // 30000 means 30 seconds
+    </script>
+    <br>
+    <!-- <div>
+        <p>【チャート描画データ：描画確認用】</p>
+        <p>最初のセンサーのid番号 : {{ l }}</p>
+        <p>抽出したセンサーのリスト={{ sensor_list }}</p>
+        <br>
+        <p>【グラフデータ】</p>
+        <p>xdata={{ x_data }}</p>
+        <p>ydata0={{ ydata0 }}</p>
+        <p>ydata1={{ ydata1 }}</p>
+        <p>ydata2={{ ydata2 }}</p>
+        <p>ydata3={{ ydata3 }}</p>
+        <p>ydata={{ ydata }}</p>
+    </div> -->
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'main/main_base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <br>
+    <h2 align="center"><u>{{ location.name }} 様現場</u></h2>
+    <table class="table caption-top table-bordered borderless">
+        <caption>各センサー毎の最新測定値</caption>
+        <thead class="table-primary table-bordered border-dark">
+            <tr align="center">
+                <th scope="col">センサー名</th>
+                <th scope="col">測定値</th>
+                <th scope="col">測定日時</th>
+                <th scope="col">備考(メモ)</th>
+            </tr>
+        </thead>
+        <tbody class="table-warning table-bordered border-dark">
+            {% for result in results %}
+            <tr>
+                <td colspan="1">{{ result.point }}</td>
+                <td colspan="1" align="right">{{ result.measured_value }}</td>
+                <td colspan="1" align="right">{{ result.measured_date }}</td>
+                <td colspan="1">{{ result.point.note }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot class="table-bordered borderless">
+            <td colspan="3"></td>
+            <td colspan="1">※{{ message }}</td>
+        </tfoot>
+    </table>
+</div>
+<br>
+<div class="container">
+    <!-- <h5 align="center">直近30分間のデータ推移</h5> -->
+    <!-- ここにグラフを描画する -->
+    <div class="graph">{{plot|safe}}</div>
+    <script>
+        // ページをreloadする:reloadの基本的な使い方
+        function doReload() {
+            // reloadメソッドによりページをリロード
+            // reloadの引数にfalseを指定してキャッシュを利用して再描画する
+            // ただし、キャッシュがある場合
+            window.location.reload(false);
+        }
+        window.addEventListener('load', function () {
+            // ページ表示完了した30秒後にリロード
+            setTimeout(doReload, 30000);
+        });
+    </script>
+</div>
+<br>
+<div class="container">
+    <h5>■工事計画: Ajax通信機能確認中!</h5>
+    <p><u>数値入力</u></p>
+    <form id="ajax-number" action="{% url 'main:ajax_number' %}" method="POST">
+        {% csrf_token %}
+        <input type="number" id="number1" required>
+        <input type="number" id="number2" required>
+        <button type="submit" >計算</button>
+    </form>
+    <p><u>数値計算結果</u></p>
+    <div class="result"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script>
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        $('#ajax-number').on('submit', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                'url': '{% url "main:ajax_number" %}',
+                'type': 'POST',
+                'data': {
+                    'number1': $('#number1').val(),
+                    'number2': $('#number2').val(),
+                },
+                'dataType': 'json'
+            })
+            .done(function(response){
+                $('.result').prepend('<p>引き算結果：' + response.minus + '</p>');
+                $('.result').prepend('<p>足し算結果：' + response.plus + '</p>');
+            });
+        });
+    </script>
+</div>
+{% endblock %}

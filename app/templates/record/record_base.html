@@ -1,0 +1,21 @@
+{% load static %}
+<html>
+    <head>
+        <title>Remote monitoring system' development record</title>
+        {% include "css.html" %}
+    </head>
+
+    <body>
+        {% include "nav.html" %}
+        <div class="page-header">  
+            <h1>遠隔監視システム [開発記録画面]</h1>
+        </div>
+        <div class="content container">
+            {% block content %}
+            <!-- この中に各HTMLのbodyがはいる -->
+            {% endblock %}
+        </div>
+        {% include "footer.html" %}
+        {% include "js.html" %}
+    </body>
+</html>

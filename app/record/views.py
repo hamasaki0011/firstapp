@@ -1,6 +1,4 @@
-from django.shortcuts import render
-# Create your views here.
-#23.6.30 from django.shortcuts import ,redirect,get_object_or_404
+from django.shortcuts import render,redirect,get_object_or_404
 # Create your views here.
 # from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
@@ -78,4 +76,3 @@ class RecordPythonView(TemplateView):
     
 class RecordServerView(TemplateView):
     template_name='record/record_server.html'
-

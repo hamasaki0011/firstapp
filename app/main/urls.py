@@ -7,45 +7,45 @@ urlpatterns=[
     # Top index view
     path('', views.IndexView.as_view(), name='main_index'),
     # path('user/', views.user_view, name='main_user'),
-#    path('other/', views.other_view, name='main_other'),
+    path('other/', views.other_view, name='main_other'),
     # Main detail view
-#    path('detail/<int:pk>/', views.MainDetailView.as_view(), name='main_detail'),
-#    path('user/', views.MainDetailView.as_view(), name='main_user'),
+    path('detail/<int:pk>/', views.MainDetailView.as_view(), name='main_detail'),
+    path('user/', views.MainDetailView.as_view(), name='main_user'),
     # Location list view
     path('location/list', views.LocationListView.as_view(), name='location_list'),
     # Location list view
     # path('location/select', views.LocationSelectView.as_view(), name='location_select'),
     # Detail view
-#    path('location/detail/<int:pk>/', views.LocationDetailView.as_view(), name='location_detail'),
+    path('location/detail/<int:pk>/', views.LocationDetailView.as_view(), name='location_detail'),
     # Location create view
-#    path('location/create/', views.LocationCreateModelFormView.as_view(), name='location_create'),
+    path('location/create/', views.LocationCreateModelFormView.as_view(), name='location_create'),
     # Location update view
-#    path('location/update/<int:pk>/', views.LocationUpdateModelFormView.as_view(), name='location_update'),    
+    path('location/update/<int:pk>/', views.LocationUpdateModelFormView.as_view(), name='location_update'),    
     # Location delete view
-#    path('location/delete/<int:pk>/', views.LocationDeleteView.as_view(), name='location_delete'),
+    path('location/delete/<int:pk>/', views.LocationDeleteView.as_view(), name='location_delete'),
     
     # Sensors list view
     path('sensors/list', views.SensorsListView.as_view(), name='sensors_list'),
     # Sensors detail view
-#    path('sensors/detail/<int:pk>/', views.SensorsDetailView.as_view(), name='sensors_detail'),
+    path('sensors/detail/<int:pk>/', views.SensorsDetailView.as_view(), name='sensors_detail'),
     # Sensors create view
-#    path('sensors/create/', views.SensorsCreateModelFormView.as_view(), name='sensors_create'),
+    path('sensors/create/', views.SensorsCreateModelFormView.as_view(), name='sensors_create'),
     # Sensors update view
-#    path('sensors/update/<int:pk>/', views.SensorsUpdateModelFormView.as_view(), name='sensors_update'),
+    path('sensors/update/<int:pk>/', views.SensorsUpdateModelFormView.as_view(), name='sensors_update'),
     # Sensor's delete view
-#    path('sensors/delete/<int:pk>/', views.SensorsDeleteView.as_view(), name='sensors_delete'),
+    path('sensors/delete/<int:pk>/', views.SensorsDeleteView.as_view(), name='sensors_delete'),
     
-#    path("profile/", include("accounts.urls")),
+    path("profile/", include("accounts.urls")),
     
     # for file uploading at 2022/11/9
-#    path('upload/', views.Upload.as_view(), name='upload'),
+    path('upload/', views.Upload.as_view(), name='upload'),
     # path('upload/', views.upload, name='upload'),
-#    path('upload/complete/', views.UploadComplete.as_view(), name='upload_complete'),
+    path('upload/complete/', views.UploadComplete.as_view(), name='upload_complete'),
     # path('upload/complete/', views.upload_complete, name='upload_complete'),
     # path('load/', views.Load.as_view(), name='load'),
     # path('download/', views.download, name='download'),
     
-#    path('ajax_number/', views.ajax_number, name='ajax_number'),
+    path('ajax_number/', views.ajax_number, name='ajax_number'),
     
     # # Display path root for all sensor devices belong in each site/location
     # path('sensor/device/list/<int:pk>/', views.SensorDeviceListView.as_view(), name='sensor_device_list'),

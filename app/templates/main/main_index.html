@@ -1,0 +1,50 @@
+{% extends 'main/main_base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <br>
+    <h4>登録ユーザー: {{user.profile}}様のページ</h4>
+    <p>
+        <span>{{user.last_login}} ログイン成功</span>
+    </p>
+    <br>
+    <h4>■遠隔監視サイトを表示</h4>
+    <div>
+        {% for location in location_list %}
+        <h3>
+            <a class="form-control btn btn-info" href="{% url 'main:main_detail' location.pk %}">{{ location.name }}</a>
+        </h3>
+        <p>【Memo】{{ location.memo }}</p>
+        {% endfor %}    
+    </div>
+    <!-- ここにユーザー情報の編集画面をいれたいのですが、、 -->
+    {% if 'fujico@kfjc.co.jp' in user.email %}
+    <br>
+    <div>
+        <h4>■システム管理者向け</h4>
+        <h6>
+            <a class="btn btn-warning" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>①遠隔監視サイトの設定を編集する</a>
+            <a class="btn btn-warning" href="{% url 'main:sensors_list' %}"><span class="glyphicon glyphicon-list"></span>②センサー設定ポイントを編集する</a>
+        </h6>
+    </div>
+    <br>
+    <div>
+        <h4>■システム開発者向け</h4>
+        <h5>
+            <a  class="btn btn-secondary" href="https://github.com/hamasaki0011/projects.git"><span class="glyphicon glyphicon-book"></span> プログラムソースを参照する</a>
+            <a  class="btn btn-secondary" href="{% url 'record:record_list' %}"><span class="glyphicon glyphicon-book"></span> 開発記録を閲覧する</a>
+            <a  class="btn btn-secondary" href="{% url 'record:record_article' %}"><span class="glyphicon glyphicon-book"></span> 開発関係情報を閲覧する</a>     
+        </h5>
+        <h5>
+            <a class="btn btn-default" href="{% url 'main:upload' %}"><span class="glyphicon glyphicon-pencil"></span>データファイルをアップロード</a>
+        </h5>
+        <p>※グラフ描画機能確認用</p>
+    </div>
+    {% else %}
+
+    {% endif%}
+</div>
+<br>
+{% endblock %}>
+

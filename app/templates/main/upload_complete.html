@@ -1,0 +1,14 @@
+<!-- upload_complete.html -->
+{% extends 'main/main_base.html' %}
+{% block content %}
+<br>
+<div class="container">
+    <h1>アップロード完了</h1>
+    <p>※ 左上のホームボタンでTOPページに戻ってください。</p>
+    <P>
+        <a  class="form-control btn btn-secondary" href="{% url 'main:upload' %}"><span class="glyphicon glyphicon-book"></span>さらにアップロードする</a>
+    </p>
+</div>
+
+<br>
+{% endblock %}

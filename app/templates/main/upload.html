@@ -1,0 +1,17 @@
+<!-- upload.html -->
+{% extends 'main/main_base.html' %}
+{% block content %}
+
+<div class="container">
+    <br>
+    <h4>CSVファイルをアップロード</h4>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <div class="form-group">
+            <button type="submit">アップロード</button>
+        </div>
+        <br>
+    </form>
+</div>
+{% endblock %}
