@@ -25,7 +25,7 @@ def regist_data(cursor,file_path):
             header=next(reader) # skip header line
 
             """ tuple format of add_data
-            [0,             ,1              ,2          ,3]  
+            [0,             ,1              ,2          ,3]
             [measure_date, measured_value, point_id, place_id
             point_id is referenced to sensors.id
             """
