@@ -6,12 +6,15 @@ from datetime import datetime as dt
 logger=logging.getLogger('development')
 
 # SQL for adding the data
-sql_insert=("insert into result (measured_date, measured_value, point_id, place_id, created_date, updated_date) "
-              "select * from (select %s as measured_date, %s as measured_value, %s as point_id, %s as place_id,"
-              "%s as created_date, %s as updated_date) as tmp "
-              "where not exists (select * from result where point_id = %s and measured_date = %s)")
+sql_insert=(
+    "insert into result (measured_date, measured_value, point_id, place_id, created_date, updated_date) "
+"select * "
+"from (select cast(%s as timestamp) as measured_date, cast(%s as numeric) as measured_value, cast(%s as integer) as point_id, cast(%s as integer) as place_id, "
+"cast(%s as timestamp) as created_date, cast(%s as timestamp) as updated_date) as tmp "
+"where not exists (select * from result where point_id = cast(%s as integer) and measured_date = cast(%s as timestamp))"
+)
 
-def regist_data(cursor,file_path):
+def read_data(cursor,file_path):
     # read csv file
     try:
         file=open(file_path,newline='')
@@ -44,7 +47,7 @@ def regist_data(cursor,file_path):
                 add_data.append(row[0])     # 対象日時(対象レコードがDBに存在するかの確認用)
                 logger.debug('add_data='+str(add_data))
 
-                # addd the record
+                # add the record
                 cursor.execute(sql_insert,add_data)
 
             logger.info("=== End DB登録 < ===")
@@ -54,6 +57,6 @@ def insert_csv_data(file_path):
     logger.info('=== csvデータ登録開始 ===')
 
     with connection.cursor() as cursor:
-        regist_data(cursor,file_path)
+        read_data(cursor,file_path)
 
     logger.info('=== csvデータ登録処理終了 ===')

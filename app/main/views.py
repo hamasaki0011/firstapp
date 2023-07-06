@@ -321,8 +321,8 @@ class MainDetailView(generic.ListView):
         sensor_list=Sensors.objects.filter(site_id=id.pk)
         # Get the number of sensor device point's 
         pointNum=len(sensor_list)
-        # Get the smallest number of the point_id
-        startPoint=sensor_list.order_by('sensors.id').first().id
+        # Get the smallest number of the sensors_id
+        startPoint=sensor_list.order_by('id').first().id
         
         # Generate a graph data from sensor's measured_value   
         # Generate the table data including the device name and the most recent measured_data
