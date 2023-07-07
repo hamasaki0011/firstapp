@@ -23,19 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Setting the environ
 #env = environ.Env()
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
 DEBUG = int(os.environ.get("DEBUG", default=0))
 
-# ALLOWED_HOSTS = ['localhost']
-# ALLOWED_HOSTS = ['hamasaki.pythonanywhere.com']
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
-# Application definitiongit 
-
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -70,7 +65,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates'),],
-        # 'DIRS': [],
         # 'DIRS': [BASE_DIR / 'templates'], 
         'APP_DIRS': True,
         'OPTIONS': {
@@ -91,11 +85,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    #'default': {
-    #    'ENGINE': 'django.db.backends.sqlite3',
-    #    'NAME': os.path.join(BASE_DIR,'db.sqlite3'),
-    #}
-        "default": {
+    "default": {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
         "USER": os.environ.get("SQL_USER", "user"),
@@ -103,6 +93,13 @@ DATABASES = {
         "HOST": os.environ.get("SQL_HOST", "localhost"),
         "PORT": os.environ.get("SQL_PORT", "5432"),
     }
+
+    #'default': {
+    #    'ENGINE': 'django.db.backends.sqlite3',
+    #    'NAME': os.path.join(BASE_DIR,'db.sqlite3'),
+    #}
+    # To use PostgreSQL
+
 }
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -144,7 +141,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS=[BASE_DIR / 'static_local']
+# 23.7.7 STATICFILES_DIRS=[BASE_DIR / 'static_local']
 # STATIC_ROOT=os.path.join(BASE_DIR,'static')
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
