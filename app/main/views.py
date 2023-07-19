@@ -114,7 +114,7 @@ def line_charts(x_data,y_data,start,points,legend):
             pattern='independent',
             roworder='top to bottom',
         ),
-         
+
         xaxis=dict(
             title='時間経過[minutes]',
             showline=True,
