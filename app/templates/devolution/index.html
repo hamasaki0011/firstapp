@@ -1,0 +1,56 @@
+{% extends 'devolution/base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <h2>はじめに</h2>
+    <h2>目次</h2>
+    <form>
+        <a class="btn btn-default" href="{% url 'devolution:index' %}"><span class="glyphicon glyphicon-list"></span>目次に戻る</a>
+    </form>
+</div>
+<br>
+<div class="container">
+    <div>
+        <h3>■HttpRequestメソッド確認用</h3>
+        <form action="/devolution/" method="post">
+            {% csrf_token %}
+            <div>
+                <label for="name">名前</label>
+                <input type="text" id="name" name="name">
+            </div>
+            <div>
+                <label for="email">メールアドレス</label>
+                <input type="mail" id="email" name="email">
+            </div>
+            <div>
+                <label for="message">内容</label>
+                <textarea id="message" name="message">{{ message }}</textarea>
+            </div>
+            <a>
+                <form action="/devolution/" method="get">
+                    {% csrf_token %}
+                    <input type="submit" value="POST送信する">
+                </form>
+            </a>
+            <a>
+                <form action="/devolution/" method="get">
+                    {% csrf_token %}
+                    <input type="submit" value="GET送信する">
+                </form>
+            </a>
+        <br>
+        <h3>■グラフ描画確認用</h3>
+        <div>
+            <p><a class="btn btn-default" href="{% url 'main:upload' %}"><span class="glyphicon glyphicon-pencil"></span>データファイルをアップロード</a></p>
+        </div> 
+    </div>
+</div>
+<br>
+<div class="container">
+    <h3>■参考資料</h3>
+    <a  class="btn btn-secondary" href="{% url 'record:record_article' %}"><span class="glyphicon glyphicon-book"></span> 開発関係情報を閲覧する</a>
+    <a  class="btn btn-secondary" href="https://github.com/hamasaki0011/django_ap.git" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span> Djangoアプリ(プログラムソース)</a>
+</div>
+<br>    
+{% endblock %}

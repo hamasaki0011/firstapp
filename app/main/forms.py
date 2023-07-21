@@ -96,4 +96,4 @@ class FileUploadForm(forms.Form):
             raise forms.ValidationError('csvファイルを選択して下さい')
         # is it correct csv file or not?
         if not file.name.startswith(self.variables):
-            raise forms.ValidationError('間違った名前のcsvファイルです。''（'+ self.variables + 'で始まるcsvファイルを選択してください。）')
+            raise forms.ValidationError('間違った名前のcsvファイルです。（{:s}で始まるcsvファイルを選択してください。）'.format(self.variables))

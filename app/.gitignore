@@ -1,0 +1,14 @@
+*.pyc
+*~
+/.vscode
+__pycache__
+# Environments
+.myenv/
+.venv
+auth/.env
+
+# Django stuff:
+db.sqlite3
+
+.DS_Store
+projects.code-workspace

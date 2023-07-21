@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <meta charset="UTF-8">
+    {% comment %} レスポンシブ対応: 端末にあわせて柔軟に表示する {% endcomment %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% comment %} Micrsoft IE対応 インストールされている最新のバージョンで表示する {% endcomment %}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    {% include "css.html" %}
+    {% block extra_css %}{% endblock %}
+
+    {% comment %} 各ページのTitleを挿入する {% endcomment %}
+    {% comment %} Origin were <title>Remote monitoring</title> {% endcomment %}
+    <title>{% block title %}{% endblock %}</title>
+    
+    {% block extra_head %}{% endblock %}
+
+  </head>
+
+  <body>
+    {% include "nav.html" %}
+
+    {% block allauth %}
+      {% if messages %}
+
+      <div>
+        {% for message in messages %}
+          {% if message.tags == "error" %}
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          
+          {% else %}
+          <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+        
+          {% endif %}
+
+          {{message}}
+          <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+
+      </div>
+
+      {% endif %}
+    {% endblock %}
+
+    <div class="page-header">
+      <h1>遠隔監視システム仕様書(工事中)</h1>
+      <h5><span>現在時刻: </span><span id="realtime"></span></h5>
+    </div>
+
+    <!-- <div class="content container"> -->
+    <!-- <div class="row"> 右サイドにコンテンツ空間を確保する -->
+    <!-- <div class="col-md-8">  --><!-- bootstrapのグリッドシステム全部で合計12とｐなる-->
+  {% block content %}
+    
+    <!-- ここに主ページが入る -->
+    
+  {% endblock %}
+
+  {% include "footer.html" %}
+  {% include "js.html" %}
+  
+  </body>
+</html>

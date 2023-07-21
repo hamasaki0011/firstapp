@@ -32,14 +32,14 @@
     <div>
         <h4>■システム開発者向け</h4>
         <h5>
-            <a  class="btn btn-secondary" href="https://github.com/hamasaki0011/projects.git"><span class="glyphicon glyphicon-book"></span> プログラムソースを参照する</a>
             <a  class="btn btn-secondary" href="{% url 'record:record_list' %}"><span class="glyphicon glyphicon-book"></span> 開発記録を閲覧する</a>
-            <a  class="btn btn-secondary" href="{% url 'record:record_article' %}"><span class="glyphicon glyphicon-book"></span> 開発関係情報を閲覧する</a>     
+            <a  class="btn btn-secondary" href="{% url 'devolution:index'%}"><span class="glyphicon glyphicon-book"></span> システム設計書</a>
         </h5>
         <h5>
             <a class="btn btn-default" href="{% url 'main:upload' %}"><span class="glyphicon glyphicon-pencil"></span>データファイルをアップロード</a>
+            <p>※グラフ描画機能確認用</p>
         </h5>
-        <p>※グラフ描画機能確認用</p>
+        
     </div>
     {% else %}
 

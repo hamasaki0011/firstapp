@@ -35,7 +35,7 @@ from django.http import JsonResponse
 # from sensor.forms import FileUploadForm
 # import numpy as np
 # from sensor import writeCsv
-# embeded watchdog module
+# embedded watchdog module
 # import sys
 # import time
 # from watchdog.observers import Observer
@@ -48,7 +48,7 @@ UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'static/uploads/')
 logger = logging.getLogger('development')
 # logger = logging.getLogger(__name__)
 
-# Color palette for chart drawing which pepared 10 colors
+# Color palette for chart drawing which prepared 10 colors
 COLOR=['darkturquoise','orange','green','red','blue','brown','violet','magenta','gray','black']
 # COMPANY={'saga':'A株式会社','kumamoto':'株式会社B','fukuoka':'C株式会社',}
 
@@ -59,7 +59,7 @@ class OwnerOnly(UserPassesTestMixin):
     
     def handle_no_permission(self):
         messages.error(self.request,"You can edit and delete only for your's.")
-        return redirect("main:location_detail", pk=self.kwargs["pk"])
+        return redirect("main:location_detail", pk=self.kwargs["pk"]) 
 # -----------------------------------------------------------------
 def other_view(request):
     
@@ -114,7 +114,7 @@ def line_charts(x_data,y_data,start,points,legend):
             pattern='independent',
             roworder='top to bottom',
         ),
-
+         
         xaxis=dict(
             title='時間経過[minutes]',
             showline=True,
@@ -321,7 +321,9 @@ class MainDetailView(generic.ListView):
         sensor_list=Sensors.objects.filter(site_id=id.pk)
         # Get the number of sensor device point's 
         pointNum=len(sensor_list)
-        # Get the smallest number of the sensors_id
+        # Get the smallest number of the point_id
+        # 23.7.4 change 'sensor.id' to 'id' for django' revision up 3.2.17 to 4.2.3
+        #startPoint=sensor_list.order_by('sensors.id').first().id
         startPoint=sensor_list.order_by('id').first().id
         
         # Generate a graph data from sensor's measured_value   

@@ -1,0 +1,42 @@
+{% extends 'main/main_base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <br>
+    <h2>ユーザー登録の情報</h2>
+    <table class="table caption-top table-bordered borderless">
+        <caption>登録ユーザー情報</caption>
+        <thead class="table-primary table-bordered border-dark">
+            <tr align="center">
+                <th scope="col">ユーザー名(email)</th>
+                <th scope="col">ユーザー名(任意)</th>
+                <th scope="col">会社名</th>
+                <th scope="col">電話</th>
+                <th scope="col">最新のログイン</th>
+                <th scope="col">ロケーション</th>
+                <th scope="col">ログエントリー</th>
+                <th scope="col">admin</th>
+                <th scope="col">staff</th>
+            </tr>
+        </thead>
+        <tbody class="table-warning table-bordered border-dark">
+            {% for user in users %}
+            <tr>
+                <td colspan="1">{{ user }}</td>
+                <td colspan="1">{{ user.profile }}</td>
+                <td colspan="1">{{ user.profile.company }}</td>
+                <td colspan="1">{{ user.profile.pone_number }}</td>
+                <td colspan="1">{{ user.last_login }}</td>
+                <td colspan="1">{{ user.location }}</td>
+                <td colspan="1">{{ user.logentry }}</td>
+                <td colspan="1">{{ user.admin }}</td>
+                <td colspan="1">{{ user.staff }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot class="table-bordered borderless">
+        </tfoot>
+    </table>
+    <br>
+{% endblock %}

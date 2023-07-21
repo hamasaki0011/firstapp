@@ -1,0 +1,89 @@
+{% extends 'record/record_base.html' %}
+
+{% block content %}
+    <h1>Webアプリ開発</h1>
+    <div>
+        <h3>django環境(python)で開発</h3>
+        <p>(1)	Python 3のセットアップ</p>
+        <p>
+            UbuntuにはPython3がプレインストールされている。
+            搭載されているPython3のバージョンは、
+            APT(Advanced Packaging Tool)のaptコマンドで、
+            システムを更新およびアップグレードした後で確認する。
+        </p>
+        <p>$sudo apt update</p>
+        <p>$sudo apt -y upgrade</p>
+        <p>
+            ここで指定した"-y"フラグは、すべてのアイテムがインストール
+            されることに同意することを示す。
+            しかし、Linuxのバージョンによってはシステムを更新・アップグレード中に
+            追加で同意を求められるかもしれない。
+            プロセス完了後、次のように入力してシステムにインストールされている
+            Python 3のバージョンを確認する。
+            バージョン番号が端末ウィンドウに出力される。
+            表示されるバージョン番号は様々だが、2022年10月現在は次のようになる。
+        </p>
+        <p>$python3 -V</p>
+        <p>Python 3.10.6</p>
+        <p>
+            Pythonのソフトウェアパッケージを管理するには、開発プロジェクトで使用する
+            プログラミングパッケージをインストールおよび管理するツールであるpipを
+            インストールする必要がある。
+        </p>
+        <p>$sudo apt install -y python3-pip</p>
+        <p>
+            pipは、Pythonのパッケージ（「ライブラリ」や「モジュール」とも呼ぶ）を
+            インストール、管理するためのパッケージ。
+            pipが依存関係を管理してくれるので、ユーザーはパッケージの依存関係を一切
+            気にする必要がない。
+            これにより、以下のように依存関係を気にすることなくパッケージを取り扱うことが
+            できる。
+        </p>
+        <p>$pip3 install package_name</p>
+        <p>
+            ここで、package_nameとして、Web開発用のDjangoや科学計算用のNumPyなど、任意の
+            Pythonパッケージまたはライブラリを参照することができる。
+            NumPyをインストールする場合は、コマンド pip3 install numpyを実行する。
+            また、pythonには堅牢なプログラミング環境セットアップのため、インストールした方が
+            良いパッケージと開発ツールがいくつかある。
+        </p>
+        <p>$sudo apt install -y build-essential libssl-dev libffi-dev python3-dev</p>
+        <p>
+            ここでインストールするパッケージは以下になる。
+        </p>
+            
+        <div>
+            <table>
+                <tr>
+                    <th width="220px"></th>
+                    <th width="580px"></th>
+                </tr>
+                <tr>
+                    <td width="220px">build-essentialパッケージ</td>
+                    <td width="580px">基本的な開発ツール</td>
+                </tr>
+                <tr>
+                    <td width="220px">libssl-devパッケージ</td>
+                    <td width="580px">
+                        OpenSSLのヘッダファイルとライブラリ
+                        Webシステム開発では、ユーザーPerlを使うが、
+                        HTTP通信をサポートするためには、IO::Socket::SSLを
+                        インストールする必要がある。
+                    </td>
+                </tr>
+                <tr>
+                    <td width="220px">libffi-devパッケージ</td>
+                    <td width="580px">
+                        FFI(Foreign function interface)の機能が提供される。
+                        ある言語から異なる言語の関数を呼び出すための仕組み。
+                        ex)pythonからc/c++など
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        </div>
+
+        <a href="{% url 'record_article' %}">前ページに戻る</a>
+
+{% endblock %}

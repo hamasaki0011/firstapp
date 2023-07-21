@@ -11,6 +11,7 @@
         <!-- <meta http-equiv="refresh" content="30; URL="> -->
 
         {% include "css.html" %}
+        
         {% block extra_css %}{% endblock %}
 
         {% comment %} 各ページのTitleを挿入する {% endcomment %}
@@ -41,7 +42,7 @@
         {% endblock %}
 
         <div class="page-header">
-            <h1>遠隔監視システム(using PostgreSQL as the DB)</h1>
+            <h1>遠隔監視システム(SQLite3 version)</h1>
             <h5><span>現在時刻: </span><span id="realtime"></span></h5>
         </div>
 
