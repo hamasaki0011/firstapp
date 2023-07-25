@@ -31,7 +31,7 @@ class RecordDetailView(DetailView):
     template_name='record/record_detail.html'
     model=Record
 
-# Updateing vew of record
+# Updating vew of record
 # class RecordUpdateView(LoginRequiredMixin,UpdateView):
 class RecordUpdateView(UpdateView):
     template_name = 'record/record_update.html'

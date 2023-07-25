@@ -79,7 +79,7 @@ class AccountsTestCase(TestCase):
         profile_obj = Profile.objects.first()
         self.assertEqual(profile_obj.user.email, profile_obj.username)
         
-#adpter.pyテスト関数2つ
+#adapter.pyテスト関数2つ
 class AdapterTestCase(TestCase):
     #signupページでユーザーを作成し、Eメール確認も済にする
     def setUp(self):

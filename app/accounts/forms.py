@@ -1,6 +1,7 @@
 from django import forms
-from django.forms.fields import DateField
-from django.utils.translation import gettext, gettext_lazy as _
+# 2023.7.24 from django.forms.fields import DateField
+from django.utils.translation import gettext_lazy as _
+# 2023.7.24 from django.utils.translation import gettext
 from django.contrib.auth.forms import UserChangeForm
 from .models import User, Profile
 from accounts.models import Profile

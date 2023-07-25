@@ -11,6 +11,7 @@ then
     echo "PostgreSQL started"
 fi
 
+# しばらくは、DBを保持する。
 # python manage.py flush --no-input
 # python manage.py migrate
 

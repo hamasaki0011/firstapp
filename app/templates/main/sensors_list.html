@@ -18,6 +18,7 @@
           <th scope="col">センサー名</th>
           <th scope="col">メモ</th>
           <th scope="col">更新日</th>
+          <th scope="col">登録日</th>
           <th scope="col">編集</th>
         </tr>
       </thead>
@@ -28,6 +29,7 @@
           <td colspan="1"><a href="{% url 'main:sensors_detail' sensors.pk %}">{{ sensors.device}}</a></td>
           <td colspan="1">{{ sensors.note }}</td>
           <td colspan="1">{{ sensors.updated_date }}</td>
+          <td colspan="1">{{ sensors.created_date }}</td>
           <td>
             <a href="{% url 'main:sensors_update' sensors.pk %}" class="btn btn-primary btn-sm">更新する</a>
             <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{sensors.pk}}">削除する</button>

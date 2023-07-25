@@ -114,7 +114,7 @@ def line_charts(x_data,y_data,start,points,legend):
             pattern='independent',
             roworder='top to bottom',
         ),
-         
+        
         xaxis=dict(
             title='時間経過[minutes]',
             showline=True,
@@ -244,7 +244,7 @@ def line_charts(x_data,y_data,start,points,legend):
                         mode='lines+markers',
                         connectgaps=True,
                         line=dict(
-                            color=COLOR[i],             # color pallete
+                            color=COLOR[i],             # color pallet
                             width=2,
                         ),
                         line_dash='solid',
@@ -267,13 +267,13 @@ def line_charts(x_data,y_data,start,points,legend):
                         mode='lines+markers',
                         connectgaps=True,
                         line=dict(
-                        color=COLOR[i-10],      # color palette
+                        color=COLOR[i-10],      # color pallet
                             width=2,
                         ),
                         line_dash="dot",
                         marker=dict(
                             symbol='circle',
-                            color=COLOR[i-10],      # color palette
+                            color=COLOR[i-10],      # color pallet
                             size=10,
                         ),
                     )
@@ -289,13 +289,13 @@ def line_charts(x_data,y_data,start,points,legend):
                         mode='lines+markers',
                         connectgaps=True,
                         line=dict(
-                            color=COLOR[i-10],      # color palette
+                            color=COLOR[i-10],      # color pallet
                             width=2,
                             ),
                         line_dash="dot",
                         marker=dict(
                             symbol='square',
-                            color=COLOR[i-10],      # color palette
+                            color=COLOR[i-10],      # color pallet
                             size=10,
                         ),
                     ),
@@ -323,13 +323,14 @@ class MainDetailView(generic.ListView):
         pointNum=len(sensor_list)
         # Get the smallest number of the point_id
         # 23.7.4 change 'sensor.id' to 'id' for django' revision up 3.2.17 to 4.2.3
-        #startPoint=sensor_list.order_by('sensors.id').first().id
+        # startPoint=sensor_list.order_by('sensor.id').first().id
         startPoint=sensor_list.order_by('id').first().id
+        #startPoint=sensor_list.order_by('id').first().id
         
         # Generate a graph data from sensor's measured_value   
         # Generate the table data including the device name and the most recent measured_data
         # recent_update=datetime.date(2023,2,27)
-        # TD=9    # time deffernce
+        # TD=9    # time differences
         # today = datetime.datetime.now() + datetime.timedelta(hours=TD)
         # 注意：最終的にはtimedeltaで1分前のデータを表示するように調整する
         today = datetime.datetime.now()
@@ -355,7 +356,7 @@ class MainDetailView(generic.ListView):
             n-=1
 
         # Create y_Axis data
-        #2023.5.8 try it lator y_tmp=[[]*latest for j in range(6)]
+        #2023.5.8 try it later y_tmp=[[]*latest for j in range(6)]
         y_tmp=[[] for j in range(latest)]
         """ this means followings; 
             device0 : y_tmp[0][0] ~ y_tmp[0][29]
@@ -377,7 +378,7 @@ class MainDetailView(generic.ListView):
             """
             'if' and 'for' Statements both do not form scopes in Python. 
             Therefore, the variable if inside the sentence is the same as the variable outside.
-            Variables, 'start_at' and 'd_tmp' lator appeared are effective both inside and outside.
+            Variables, 'start_at' and 'd_tmp' later appeared are effective both inside and outside.
             """
         
         context={
@@ -448,7 +449,7 @@ class LocationCreateView(LoginRequiredMixin,generic.CreateView):
     def form_valid(self, form):
         location = form.save(commit=False)
         # location.author = self.request.user
-        location.crteated_date = timezone.now()
+        location.created_date = timezone.now()
         location.updated_date = timezone.now()
         location.save()
         return super().form_valid(form)
@@ -459,7 +460,7 @@ class LocationUpdateModelFormView(OwnerOnly,generic.UpdateView):
     template_name = "main/location_form.html"
     form_class = LocationForm
     success_url = reverse_lazy("main:location_list")
-    # Following get_querryset() is mondatly requrered.
+    # Following get_queryset() is mandatory required.
     # in case of using a FormView
     def get_queryset(self):
         qs = Location.objects.all()
@@ -574,7 +575,7 @@ class SensorsCreateView(generic.CreateView):
     def form_valid(self, form):
         sensors = form.save(commit=False)
         # sensors.author = self.request.user
-        sensors.crteated_date = timezone.now()
+        sensors.created_date = timezone.now()
         sensors.updated_date = timezone.now()
         sensors.save()
         return super().form_valid(form)
@@ -586,7 +587,7 @@ class SensorsUpdateModelFormView(generic.UpdateView):
     form_class = SensorsForm
     success_url = reverse_lazy("main:sensors_list")
     
-    # Following get_querryset() is mondatly requrered.
+    # Following get_queryset() is mandatory required.
     # in order to get place data
     def get_queryset(self):
         return Sensors.objects.all()
@@ -621,7 +622,7 @@ class SensorsDeleteView(generic.DeleteView):
     # form_class=LocationForm
     success_url = reverse_lazy('main:sensors_list')
 # -----------------------------------------------------------------
-# 2022/11/8 CSV file uplaoding
+# 2022/11/8 CSV file uploading
 # it does need as reverse url path, does not it need? at 2022/11/11  
 # def index(req):
 #     return render(req, 'main/index.html')
@@ -674,7 +675,7 @@ def handle_uploaded_file(f):
         addCsv.insert_csv_data(path)        # register the contents of csv file' to DB
     except Exception as exc:
         logger.error(exc)
-    # Delete the apploaded file
+    # Delete the uploaded file
     os.remove(path)                         
 # -----------------------------------------------------------------
 # CSV file uploading
@@ -733,10 +734,10 @@ def upload_complete(request):
 #     form_class = FileUploadForm
     
 #     def get_form_kwargs(self):
-#         # set prefix of correct csv file's name into valiables
-#         valiables='test'    # valiable to pass to form
+#         # set prefix of correct csv file's name into variables
+#         variables='test'    # variable to pass to form
 #         kwargs=super(Load,self).get_form_kwargs()
-#         kwargs.update({'valiables':valiables})
+#         kwargs.update({'variables':variables})
 #         return kwargs
 
 #     def get_context_data(self, **kwargs):

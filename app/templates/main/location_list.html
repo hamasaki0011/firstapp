@@ -16,6 +16,7 @@
                   <th scope="col">現場</th>
                   <th scope="col">メモ</th>
                   <th scope="col">更新日</th>
+                  <th scope="col">登録日</th>
                   <th scope="col">編集</th>
               </tr>
           </thead>
@@ -25,6 +26,7 @@
               <td colspan="1"><a href="{% url 'main:location_detail' location.pk %}">{{ location.name}}</a></td>
               <td colspan="1">{{ location.memo }}</td>
               <td colspan="1">{{ location.updated_date }}</td>
+              <td colspan="1">{{ location.created_date }}</td>
               <td>
                 <a href="{% url 'main:location_update' location.pk %}" class="btn btn-primary btn-sm">更新する</a>
                 <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{location.pk}}">削除する</button>

@@ -11,21 +11,41 @@ MIDDLEWARE += [
 ]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR,'db.sqlite3'),
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR,'db.sqlite3'),
+    # }
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'django',
-    #     'USER': 'admin',
-    #     'PASSWORD': 'admin',
-    #     'PORT': '5433'
+    #     'NAME': 'sensor_data',
+    #     'USER': 'fujico',
+    #     'PASSWORD': 'admin.fujico',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432'
     # }
+    'default': {
+        'ENGINE': env('SQL_ENGINE'),
+        'NAME': env('SQL_DATABASE'),
+        'USER': env('SQL_USER'),
+        'PASSWORD': env('SQL_PASSWORD'),
+        'HOST': env('SQL_HOST'),
+        'PORT': env('SQL_PORT')
+    }    
 }
+# the contents of .env.dev
+# SQL_ENGINE=django.db.backends.postgresql
+## SQL_ENGINE2=django.db.backends.postgresql_psycopg2
+# SQL_DATABASE=sensor_data
+# SQL_USER=fujico
+# SQL_PASSWORD=admin.fujico
+# SQL_HOST=localhost
+# SQL_PORT=5432
+# DATABASE=postgres
 
+# 追加
 INTERNAL_IPS = ['127.0.0.1']
 
+# 追加
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',
     'debug_toolbar.panels.timer.TimerPanel',
@@ -41,3 +61,8 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
     'debug_toolbar.panels.profiling.ProfilingPanel',
 ]
+
+# 追加
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK" : lambda request: True,
+}

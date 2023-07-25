@@ -46,7 +46,7 @@ class User(AbstractBaseUser):
     
     USERNAME_FIELD = 'email'
     
-    # Inorder to link UserManager
+    # In order to link UserManager
     objects = UserManager()
 
     def __str__(self):             

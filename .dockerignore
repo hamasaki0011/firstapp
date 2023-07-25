@@ -7,19 +7,21 @@
 .dockerignore
 .env.dev
 .gitignore
-docker-compose.yml
+.venv/*
+#docker-compose.yml
 README.md
 # app配下の環境設定ファイル
-app/.venv
-app/.vscode
+app/.venv/*
+#app/.vscode
 app/.gitignore
 app/db.sqlite3
-app/Dockerfile
-app/entrypoint.sh
+#app/Dockerfile
+#app/entrypoint.sh #これをignoreしてはならない！
 app/README.md
-app/auth*
+app/auth/*
 # app_old配下すべて
 app_old/*
+app_prev/*
 
 # rootから2階層以下のサブディレクトリ内で、 temp で始まる名前のファイルやディレクトリを除外
 # ex. /somedir/subdir/temporary.txt を除外

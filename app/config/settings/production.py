@@ -1,8 +1,10 @@
 from .base import *
 
 # 2023.7.14 Need to set env file later 
-# ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
-ALLOWED_HOSTS =  os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+# if based on auth/.env 
+#ALLOWED_HOSTS =  os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+# if based on .env.dev
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 DATABASES = {
     # 'default': {
@@ -18,5 +20,5 @@ DATABASES = {
     }
 }
 
-# STATIC_ROOT = '/usr/share/nginx/html/static'
-# MEDIA_ROOT = '/usr/share/nginx/html/media'
+STATIC_ROOT = '/usr/share/nginx/html/static'
+MEDIA_ROOT = '/usr/share/nginx/html/media'

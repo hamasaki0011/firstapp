@@ -33,7 +33,7 @@ class UserAdmin(BaseUserAdmin):
         ('Permissions', {'fields': ('staff','admin',)}),
     )
 
-     # Set 新規登録フォーム
+    # Set 新規登録フォーム
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
