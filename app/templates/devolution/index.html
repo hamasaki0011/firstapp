@@ -3,7 +3,18 @@
 {% block content %}
 
 <div class="container">
+    <br>
     <h2>はじめに</h2>
+    <div>
+        <p>HTML、CSSなどのフロントエンド技術に習熟していないのでページ構成が見ずらいです。</p>
+        <h5>実験検証に構築した遠隔監視システムについてまとめる</h5>
+        <p>遠隔監視システムを実験検証するため、以下の要件をフジコー社内ネットワーク上に準備</p>
+        <span>WEBアプリサーバーをLinux(Ubuntu 20.04.01LTS)OSで構成。</span>
+        <br><span>選択した理由は、</span>
+        <br><span>①余計な費用をかけずに、無料で長期サポートのオープンソースOSのため低コストで実現できる</span>
+        <br><span>②Windows10(version 22H2)のマルチOS機能でサポートされているので、開発環境を構築しやすい</span>
+    </div>
+    <br>
     <h2>目次</h2>
     <form>
         <a class="btn btn-default" href="{% url 'devolution:index' %}"><span class="glyphicon glyphicon-list"></span>目次に戻る</a>
