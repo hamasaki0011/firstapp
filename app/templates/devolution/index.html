@@ -4,23 +4,52 @@
 
 <div class="container">
     <br>
-    <h2>はじめに</h2>
+    <h3>システム仕様書</h3>
+    <p>HTML、CSSなどのフロントエンド技術に習熟していないのでページ構成が見難いです</p>
+    <p id="tabcontrol">
+        <a href="#tabpage1">はじめに</a>
+        <a href="#tabpage2">目次</a>
+        <a href="#tabpage3">実験検証用のサーバー構築</a>
+    </p>
+    <div id="tabbody">
+        <div id="tabpage1">
+            <h5>
+                遠隔監視システム
+                <p>遠隔地に設置したセンサーデバイスのデータをサーバーにアップするこでリモート監視する目的で設計</p>
+                <span>本システムの構成要件は、</span>
+                <br><span>①データロガー：現場のセンサーデータを取得。</span>
+                <br><span>②ゲートウェイPC：データロガーに集めたセンサーデータをサーバー側に上げる。</span>
+                <br><span>③WEBアプリサーバー：集めたセンサーデータを可視化する。</span>
+                <br><span>④データベースサーバー：集めたセンサーデータを記憶・保管する。</span>
+            </h5>    
+        </div>
+        <div id="tabpage2">
+            <h5>
+                ＜　目次　＞
+                <p>はじめに …</p>
+                <p>実験検証用のサーバー構築について …</p>  
+            </h5>
+            </div>
+        <div id="tabpage3">
+            <h5>
+                ■実験検証に構築した遠隔監視システムについて
+                <p>遠隔監視システムを実験検証するため、以下の要件をフジコー社内ネットワーク上に準備</p>
+                <span>WEBアプリサーバーをLinux(Ubuntu 20.04.01LTS)OSで構成。</span>
+                <br><span>選択した理由は、</span>
+                <br><span>①余計な費用をかけずに、無料で長期サポートのオープンソースOSのため低コストで実現できる</span>
+                <br><span>②Windows10(version 22H2)のマルチOS機能でサポートされているので、開発環境を構築しやすい</span>
+            </h5>
+            <form>
+                <a class="btn btn-default" href="{% url 'devolution:index' %}"><span class="glyphicon glyphicon-list"></span>目次に戻る</a>
+            </form>        
+        </div>
+     </div>
     <div>
-        <p>HTML、CSSなどのフロントエンド技術に習熟していないのでページ構成が見ずらいです。</p>
-        <h5>実験検証に構築した遠隔監視システムについてまとめる</h5>
-        <p>遠隔監視システムを実験検証するため、以下の要件をフジコー社内ネットワーク上に準備</p>
-        <span>WEBアプリサーバーをLinux(Ubuntu 20.04.01LTS)OSで構成。</span>
-        <br><span>選択した理由は、</span>
-        <br><span>①余計な費用をかけずに、無料で長期サポートのオープンソースOSのため低コストで実現できる</span>
-        <br><span>②Windows10(version 22H2)のマルチOS機能でサポートされているので、開発環境を構築しやすい</span>
     </div>
     <br>
-    <h2>目次</h2>
-    <form>
-        <a class="btn btn-default" href="{% url 'devolution:index' %}"><span class="glyphicon glyphicon-list"></span>目次に戻る</a>
-    </form>
 </div>
-<br>
+
+
 <div class="container">
     <div>
         <h3>■HttpRequestメソッド確認用</h3>
@@ -63,5 +92,54 @@
     <a  class="btn btn-secondary" href="{% url 'record:record_article' %}"><span class="glyphicon glyphicon-book"></span> 開発関係情報を閲覧する</a>
     <a  class="btn btn-secondary" href="https://github.com/hamasaki0011/djangopj1.git" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span> Djangoアプリ(プログラムソース)</a>
 </div>
-<br>    
+<br>
+
+<script type="text/javascript">
+    // ---------------------------
+    // ▼A：対象要素を得る
+    // ---------------------------
+    var tabs = document.getElementById('tabcontrol').getElementsByTagName('a');
+    var pages = document.getElementById('tabbody').getElementsByTagName('div');
+    
+    // ---------------------------
+    // ▼B：タブの切り替え処理
+    // ---------------------------
+    function changeTab() {
+       // ▼B-1. href属性値から対象のid名を抜き出す
+       var targetid = this.href.substring(this.href.indexOf('#')+1,this.href.length);
+    
+       // ▼B-2. 指定のタブページだけを表示する
+       for(var i=0; i<pages.length; i++) {
+          if( pages[i].id != targetid ) {
+             pages[i].style.display = "none";
+          }
+          else {
+             pages[i].style.display = "block";
+          }
+       }
+    
+       // ▼B-3. クリックされたタブを前面に表示する
+       for(var i=0; i<tabs.length; i++) {
+          tabs[i].style.zIndex = "0";
+       }
+       this.style.zIndex = "10";
+    
+       // ▼B-4. ページ遷移しないようにfalseを返す
+       return false;
+    }
+    
+    // ---------------------------
+    // ▼C：すべてのタブに対して、クリック時にchangeTab関数が実行されるよう指定する
+    // ---------------------------
+    for(var i=0; i<tabs.length; i++) {
+       tabs[i].onclick = changeTab;
+    }
+    
+    // ---------------------------
+    // ▼D：最初は先頭のタブを選択しておく
+    // ---------------------------
+    tabs[0].onclick();
+    
+    </script>
+
 {% endblock %}

@@ -2,8 +2,6 @@
 # ex. /somedir/temporary.txt, /somedir/tempを除外
 #*/temp*
 
-*/db.sqlite3
-
 # rootから2階層以下のサブディレクトリ内で、 temp で始まる名前のファイルやディレクトリを除外
 # ex. /somedir/subdir/temporary.txt を除外
 #*/*/temp*

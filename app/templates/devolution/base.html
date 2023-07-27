@@ -8,6 +8,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     {% include "css.html" %}
+    {% load static %}
+    <!-- css for main.html -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/devolution.css' %}">
+
     {% block extra_css %}{% endblock %}
 
     {% comment %} 各ページのTitleを挿入する {% endcomment %}
