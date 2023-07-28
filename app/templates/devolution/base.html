@@ -7,10 +7,8 @@
     {% comment %} Micrsoft IE対応 インストールされている最新のバージョンで表示する {% endcomment %}
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    {% include "css.html" %}
-    {% load static %}
-    <!-- css for main.html -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/devolution.css' %}">
+    <!-- css for devolution.html -->
+    {% include "css_devolution.html" %}
 
     {% block extra_css %}{% endblock %}
 

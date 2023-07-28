@@ -7,30 +7,140 @@
     <h3>システム仕様書</h3>
     <p>HTML、CSSなどのフロントエンド技術に習熟していないのでページ構成が見難いです</p>
     <p id="tabcontrol">
-        <a href="#tabpage1">はじめに</a>
-        <a href="#tabpage2">目次</a>
-        <a href="#tabpage3">実験検証用のサーバー構築</a>
+        <a href="#tabpage1">概要</a>
+        <a href="#tabpage2">Webアプリ構築</a>
+        <a href="#tabpage3">ゲートウェイ構築</a>
+        <a href="#tabpage4">実験検証用のサーバー構築</a>
     </p>
     <div id="tabbody">
         <div id="tabpage1">
-            <h5>
-                遠隔監視システム
-                <p>遠隔地に設置したセンサーデバイスのデータをサーバーにアップするこでリモート監視する目的で設計</p>
-                <span>本システムの構成要件は、</span>
-                <br><span>①データロガー：現場のセンサーデータを取得。</span>
-                <br><span>②ゲートウェイPC：データロガーに集めたセンサーデータをサーバー側に上げる。</span>
-                <br><span>③WEBアプリサーバー：集めたセンサーデータを可視化する。</span>
-                <br><span>④データベースサーバー：集めたセンサーデータを記憶・保管する。</span>
-            </h5>    
+            <h5>概要…遠隔監視システムの機能</h5>
+            <p>
+                遠隔地に設置したセンサーデバイスのデータをサーバーにアップし可視化することでリモート監視を実現する。<br>
+                センサーデバイスの設置現場毎にユーザー認証機能を搭載し、各ユーザーでデータを確認・監視することができる。<br>
+            </p>
+            <br>
+            <h5>本システムのハードウェア構成と機能：</h5>
+            <h6>①データロガー: 現場のセンサーデータを取得。</h6>
+            <p>
+                日置電気株式会社製LR8450を採用、LR8450をUSBケーブルで②ゲートウェイ(PC)と接続。<br>
+                測定データはPCからWebサーバーにアップされる。<br>
+            </p>
+            <h6>②ゲートウェイPC: データロガーに集めたセンサーデータをサーバー側に上げる。</h6>
+            <p>
+                WindowsPCを使用し、測定データのサーバーへのアップはHTTPリクエストによって行う。
+            </p>
+            <h6>③WEBアプリサーバー: 集めたセンサーデータを表形式で表示、およびグラフ描画することで可視化する。</h6>
+            <p>
+                Webアプリサーバーは、外部レンタルサーバー、またはクラウドサーバーを使用する。<br>
+            </p>
+            <h6>④データベースサーバー: 集めたセンサーデータを記憶・保管する。</h6>
+            <P>
+                測定データをまとめて、CSVファイル形式などでPC上にダウンロードすることができる。
+            </p>
         </div>
         <div id="tabpage2">
+            <h5>Webアプリ構築</h5>
+            <p>webアプリは、センサーデータの可視化とデータベースへの登録を行う</p>
+            <h6>開発言語とフレームの選択</h6>
+            <p>
+                Webアプリの開発は、初めてなのでフレームワークの設定から始めた。<br>
+                フレームワークとは、ソフトウェアアプリケーションを開発するためのプラットフォームで、
+                コードを追加することで特定の機能を保有するページを作ることができ、また動作させることができるテンプレート。
+                図表描画のライブラリやログイン認証の機能など、各種リソースを利用しながら一つのパッケージにまとめることができるもの。<br>
+                フレームワークがあれば、新規Webサイトを立ち上げるだけでなく、サービス開始後も新しい機能を追加したり置き換えたりする
+                ことが比較的容易にできることが期待できる。<br>
+                開発にあたって、一般によく使用されているバックエンド向けフレームワークを調査(以下の5つ)<br>
+                <small>
+                    <font color=red>
+                        バックエンドWebフレームワークは、サーバーとデータベース機能を指す。
+                        ソリューションロジックとアーキテクチャー、ルーティングプロトコル、データセキュリティ、承認オプションなどを制御する。<br>
+                    </font>
+                </small>
+                ・WebアプリのフレームワークはDjangoを選択<br>
+                フレームワーク5つの選択肢から、後述の開発言語:Pythonで進められるDjangoに決定。<br>
+                <small>
+                    <font color=red>
+                        ※開発をはじめて、一年経過時にDjangoは非同期アクセスに弱いことが判明し、高い障壁となった。<br>
+                    </font>
+                </small>
+                <table class="table caption-top table-bordered borderless">
+                    <caption>表 Webアプリ開発フレームワーク</caption>
+                    <thead class="table-primary table-bordered border-dark">
+                        <tr align="center">
+                            <th scope="col">フレームワーク</th>
+                            <th scope="col">開発言語</th>
+                            <th scope="col">採用されている主なWebサイト</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-warning table-bordered border-dark">
+                        <tr align="center">
+                            <td colspan="1">Express</td>
+                            <td colspan="1">Node.js、JavaScript</td>
+                            <td colspan="1">Netfix</td>
+                        </tr>
+                        <tr align="center">
+                            <td colspan="1">Django</td>
+                            <td colspan="1">Python</td>
+                            <td colspan="1">Google、Youtube、Instagram</td>
+                        </tr>
+                        <tr align="center">
+                            <td colspan="1">RaRails</td>
+                            <td colspan="1">Ruby</td>
+                            <td colspan="1">Shopify、Groupon、Zendesk</td>
+                        </tr>
+                        <tr align="center">
+                            <td colspan="1">Laravel</td>
+                            <td colspan="1">PHP</td>
+                            <td colspan="1">BBC、Ratio、TourRadar、Crowdcube</td>
+                        </tr>
+                        <tr align="center">
+                            <td colspan="1">Spring</td>
+                            <td colspan="1">JAVA</td>
+                            <td colspan="1"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </p>
+            <P>
+                ・開発言語はPythonを選択<br>
+                このWebアプリは、Pythonを開発言語として、Djangoフレームワークで構成。<br>
+                Pythonを選択した理由は、<br>
+                ①インタープリター形式でコーディングと実行検証がほぼ同時にできるので時間効率が良い。<br>
+                ②無償ライセンスで使用できるライブラリーが豊富で今回使用するフレームワーク:Djangoもその一つ。<br>
+                ③サーバーのOSを選ばない。Windows、Linux/MacOS上で動作可能。<br>
+                ④以上を総合して、低コストでかつ短期間でのWebアプリ構築が期待できると判断した。<br>
+            </P>
+            <h6>開発環境</h6>
+            <p>
+                ・開発言語    Python3 3.10.6<br>
+                ・Webアプリフレームワーク(バックエンド)   Django 3.2.17<br>
+                ・コードエディター    VScode 1.80.2<br>
+                ・コンテナー作成ツール  Docker、Docker-compose
+            </p>
+            <h6>参考記事</h6>
+            <p>
+                <a href="https://www.itmanage.co.jp/column/web-application/" target="_blank" rel="noopener noreferrer">WEBアプリケーションとは？ 仕組みを開発やフレームワークを例に解説</a><br>
+                <a href="https://yunifusu.com/programming/webapp_make_01/" target="_blank" rel="noopener noreferrer">【Python×Django×Docker×VScode】WEBアプリ作成フロー</a><br>
+                <a href="https://azure.microsoft.com/ja-jp/products/visual-studio-code/" target="_blank" rel="noopener noreferrer">Visual Studio Code</a><br>
+                <a href="https://www.docker.com/get-started/" target="_blank" rel="noopener noreferrer">Get Started with Docker</a><br>
+                <a href="https://docs.docker.jp/index.html" target="_blank" rel="noopener noreferrer">Docker ドキュメント日本語化プロジェクト</a><br>    
+                - Pyhton学習関連:<br> 
+                <a href="https://docs.python.org/ja/3/tutorial/" target="_blank" rel="noopener noreferrer">Python公式チュートリアル日本語訳「Python チュートリアル」</a><br>
+                - Django学習: <br>
+                <a href="https://docs.djangoproject.com/ja/4.1/intro/tutorial01/" target="_blank" rel="noopener noreferrer">Django公式チュートリアル「はじめての Django アプリ作成、その 1」</a><br>   
+                <a href="https://djangogirls.org/en/" target="_blank" rel="noopener noreferrer">Django Girls, </a>
+                <a href="https://tutorial.djangogirls.org/ja/" target="_blank" rel="noopener noreferrer">Django Girls のチュートリアル日本語訳版</a><br>
+            </p> 
+        </div>
+        <div id="tabpage3">
             <h5>
-                ＜　目次　＞
-                <p>はじめに …</p>
+                <p>概要 …</p>
+                <p>Webアプリ構築 …</p>
                 <p>実験検証用のサーバー構築について …</p>  
             </h5>
-            </div>
-        <div id="tabpage3">
+        </div>
+        <div id="tabpage4">
             <h5>
                 ■実験検証に構築した遠隔監視システムについて
                 <p>遠隔監視システムを実験検証するため、以下の要件をフジコー社内ネットワーク上に準備</p>
@@ -90,7 +200,8 @@
 <div class="container">
     <h3>■参考資料</h3>
     <a  class="btn btn-secondary" href="{% url 'record:record_article' %}"><span class="glyphicon glyphicon-book"></span> 開発関係情報を閲覧する</a>
-    <a  class="btn btn-secondary" href="https://github.com/hamasaki0011/djangopj1.git" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span> Djangoアプリ(プログラムソース)</a>
+    <a  class="btn btn-secondary" href="https://github.com/hamasaki0011/djangopj1.git" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span> Djangoアプリ(with SQLite3)</a>
+    <a  class="btn btn-secondary" href="https://github.com/hamasaki0011/webapp1.git" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span> Dockerコンテナー(Djangoアプリ + SQLite3 + PostgreSQL + Gunicorn + Nginx)</a>
 </div>
 <br>
 
