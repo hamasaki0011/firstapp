@@ -2,9 +2,10 @@
 <nav class="navbar navbar-light" style="background-color: #1c83e2;">
   <div class="container-fluid">
     <div>
-      <a class="navbar-brand" href="{% url 'main:main_index' %}"><small>Home</small>
-        {% comment %} <img src="/media/pages/rmt_icon.png" style="width:50px;"/> {% endcomment %}
-        <i class="bi bi-house-door" style="font-size: 1.5rem; color: white;"></i>
+      <a class="navbar-brand" href="{% url 'main:main_index' %}">
+        {% comment %} <small>Home</small> {% endcomment %}
+        <img src="/media/pages/icon.png" style="width:80px;"/>
+        {% comment %} <i class="bi bi-house-door" style="font-size: 1.5rem; color: white;"></i> {% endcomment %}
       </a>
       {% comment %} ナビ左上のトグルボタン {% endcomment %}
       {% comment %} <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> {% endcomment %}

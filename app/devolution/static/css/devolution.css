@@ -18,13 +18,16 @@ body {
    font-size: 12pt;
    text-decoration: none;
 }
-.content {
+
+/* .content {
    margin-left: 40px;
-}
-/* .container {
+} */
+
+.container {
    margin-left: 40px;
    width: 100%;
-} */
+}
+
 h1, h2, h3, h4 {
    font-family: 'Gothic';
 }
@@ -62,8 +65,8 @@ p {
     display: inline-block;            /* インラインブロック化 */
     border-width: 1px 1px 0px 1px;    /* 下以外の枠線を引く */
     border-style: solid;              /* 枠線の種類：実線 */
-    border-color: black;              /* 枠線の色：黒色 */
-    border-radius: 0.75em 0.75em 0 0; /* 枠線の左上角と右上角だけを丸く */
+    border-color: blue;              /* 枠線の色：黒色 */
+    border-radius: 0.9em 0.9em 0 0; /* 枠線の左上角と右上角だけを丸く */
     padding: 0.75em 1em;              /* 内側の余白 */
     text-decoration: none;            /* リンクの下線を消す */
     color: black;                     /* 文字色：黒色 */
@@ -78,7 +81,7 @@ p {
 
  /* ▼タブの中身 */
 #tabbody div {
-    border: 1px solid black; /* 枠線：黒色の実線を1pxの太さで引く */
+    /* border: 1px solid black; 枠線：黒色の実線を1pxの太さで引く */
     margin-top: -1px;        /* 上側にあるタブと1pxだけ重ねるために「-1px」を指定 */
     padding: 1em;            /* 内側の余白量 */
     background-color: white; /* 背景色：白色 */
@@ -86,6 +89,8 @@ p {
     z-index: 0;              /* 重なり順序を「最も背面」にするため */
  }
  /* ▼タブの配色 */
-#tabcontrol a:nth-child(1), #tabbody div:nth-child(1) { background-color: #ddffdd; }/* 1つ目のタブとその中身用の配色 */
-#tabcontrol a:nth-child(2), #tabbody div:nth-child(2) { background-color: #ffffdd; }/* 2つ目のタブとその中身用の配色 */
-#tabcontrol a:nth-child(3), #tabbody div:nth-child(3) { background-color: #ddddff; }/* 3つ目のタブとその中身用の配色 */
+#tabcontrol a:nth-child(1), #tabbody div:nth-child(1) { background-color: #ccffff; }
+#tabcontrol a:nth-child(2), #tabbody div:nth-child(2) { background-color: #99e5ff; }/* 1つ目のタブとその中身用の配色 */
+#tabcontrol a:nth-child(3), #tabbody div:nth-child(3) { background-color: #ddffdd; }/* 2つ目のタブとその中身用の配色 */
+#tabcontrol a:nth-child(4), #tabbody div:nth-child(4) { background-color: #ffffdd; }/* 3つ目のタブとその中身用の配色 */
+#tabcontrol a:nth-child(5), #tabbody div:nth-child(5) { background-color: #ddddff; }

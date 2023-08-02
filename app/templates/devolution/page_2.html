@@ -1,92 +1,42 @@
-<h5>Webアプリ構築</h5>
-<p>webアプリは、センサーデータの可視化とデータベースへの登録を行う</p>
-<h6>開発言語とフレームの選択</h6>
+<h5>遠隔監視システム(初版リリース)で搭載した機能</h5>
+<h6>〇ユーザー認証機能</h6>
+<p>☑ユーザーメールアドレスによりアクセス認証を行う。</p>
+<h6>〇各ユーザーごとに現場に設置したセンサーデバイスの測定データを数値およびグラフで表示</h6>
 <p>
-    Webアプリの開発は、初めてなのでフレームワークの設定から始めた。<br>
-    フレームワークとは、ソフトウェアアプリケーションを開発するためのプラットフォームで、
-    コードを追加することで特定の機能を保有するページを作ることができ、また動作させることができるテンプレート。
-    図表描画のライブラリやログイン認証の機能など、各種リソースを利用しながら一つのパッケージにまとめることができるもの。<br>
-    フレームワークがあれば、新規Webサイトを立ち上げるだけでなく、サービス開始後も新しい機能を追加したり置き換えたりする
-    ことが比較的容易にできることが期待できる。<br>
-    開発にあたって、一般によく使用されているバックエンド向けフレームワークを調査(以下の5つ)<br>
-    <small>
-        <font color=red>
-            バックエンドWebフレームワークは、サーバーとデータベース機能を指す。
-            ソリューションロジックとアーキテクチャー、ルーティングプロトコル、データセキュリティ、承認オプションなどを制御する。<br>
-        </font>
-    </small>
-    ・WebアプリのフレームワークはDjangoを選択<br>
-    フレームワーク5つの選択肢から、後述の開発言語:Pythonで進められるDjangoに決定。<br>
-    <small>
-        <font color=red>
-            ※開発をはじめて、一年経過時にDjangoは非同期アクセスに弱いことが判明し、高い障壁となった。<br>
-        </font>
-    </small>
-    <table class="table caption-top table-bordered borderless">
-        <caption>表 Webアプリ開発フレームワーク</caption>
-        <thead class="table-primary table-bordered border-dark">
-            <tr align="center">
-                <th scope="col">フレームワーク</th>
-                <th scope="col">開発言語</th>
-                <th scope="col">採用されている主なWebサイト</th>
-            </tr>
-        </thead>
-        <tbody class="table-warning table-bordered border-dark">
-            <tr align="center">
-                <td colspan="1">Express</td>
-                <td colspan="1">Node.js、JavaScript</td>
-                <td colspan="1">Netfix</td>
-            </tr>
-            <tr align="center">
-                <td colspan="1">Django</td>
-                <td colspan="1">Python</td>
-                <td colspan="1">Google、Youtube、Instagram</td>
-            </tr>
-            <tr align="center">
-                <td colspan="1">RaRails</td>
-                <td colspan="1">Ruby</td>
-                <td colspan="1">Shopify、Groupon、Zendesk</td>
-            </tr>
-            <tr align="center">
-                <td colspan="1">Laravel</td>
-                <td colspan="1">PHP</td>
-                <td colspan="1">BBC、Ratio、TourRadar、Crowdcube</td>
-            </tr>
-            <tr align="center">
-                <td colspan="1">Spring</td>
-                <td colspan="1">JAVA</td>
-                <td colspan="1"></td>
-            </tr>
-        </tbody>
-    </table>
+    ☑測定データは1分毎に更新され、最新の測定数値が表示される。<br>
+    ☑グラフは直近の6時間分のデータ推移を表示する。<br>
+    拡張予定機能<br>
+    □各センサーデータについて、規定時間内の最大値、平均値を数値表示する。<br>
+    □各センサーデータをCSVファイルにまとめてローカルPCにダウンロードする。<br>
 </p>
+<h6>〇管理者ページ搭載</h6>
+<p>
+    ☑全測定サイトのセンサーデバイスのデータを確認することができる
+    ☑測定現場情報の追加、編集が可能<br>
+    ☑各測定現場で設置するセンサーデバイス情報の追加、編集が可能<br>
+</p><br>
+<h5>本システムのハードウェア構成と機能</h5>
+<h6>①データロガー: 現場のセンサーデータを取得。</h6>
+<p>
+    日置電機株式会社製LR8450を採用、LR8450をUSBケーブルで②のゲートウェイ(PC)と接続。<br>
+    測定データはPCからWebサーバーにアップされる。<br>
+</p>
+<h6>②ゲートウェイPC: データロガーに集めたセンサーデータをサーバー側に送る。</h6>
+<p>
+    WindowsPCまたはRaspberryPiを使用。FutureNet社のMA-E350使用の可能性あり。<br>
+    測定データのサーバーへのアップは、ftpsまたはHTTPリクエストによって行う。
+</p>
+<h6>③WEBアプリサーバー: 集めたセンサーデータを表形式で数値表示、およびグラフ描画することで可視化する。</h6>
+<p>
+    Webアプリサーバーは、外部レンタルサーバー、またはクラウドサーバーを使用する。<br>
+</p>
+<h6>④データベースサーバー: 集めたセンサーデータを記憶・保管する。</h6>
 <P>
-    ・開発言語はPythonを選択<br>
-    このWebアプリは、Pythonを開発言語として、Djangoフレームワークで構成。<br>
-    Pythonを選択した理由は、<br>
-    ①インタープリター形式でコーディングと実行検証がほぼ同時にできるので時間効率が良い。<br>
-    ②無償ライセンスで使用できるライブラリーが豊富で今回使用するフレームワーク:Djangoもその一つ。<br>
-    ③サーバーのOSを選ばない。Windows、Linux/MacOS上で動作可能。<br>
-    ④以上を総合して、低コストでかつ短期間でのWebアプリ構築が期待できると判断した。<br>
-</P>
-<h6>開発環境</h6>
-<p>
-    ・開発言語    Python3 3.10.6<br>
-    ・Webアプリフレームワーク(バックエンド)   Django 3.2.17<br>
-    ・コードエディター    VScode 1.80.2<br>
-    ・コンテナー作成ツール  Docker、Docker-compose
+    物理的にはWebサーバーと同じサーバーを使用する。
+    センサーデバイスから収集したデータを記憶・保管する。Webアプリのクエリーに応じて必要なデータを出力する。<br>
+    また、測定データをまとめて、CSVファイル形式などでローカルPC上にダウンロードすることができる。
 </p>
-<h6>参考記事</h6>
 <p>
-    <a href="https://www.itmanage.co.jp/column/web-application/" target="_blank" rel="noopener noreferrer">WEBアプリケーションとは？ 仕組みを開発やフレームワークを例に解説</a><br>
-    <a href="https://yunifusu.com/programming/webapp_make_01/" target="_blank" rel="noopener noreferrer">【Python×Django×Docker×VScode】WEBアプリ作成フロー</a><br>
-    <a href="https://azure.microsoft.com/ja-jp/products/visual-studio-code/" target="_blank" rel="noopener noreferrer">Visual Studio Code</a><br>
-    <a href="https://www.docker.com/get-started/" target="_blank" rel="noopener noreferrer">Get Started with Docker</a><br>
-    <a href="https://docs.docker.jp/index.html" target="_blank" rel="noopener noreferrer">Docker ドキュメント日本語化プロジェクト</a><br>    
-    - Pyhton学習関連:<br> 
-    <a href="https://docs.python.org/ja/3/tutorial/" target="_blank" rel="noopener noreferrer">Python公式チュートリアル日本語訳「Python チュートリアル」</a><br>
-    - Django学習: <br>
-    <a href="https://docs.djangoproject.com/ja/4.1/intro/tutorial01/" target="_blank" rel="noopener noreferrer">Django公式チュートリアル「はじめての Django アプリ作成、その 1」</a><br>   
-    <a href="https://djangogirls.org/en/" target="_blank" rel="noopener noreferrer">Django Girls, </a>
-    <a href="https://tutorial.djangogirls.org/ja/" target="_blank" rel="noopener noreferrer">Django Girls のチュートリアル日本語訳版</a><br>
-</p> 
+    <a><img src="/media/devolution/system.png" width="80%" height="80%" border="0" /></a>
+</p><br>
+

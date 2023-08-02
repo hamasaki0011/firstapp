@@ -7,34 +7,31 @@
     <h3>システム仕様書</h3>
     <p>HTML、CSSなどのフロントエンド技術に習熟していないのでページ構成が見難いです</p>
     <p id="tabcontrol">
-        <a href="#tabpage1">概要</a>
-        <a href="#tabpage2">Webアプリ構築</a>
-        <a href="#tabpage3">ゲートウェイ構築</a>
-        <a href="#tabpage4">実験検証用のサーバー構築</a>
+        <a href="#tabpage1">はじめに</a>
+        <a href="#tabpage2">概要</a>
+        <a href="#tabpage3">Webアプリ開発環境</a>
+        <a href="#tabpage4">実験検証用のサーバー</a>
+        <a href="#tabpage5">Webアプリ構造</a>
     </p>
     <div id="tabbody">
         <div id="tabpage1">
+            {% comment %} page_0:はじめに {% endcomment %}
             <p>{% include 'devolution/page_1.html' %}</p>
         </div>
         <div id="tabpage2">
-            <p>{% include 'devolution/page_2.html' %}</p>
+            {% comment %} page_1:概要 {% endcomment %}
+            <p>{% include 'devolution/page_2.html' %}</p>0
         </div>
         <div id="tabpage3">
-            <h5>
-                <p>概要 …</p>
-                <p>Webアプリ構築 …</p>
-                <p>実験検証用のサーバー構築について …</p>  
-            </h5>
+            {% comment %} page_2:Webアプリ開発環境構築 {% endcomment %}
+            <p>{% include 'devolution/page_3.html' %}</p>
         </div>
         <div id="tabpage4">
-            <h5>
-                ■実験検証に構築した遠隔監視システムについて
-                <p>遠隔監視システムを実験検証するため、以下の要件をフジコー社内ネットワーク上に準備</p>
-                <span>WEBアプリサーバーをLinux(Ubuntu 20.04.01LTS)OSで構成。</span>
-                <br><span>選択した理由は、</span>
-                <br><span>①余計な費用をかけずに、無料で長期サポートのオープンソースOSのため低コストで実現できる</span>
-                <br><span>②Windows10(version 22H2)のマルチOS機能でサポートされているので、開発環境を構築しやすい</span>
-            </h5>
+            {% comment %} page_3:実験検証用のサーバー構築について {% endcomment %}
+            <p>{% include 'devolution/page_4.html' %}</p>
+        </div>
+        <div id="tabpage5">
+
             <form>
                 <a class="btn btn-default" href="{% url 'devolution:index' %}"><span class="glyphicon glyphicon-list"></span>目次に戻る</a>
             </form>        
@@ -102,34 +99,34 @@
     // ▼B：タブの切り替え処理
     // ---------------------------
     function changeTab() {
-       // ▼B-1. href属性値から対象のid名を抜き出す
-       var targetid = this.href.substring(this.href.indexOf('#')+1,this.href.length);
+        // ▼B-1. href属性値から対象のid名を抜き出す
+        var targetid = this.href.substring(this.href.indexOf('#')+1,this.href.length);
     
        // ▼B-2. 指定のタブページだけを表示する
-       for(var i=0; i<pages.length; i++) {
-          if( pages[i].id != targetid ) {
-             pages[i].style.display = "none";
-          }
-          else {
-             pages[i].style.display = "block";
-          }
-       }
+        for(var i=0; i<pages.length; i++) {
+            if( pages[i].id != targetid ) {
+                pages[i].style.display = "none";
+            }
+            else {
+                pages[i].style.display = "block";
+            }
+        }
+
+        // ▼B-3. クリックされたタブを前面に表示する
+        for(var i=0; i<tabs.length; i++) {
+            tabs[i].style.zIndex = "0";
+        }
+        this.style.zIndex = "10";
     
-       // ▼B-3. クリックされたタブを前面に表示する
-       for(var i=0; i<tabs.length; i++) {
-          tabs[i].style.zIndex = "0";
-       }
-       this.style.zIndex = "10";
-    
-       // ▼B-4. ページ遷移しないようにfalseを返す
-       return false;
+        // ▼B-4. ページ遷移しないようにfalseを返す
+        return false;
     }
     
     // ---------------------------
     // ▼C：すべてのタブに対して、クリック時にchangeTab関数が実行されるよう指定する
     // ---------------------------
     for(var i=0; i<tabs.length; i++) {
-       tabs[i].onclick = changeTab;
+        tabs[i].onclick = changeTab;
     }
     
     // ---------------------------
@@ -137,6 +134,6 @@
     // ---------------------------
     tabs[0].onclick();
     
-    </script>
+</script>
 
 {% endblock %}

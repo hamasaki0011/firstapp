@@ -1,0 +1,78 @@
+<h5>Webアプリ開発環境の構築</h5>        
+<p>
+    Webアプリ開発環境は、WindowsPC上に以下のソフトウェアライブラリにより構築した。<br>
+    開発当初は、WindowsPc上に仮想サーバーをたてて、論理検証や動作確認を実施。<br>
+    中盤以降は、フジコー社内ネットワーク上にUbuntuサーバーを設置するとともにDockerコンテナーを導入して実動作検証を行った。<br>
+    <table class="table caption-top table-bordered borderless">
+        <caption>表 Webアプリ開発環境</caption>
+        <thead class="table-default table-bordered border-dark">
+            <tr align="center">
+                <th scope="col">ハードウェア/ソフトウェア</th>
+                <th scope="col">バージョン</th>
+                <th scope="col">機能/説明</th>
+                <th scope="col">ライセンス</th>
+            </tr>
+        </thead>
+        <tbody class="table-default table-bordered border-dark">
+            <tr align="center">
+                <td colspan="1">WindowsPC</td>
+                <td colspan="1">Windows10(22H2更新済み以降)※1</td>
+                <td colspan="1">WSL2(Winodws Subsystem for Linux)によるUbuntu 22.04.1LTS搭載</td>
+                <td colspan="1">**</td>
+            </tr>
+            <tr align="center">
+                <td colspan="1">Python3</td>
+                <td colspan="1">3.10.6</td>
+                <td colspan="1">開発言語</td>
+                <td colspan="1">あとで</td>
+            </tr>
+            <tr align="center">
+                <td colspan="1">Django</td>
+                <td colspan="1">3.2.17</td>
+                <td colspan="1">バックエンド向けフレームワーク</td>
+                <td colspan="1">あとで</td>
+            </tr>
+            <tr align="center">
+                <td colspan="1">VScode</td>
+                <td colspan="1">1.80.2</td>
+                <td colspan="1">コードエディター</td>
+                <td colspan="1">あとで</td>
+            </tr>
+            <tr align="center">
+                <td colspan="1">Docker、Docker-compose</td>
+                <td colspan="1">--</td>
+                <td colspan="1">アプリサーバー、データベースサーバー、Webサーバー実装コンテナー作成ツール</td>
+                <td colspan="1">あとで</td>
+            </tr>
+        </tbody>
+    </table>
+    <small>
+        <font color=red>
+            ※1: Windows11以降であれば、WSL2は標準搭載されているので、機能を有効にするのみ。
+            Windows10の場合は、アップデートにより22h2に更新して、さらにWSL2をインストールする必要がある。<br>
+            WSL2を有効にした後、Microsoft StoreからUbuntuをインストールする。(無料)<br>
+        </font>
+    </small>
+    他に
+    ・Webサーバー   Gunicorn、Enginx
+</p>
+<h6>開発環境ソフトウェアの入手先および参考記事</h6>
+<p>
+    Webアプリについて ⇒
+    <a href="https://www.itmanage.co.jp/column/web-application/" target="_blank" rel="noopener noreferrer">WEBアプリケーションとは？ 仕組みを開発やフレームワークを例に解説</a><br>
+    Webアプリ開発環境構築について ⇒
+    <a href="https://yunifusu.com/programming/webapp_make_01/" target="_blank" rel="noopener noreferrer">【Python×Django×Docker×VScode】WEBアプリ作成フロー</a><br>
+    WindowsPCにWSLをインストールしてLinuxを動作させる ⇒
+    <a href="https://learn.microsoft.com/ja-jp/windows/wsl/install" target="_blank" rel="noopener noreferrer">Visual Studio Code</a><br>
+    エディターVScodeをインストールする ⇒
+    <a href="https://azure.microsoft.com/ja-jp/products/visual-studio-code/" target="_blank" rel="noopener noreferrer">Visual Studio Code</a><br>
+    Dockerコンテナーを導入する ⇒
+    <a href="https://www.docker.com/get-started/" target="_blank" rel="noopener noreferrer">Get Started with Docker</a>、
+    <a href="https://docs.docker.jp/index.html" target="_blank" rel="noopener noreferrer">Docker ドキュメント日本語化プロジェクト</a><br>    
+    Pyhton学習を進める ⇒<br> 
+    <a href="https://docs.python.org/ja/3/tutorial/" target="_blank" rel="noopener noreferrer">Python公式チュートリアル日本語訳「Python チュートリアル」</a><br>
+    Django学習を進める ⇒<br>
+    <a href="https://docs.djangoproject.com/ja/4.1/intro/tutorial01/" target="_blank" rel="noopener noreferrer">Django公式チュートリアル「はじめての Django アプリ作成、その 1」</a>、
+    <a href="https://djangogirls.org/en/" target="_blank" rel="noopener noreferrer">Django Girls</a>、
+    <a href="https://tutorial.djangogirls.org/ja/" target="_blank" rel="noopener noreferrer">Django Girls のチュートリアル日本語訳版</a><br>
+</p><br> 
