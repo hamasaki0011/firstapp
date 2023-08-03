@@ -1,4 +1,5 @@
-# remoteapp
+# firstapp
+2023.8.3    Change The repository caused by re-setting the SSH configuration
 2023.8.2    Start to prepare the document.
 2023.7.28   Come back to webapp.
 2023.7.21   Reduce dotenv function and integrate to django_environ
