@@ -15,26 +15,24 @@
     </p>
     <div id="tabbody">
         <div id="tabpage1">
-            {% comment %} page_0:はじめに {% endcomment %}
+            {% comment %} page_1:はじめに {% endcomment %}
             <p>{% include 'devolution/page_1.html' %}</p>
         </div>
         <div id="tabpage2">
-            {% comment %} page_1:概要 {% endcomment %}
+            {% comment %} page_2:概要 {% endcomment %}
             <p>{% include 'devolution/page_2.html' %}</p>0
         </div>
         <div id="tabpage3">
-            {% comment %} page_2:Webアプリ開発環境構築 {% endcomment %}
+            {% comment %} page_3:Webアプリ開発環境構築 {% endcomment %}
             <p>{% include 'devolution/page_3.html' %}</p>
         </div>
         <div id="tabpage4">
-            {% comment %} page_3:実験検証用のサーバー構築について {% endcomment %}
+            {% comment %} page_4:実験検証用のサーバー構築について {% endcomment %}
             <p>{% include 'devolution/page_4.html' %}</p>
         </div>
         <div id="tabpage5">
-
-            <form>
-                <a class="btn btn-default" href="{% url 'devolution:index' %}"><span class="glyphicon glyphicon-list"></span>目次に戻る</a>
-            </form>        
+            {% comment %} page_5:Webアプリ構成図 {% endcomment %}
+            <p>{% include 'devolution/page_5.html' %}</p>       
         </div>
      </div>
     <div>
@@ -83,8 +81,6 @@
 <div class="container">
     <h3>■参考資料</h3>
     <a  class="btn btn-secondary" href="{% url 'record:record_article' %}"><span class="glyphicon glyphicon-book"></span> 開発関係情報を閲覧する</a>
-    <a  class="btn btn-secondary" href="https://github.com/hamasaki0011/djangopj1.git" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span> Djangoアプリ(with SQLite3)</a>
-    <a  class="btn btn-secondary" href="https://github.com/hamasaki0011/webapp1.git" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span> Dockerコンテナー(Djangoアプリ + SQLite3 + PostgreSQL + Gunicorn + Nginx)</a>
 </div>
 <br>
 
