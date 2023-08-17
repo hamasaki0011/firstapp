@@ -9,15 +9,16 @@
     Django framework up version to 4.2.3
 2023.7.20 install django_debug_toolbar for development
     as a result Django framework version should be down grade to 3.2.17
-    because version 4.2.3 does not support "is.ajax()" function
+    because version 4.2.3 does NOT support "is.ajax()" function
     not only above but also modification to separate a settings.py configuration 
 
 # webapp
-This is my first time web application.
+This is my first web application.
+Sever OS: Ubuntu 22.04 LTS
 Construction:
-Language: Python 3.10.6
-Framework: Django 3.2.17
-Database: PostgreSQL 2.9.1
-WSGI server: Gunicorn 20.1.0
-WEB server: Nginx 1.21-alpine
-Container: Docker# homeapp
+    Language: Python 3.10.6
+    Framework: Django 3.2.17
+    Database: PostgreSQL 2.9.1
+    WSGI server: Gunicorn 20.1.0
+    WEB server: Nginx 1.21-alpine
+    Container: Docker# homeapp

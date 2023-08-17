@@ -1,0 +1,119 @@
+<h5>SSLソケット通信を始める</h5>
+<p>この記事は以下を参照元：
+    <a href="https://search.yahoo.co.jp/search?p=Python%20SSLsocket&rkf=1&sqs=1&ei=UTF-8&fr=mcafeess1&x=nl" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span>Python SSLsocket 検索結果</a><br>
+    <a href="https://qiita.com/butada/items/9450e39d8d4aac6ac1fe" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span>(初心者)SSLソケット通信 -2016年05月02日-</a><br>
+</p>
+<h6>はじめに</h6>
+<p>SSLのソケット通信をGatewayに組み込めないか？上の記事を頼りに検証を行う</p>
+<pre>
+    環境：
+    Server OS: UBUNTU 22.04 LTS
+    Python: 3.10.6
+    OpenSSL 0.9.8zh Jan 2016 ⇐？
+</pre>
+<h6>準備</h6>
+<p>証明書と公開鍵を作成する</P>
+<pre>
+①秘密鍵を生成してcsrを生成
+    openssl req -nodes -newkey rsa:2048 -keyout server.key -out server.csr -subj "/C=JP/ST=Hokkaido/L=Sapporo/O=Example INC./OU=IT Department/CN=example.com"
+
+②csrを秘密鍵で署名、有効期限を10年間としたcrtファイルを出力
+    openssl x509 -req -days 3650 -in server.csr -signkey server.key -out server.crt
+
+①、②をワンライナーでまとめる(これは覚えられない！)
+    openssl req -nodes -newkey rsa:2048 -keyout server.key -out server.csr -subj "/C=JP/ST=Hokkaido/L=Sapporo/O=Example INC./OU=IT Department/CN=example.com" && openssl x509 -req -days 3650 -in server.csr -signkey server.key -out server.crt
+
+</Pre>
+<p>
+    参照元：
+    <a href="https://qiita.com/marcy-terui/items/2f63d7f170ff82531245" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span>オレオレ証明書・秘密鍵・CSR全部まとめて作るワンライナー -2015年05月01日-</a><br>    
+</p>
+<h6>準備</h6>
+<p>
+    このページを参考にコードを作成<br>
+    <a href="https://docs.python.org/2/library/ssl.html" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span>17.3. ssl — TLS/SSL wrapper for socket objects -version 2.6-</a><br>
+    17.3.5.2. クライアントサイドの処理<br>
+    17.3.5.3. サーバーサイドの処理<br>    
+</p>
+<p>■ssl_server.py</p>
+<pre>
+    import socket, ssl
+
+    URL = '127.0.0.1'
+    PORT = 10023
+
+    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    context.load_cert_chain(certfile="keys/server.crt", keyfile="keys/server.key")
+
+    bindsocket = socket.socket()
+    bindsocket.bind((URL, 10023))
+    bindsocket.listen(5)
+
+    def do_something(connstream, data):
+        print '---------------------'
+        print data + '\n'
+        print '---------------------'
+        print
+
+    def deal_with_client(connstream):
+        data = connstream.read()
+        # null data means the client is finished with us
+        while data:
+            if not do_something(connstream, data):
+                # we'll assume do_something returns False
+                # when we're finished with client
+                break
+            data = connstream.read()
+        # finished with client
+
+    while True:
+        newsocket, fromaddr = bindsocket.accept()
+        connstream = context.wrap_socket(newsocket, server_side=True)
+        try:
+            deal_with_client(connstream)
+        finally:
+            connstream.shutdown(socket.SHUT_RDWR)
+            connstream.close()
+</pre>
+<p>■ssl_client.py</p>
+<pre>
+    import ssl
+    import socket
+    import pprint
+    
+    URL = '127.0.0.1'
+    PORT = 10023
+    
+    context = ssl.create_default_context()
+    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    context.verify_mode = ssl.CERT_NONE 
+    context.check_hostname = False
+    conn = context.wrap_socket(socket.socket(socket.AF_INET), server_hostname=URL)
+    conn.connect((URL, PORT))
+    cert = conn.getpeercert()
+    pprint.pprint(cert)
+    conn.sendall(b"HEAD / HTTP/1.0\r\nHost: linuxfr.org\r\n\r\n")
+    pprint.pprint(conn.recv(1024).split(b"\r\n"))
+</pre>
+<h6>結果</h6>
+<p>
+    サーバー側：<br>
+    <pre>
+        $ python ssl_server.py 
+        ---------------------
+        HEAD / HTTP/1.0
+        Host: linuxfr.org
+
+
+
+        ---------------------
+    </pre>
+    クライアント側：<br>
+    <pre>
+        $ python ssl_client.py 
+        {}
+        ['']
+        $ 
+        
+    </pre>
+</p>
