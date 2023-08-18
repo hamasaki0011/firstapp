@@ -1,0 +1,77 @@
+<h5>Python開発環境構築</h5>
+<h6>Python3のインストール</h6>
+<p>
+UbuntuにはPython3がプレインストールされている。<br>
+搭載されているPython3のバージョンは、APT(Advanced Packaging Tool)のaptコマンドで、
+システムの更新とアップグレードを行った後で確認することができる。
+<pre>
+    以下にその例を示す。
+<code>
+    $sudo apt update
+    $sudo apt -y upgrade
+</code>
+    ここで指定した"-y"フラグは、すべてのアイテムがインストールされることに同意することを示す。
+    ただし、Linuxのバージョンによってはシステムを更新とアップグレード中に追加で同意を求められることもある。
+    プロセス完了後、次のように入力してシステムにインストールされているPython3のバージョンを確認する。
+    バージョン番号が端末ウィンドウに出力される。表示されるバージョン番号は様々だが、2022年10月現在は次のようになる。
+<code>
+    $python3 -V
+    Python 3.10.6
+</code>
+    Pythonのソフトウェアパッケージを管理するには、開発プロジェクトで使用するプログラミングパッケージを
+    インストールおよび管理するツールであるpipをインストールする必要がある。
+<code>
+    $sudo apt install -y python3-pip
+</code>
+    pipは、Pythonのパッケージ（「ライブラリ」や「モジュール」とも呼ぶ）をインストール、管理するためのパッケージ。
+    pipが依存関係を管理してくれるので、ユーザーはパッケージの依存関係を一切気にする必要がない。
+    これにより、以下のように依存関係を気にすることなくパッケージを取り扱うことができる。
+<code>
+    $pip3 install package_name
+</code>
+    ここで、package_nameとして、Web開発用のDjangoや科学計算用のNumPyなど、任意のPythonパッケージまたは
+    ライブラリを参照することができる。
+    NumPyをインストールする場合は、コマンド pip3 install numpyを実行する。
+    また、pythonには堅牢なプログラミング環境セットアップのため、インストールした方が
+    良いパッケージと開発ツールがいくつかある。
+<code>
+    $sudo apt install -y build-essential libssl-dev libffi-dev python3-dev
+</code>
+</pre>
+<p>
+インストールするパッケージをまとめると以下にようになる。
+</p>
+<table class="table caption-top table-bordered borderless">
+<caption>表 Python3関連ライブラリー</caption>
+<thead class="table-default table-bordered border-dark">
+    <tr align="center">
+        <th scope="col">パッケージ名</th>
+        <th scope="col">機能概要</th>
+    </tr>
+</thead>
+<tbody class="table-default table-bordered border-dark">
+    <tr>
+        <td width="220px">build-essential</td>
+        <td width="580px">基本的な開発ツール</td>
+    </tr>
+    <tr>
+        <td width="220px">libssl-dev</td>
+        <td width="580px">
+            OpenSSLのヘッダファイルとライブラリ。<br>
+            Webシステム開発では、HTTP通信をサポートするためには、IO::Socket::SSLをインストールする必要がある。
+        </td>
+    </tr>
+    <tr>
+        <td width="220px">libffi-dev</td>
+        <td width="580px">
+            FFI(Foreign function interface)の機能が提供される。
+            ある言語から異なる言語の関数を呼び出すための仕組み。<br>
+            ex)pythonからc/c++など
+    </td>
+    </tr>
+</tbody>
+</table>
+
+
+
+

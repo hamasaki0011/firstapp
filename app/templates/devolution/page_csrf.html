@@ -1,0 +1,157 @@
+<h5>DjangoでPOSTメッセージにCSRFtokenを組み込む方法</h5>
+<p>この記事は以下を引用：<br>
+    <a href="https://own-search-and-study.xyz/2017/11/12/django%E3%81%A7post%E3%83%A1%E3%83%83%E3%82%BB%E3%83%BC%E3%82%B8%E3%81%ABcsrftoken%E3%82%92%E5%90%AB%E3%81%BE%E3%81%9B%E3%82%8B%E6%96%B9%E6%B3%95%E3%81%BE%E3%81%A8%E3%82%81/" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span>DjangoでPOSTメッセージにCSRFtokenを含ませる方法まとめ</a><br>
+    <a href="https://own-search-and-study.xyz/2017/04/09/django%e3%81%a7%e4%bd%9c%e3%81%a3%e3%81%9f%e3%82%b5%e3%82%a4%e3%83%88%e3%81%ab%e3%82%b9%e3%82%af%e3%83%aa%e3%83%97%e3%83%88%e3%81%a7%e3%83%ad%e3%82%b0%e3%82%a4%e3%83%b3%e3%81%99%e3%82%8b%e6%96%b9/" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span>Djangoで作ったサイトにスクリプトでログインする方法</a><br>
+</p>
+<h6>はじめに</h6>
+<p>
+CSRF（Cross Site Request Forgery）とは、Webアプリケーションサイトに存在する「脆弱性」を利用して、悪意のある偽りの
+処理を要求して攻撃することを意味する。<br><br>
+<big>攻撃の手法・特徴</big><br>
+・攻撃者は攻撃用Webページを準備し、ユーザがアクセスするよう誘導する。<br>
+・ユーザが攻撃用Webページにアクセスすると、攻撃用Webページ内にあらかじめ用意されていた不正なリクエストを攻撃対象サーバに送る。<br>
+・その結果、攻撃対象サーバ上のWebアプリケーションは不正なリクエストを処理し、ユーザが意図していない処理が行われてしまう。<br><br>
+今回フレームワークとして使用したDjangoには、この攻撃を防ぐためPOSTリクエストに「Cookieに含まれるcsrftokenの情報」が含まれていなければ
+リクエストを拒否する仕様が搭載されている。<br>
+「csrftoken」は、元々はサーバから受け取る乱数の情報であり、この情報を持っているということは、少なくとも正規の方法で
+ページにアクセスした状態を保持してリスクエストを送っているということになり、悪意のある攻撃を排除するという仕組みが働くことで
+攻撃リスクを低減できる。<br>
+</p>
+<h6>(1)htmlでformを使う場合</h6>
+<p>
+この方法が一番簡単で、templateとなるhtmlファイルの中に、 "｛％ csrf_token ％｝"というコードを追加しておくだけで自動的にcsrftokenが送られる。<br>
+<a href="https://docs.djangoproject.com/en/1.11/ref/csrf/" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span>https://docs.djangoproject.com/en/1.11/ref/csrf/</a><br>
+</P>
+<h6>(2)JavaScriptでcreateElementを使う場合</h6>
+<p>
+createElementで作ったformの中にcsrftokenを含ませる必要があるので、csrftokenを以下の関数を作って取得する。<br>
+<a href="https://docs.djangoproject.com/en/1.11/ref/csrf/" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span>https://docs.djangoproject.com/en/1.11/ref/csrf/</a><br>  
+<pre>
+<code>
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</code>
+    具体的には、
+<code>
+    var csrftoken = getCookie('csrftoken');
+</code>
+    次にcreatElementでformを作り、TEXTのINPUTとしてNAMEが”csrfmiddlewaretoken”、VALUEがcsrftokenのElementを加えて
+    formをSubmitする。
+<code>
+    function post_sample()
+    {
+        var form = document.createElement("form");
+        form.setAttribute("action", "sample.html"); // 投げたいURLを書く。
+        form.setAttribute("method", "POST"); // POSTリクエストもしくはGETリクエストを書く。
+        form.style.display = "none"; // 画面に表示しないことを指定する
+
+        // csrtokenを設定する部分
+        my_tb=document.createElement('INPUT');
+        my_tb.type='TEXT';
+        my_tb.name='csrfmiddlewaretoken';
+        my_tb.value=[getCookie('csrftoken')];
+        form.appendChild(my_tb);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</code>
+</pre>
+</p>
+<h6>(3)Ajaxを使う場合</h6>
+<p>
+初期設定のような形でcsrftokenを与えるようにしておけばいいよい。
+<a href="https://docs.djangoproject.com/en/1.11/ref/csrf/" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span>https://docs.djangoproject.com/en/1.11/ref/csrf/</a><br>  
+<pre>
+<code>
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+</code>
+    あとは普通にAjaxを使う手順でPOSTメッセージを作成する。
+    <a href="https://ysklog.net/jquery/ajax/4501.html" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-book"></span>【ajax】通信エラーとなった原因（エラーログ）を取得する</a><br>
+<code>
+    function post_sample()
+    {
+            var data = {
+                "sample": "sample",
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "sample.html",
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                data: JSON.stringify(data),
+                dataType:"html",
+            
+                success:function(res) {
+                    console.log("ajax通信に成功しました");
+                    console.log(res);    
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("失敗しました");
+                    console.log("ajax通信に失敗しました");
+                    console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+                    console.log("textStatus     : " + textStatus);
+                    console.log("errorThrown    : " + errorThrown.message);    
+                },
+            });
+    }
+</code>
+</pre>
+</P>  
+<h6>(4)Pythonのrequestsを使う場合</h6>
+<p>
+ブラウザを起動せずにPOSTメッセージを送りたい場合、例えばPythonのrequestsモジュールを使う方法がある。<br>
+ただし注意を要する点が3つ、ログインにcsrfが必要なこと（②）、およびcsrfがポストボタンを押すたびに
+変わってしまうため、csrfが古くならないようにPOSTする必要があること（①、③）。
+<pre>
+<code>
+    import requests
+
+    #ログインに必要な情報
+    #重要①：URLに「?next=アクセスしたいページ」の部分を含めてはいけない。
+    URL = "ログインページのURL"　
+    ID = "ログインするユーザのID"
+    PASS = "ログインするユーザのパスワード"
+    NEXT = "アクセスしたいページ"
+
+    #重要②：まずログインページにアクセスしてクッキーからtokenを取得する
+    session = requests.session()
+    res = session.get(URL)
+    csrf = session.cookies['csrftoken']
+
+    login_info = {
+        "csrfmiddlewaretoken" : csrf,
+        "username" : ID,
+        "password" : PASS,
+        "next" : NEXT,
+    }
+
+    #重要③：headerにURLを渡す。
+    response = session.post(URL, data=login_info, headers=dict(Referer=URL))
+
+</code>
+</pre>
+</P>

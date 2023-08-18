@@ -5,27 +5,34 @@
 <div class="container">
     <br>
     <h3>システム仕様書</h3>
-    <p>HTML、CSSなどのフロントエンド技術に習熟していないのでページ構成が見難いです</p>
+    <p>閲覧する項目のタブを選択してください。</p>
     <p id="tabcontrol">
-        <a href="#tabpage1">はじめに</a>
-        <a href="#tabpage2">概要</a>
-        <a href="#tabpage3">Webアプリ開発環境</a>
+        <a href="#tabpage_begin">はじめに</a>
+        <a href="#tabpage_overview">概要</a>
+        <a href="#tabpage_environ">Webアプリ開発環境</a>
+        <a href="#tabpage_python">Python開発環境構築</a>
         <a href="#tabpage4">実験検証用のサーバー</a>
         <a href="#tabpage5">Webアプリ構造</a>
+        <a href="#tabpage_csrf">CSRF対策</a>
         <a href="#tabpage_SSL">SSLソケット通信</a>
+        <a href="#tabpage_reference">参考Webサイト</a>
     </p>
     <div id="tabbody">
-        <div id="tabpage1">
+        <div id="tabpage_begin">
             {% comment %} page_1:はじめに {% endcomment %}
-            <p>{% include 'devolution/page_1.html' %}</p>
+            <p>{% include 'devolution/page_begin.html' %}</p>
         </div>
-        <div id="tabpage2">
+        <div id="tabpage_overview">
             {% comment %} page_2:概要 {% endcomment %}
-            <p>{% include 'devolution/page_2.html' %}</p>0
+            <p>{% include 'devolution/page_overview.html' %}</p>0
         </div>
-        <div id="tabpage3">
+        <div id="tabpage_environ">
             {% comment %} page_3:Webアプリ開発環境構築 {% endcomment %}
-            <p>{% include 'devolution/page_3.html' %}</p>
+            <p>{% include 'devolution/page_environ.html' %}</p>
+        </div>
+        <div id="tabpage_python">
+            {% comment %} page_python:Python開発環境構築 {% endcomment %}
+            <p>{% include 'devolution/page_python.html' %}</p>
         </div>
         <div id="tabpage4">
             {% comment %} page_4:実験検証用のサーバー構築について {% endcomment %}
@@ -35,10 +42,19 @@
             {% comment %} page_5:Webアプリ構成図 {% endcomment %}
             <p>{% include 'devolution/page_5.html' %}</p>       
         </div>
+        <div id="tabpage_csrf">
+            {% comment %} page_csrf:POSTメッセージにCSRFTokenを組み込む {% endcomment %}
+            <p>{% include 'devolution/page_csrf.html' %}</p>       
+        </div>
         <div id="tabpage_SSL">
             {% comment %} page_SSL:SSLソケット通信 {% endcomment %}
             <p>{% include 'devolution/page_SSL.html' %}</p>       
         </div>
+            <div id="tabpage_reference">
+            {% comment %} page_reference:参考Webサイト情報 {% endcomment %}
+            <p>{% include 'devolution/page_reference.html' %}</p>       
+        </div>
+
      </div>
     <div>
     </div>
@@ -76,18 +92,8 @@
                 </form>
             </a>
         <br>
-        <h3>■グラフ描画確認用</h3>
-        <div>
-            <p><a class="btn btn-default" href="{% url 'main:upload' %}"><span class="glyphicon glyphicon-pencil"></span>データファイルをアップロード</a></p>
-        </div> 
     </div>
 </div>
-<br>
-<div class="container">
-    <h3>■参考資料</h3>
-    <a  class="btn btn-secondary" href="{% url 'record:record_article' %}"><span class="glyphicon glyphicon-book"></span> 開発関係情報を閲覧する</a>
-</div>
-<br>
 
 <script type="text/javascript">
     // ---------------------------
