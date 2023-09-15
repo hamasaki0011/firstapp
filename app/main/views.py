@@ -80,10 +80,10 @@ class IndexView(LoginRequiredMixin,generic.ListView):
         user=self.request.user
         # ログインユーザーに許可されたQuery情報を渡す
         if user.is_authenticated:
-            if('fujico@kfjc.co.jp' in user.email):
+            if('fujico@kfjc.co.jp' in user.email): # type: ignore
                 locations = Location.objects.all()
             else:
-                locations = Location.objects.filter(name=user.profile.belongs)
+                locations = Location.objects.filter(name=user.profile.belongs) # type: ignore
         return locations
 
     # Get user infromation
@@ -324,7 +324,7 @@ class MainDetailView(generic.ListView):
         # Get the smallest number of the point_id
         # 23.7.4 change 'sensor.id' to 'id' for django' revision up 3.2.17 to 4.2.3
         # startPoint=sensor_list.order_by('sensor.id').first().id
-        startPoint=sensor_list.order_by('id').first().id
+        startPoint=sensor_list.order_by('id').first().id # type: ignore
         #startPoint=sensor_list.order_by('id').first().id
         
         # Generate a graph data from sensor's measured_value   
@@ -334,7 +334,7 @@ class MainDetailView(generic.ListView):
         # today = datetime.datetime.now() + datetime.timedelta(hours=TD)
         # 注意：最終的にはtimedeltaで1分前のデータを表示するように調整する
         today = datetime.datetime.now()
-        start_date=today-datetime.timedelta(hours=4)
+        start_date=today-datetime.timedelta(hours=1)
         results=Result.objects.all().filter(place_id=id.pk, created_date__range=(start_date,today))
         # results=Result.objects.all().filter(place_id=id.pk)
         if results.first() is None:
@@ -661,16 +661,23 @@ class SensorsDeleteView(generic.DeleteView):
 # handling the uploading file
 def handle_uploaded_file(f):
     path = os.path.join(UPLOAD_DIR, f.name)
+    """ 'w': 書込み用でファイルを開く
+        ファイル名に指定したものがすでに存在する場合は上書き
+        'b': バイナリーモードで開く
+        '+': 更新のためディスクファイルを開く
+        他に、'Y': 読み込み用、'X': 新規ファイルの書き込み用
+        'a': 書込み用で開く、すでに存在している場合末行に追加書込み
+    """
     with open(path, 'wb+') as destination:
-        """ 'w': 書込み用でファイルを開く
-            ファイル名に指定したものがすでに存在する場合は上書き
-            'b': バイナリーモードで開く
-            '+': 更新のためディスクファイルを開く
-            他に、'Y': 読み込み用、'X': 新規ファイルの書き込み用
-            'a': 書込み用で開く、すでに存在している場合末行に追加書込み
+        """  ~ in xxx: リストオブジェクトxxxから1つずつ要素を
+            取り出して、~の変数に代入してループ処理を行う。
+            リストオブジェクトは、メソッドchunk()で分割されたもの
+            chunk(): ファイルをchunk_sizeに指定したサイズの塊りずつ
+            読みだす。chunk_sizeのデフォールトは64KB。
         """
         for chunk in f.chunks():
             destination.write(chunk)
+    
     try:
         addCsv.insert_csv_data(path)        # register the contents of csv file' to DB
     except Exception as exc:
