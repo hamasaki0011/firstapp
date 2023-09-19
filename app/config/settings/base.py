@@ -35,8 +35,8 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 DEBUG = env.bool('DEBUG')
-#ALLOWED_HOSTS =  os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+ALLOWED_HOSTS =  os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+#ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # Application definitiongit 
 INSTALLED_APPS = [

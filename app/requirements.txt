@@ -8,13 +8,14 @@ defusedxml==0.7.1
 Django==3.2.17
 django-allauth==0.52.0
 django-crispy-forms==2.0
+gunicorn==20.1.0            #2023.9.19 add
 django-debug-toolbar==4.1.0
 django-environ==0.10.0
 idna==3.4
 oauthlib==3.2.2
 plotly==5.13.1
 # install PostgreSQL
-psycopg2-binary==2.9.1
+psycopg2-binary==2.9.1  # is equal to PostgreSQl version 14.8
 pycparser==2.21
 PyJWT==2.6.0
 python-dateutil==2.8.2
