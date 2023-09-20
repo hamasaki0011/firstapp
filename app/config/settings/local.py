@@ -2,10 +2,12 @@ from .base import *
 
 ALLOWED_HOSTS = ['*']
 
+# Add for django tool bar 
 INSTALLED_APPS += [
     'debug_toolbar',
 ]
 
+# Add for django tool bar
 MIDDLEWARE += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
@@ -42,10 +44,10 @@ DATABASES = {
 # SQL_PORT=5432
 # DATABASE=postgres
 
-# 追加
+# Add for django tool bar
 INTERNAL_IPS = ['127.0.0.1']
 
-# 追加
+# Add for django tool bar
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',
     'debug_toolbar.panels.timer.TimerPanel',
@@ -62,7 +64,7 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.profiling.ProfilingPanel',
 ]
 
-# 追加
+# Add for django tool bar
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK" : lambda request: True,
 }

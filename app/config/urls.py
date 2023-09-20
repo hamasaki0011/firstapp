@@ -31,7 +31,9 @@ urlpatterns = [
     path('devolution/', include('devolution.urls')),
 ]
 
-if settings.DEBUG:
+# Add for django debug tool bar
+if DEBUG:
+# if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns += [
