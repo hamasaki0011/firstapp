@@ -1,0 +1,99 @@
+body {
+    background-color: white;
+}
+.page-header {
+    background-color: #1c83e2;
+    margin-top: 0;
+    padding: 5px 20px 5px 40px;   /* the origin is 20px 20px 20px 40px */
+}
+.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
+    /* Display the title */
+    color: #ffffff;
+    font-size: 24pt;    /* the origin was 36pt */
+    text-decoration: none;
+}
+.page-header h5 {
+    /* Embed the real time date and clock */
+    color: #ffffff;
+    font-size: 12pt;
+    text-decoration: none;
+}
+.content {
+    margin-left: 40px;
+}
+/* .container {
+    margin-left: 40px;
+    width: 100%;
+} */
+h1, h2, h3, h4 {
+    font-family: 'Gothic';
+}
+.date {
+    color: #828282;
+}
+.save {
+    float: right;
+}
+.main-form textarea, .main-form input {
+    width: 100%;
+}
+.top-menu, .top-menu:hover, .top-menu:visited { 
+    color: #ffffff;
+    float: right;
+    font-size: 26pt;
+    margin-right: 20px;
+}
+.main {
+    margin-top: 20px;
+    margin-bottom: 30px;    /* the origin is top 0px; bottom 70px; */
+}
+.main h2 a, .main h2 a:visited .main h4 a, .main h4 a:visited{
+    color: #000000;
+}
+
+/* .page-header {
+    background-color: #0241233d;
+    margin-top: 0;
+    padding: 20px 20px 20px 40px;
+}
+.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
+    color: #ffffff;
+    font-size: 24pt;
+    text-decoration: none;
+}
+.page-header h5 {
+    color: #ffffff;
+    font-size: 12pt;
+    text-decoration: none;
+}
+.content {
+    margin-left: 40px;
+}
+h1, h2, h3, h4 {
+    font-family: 'Gothic';
+}
+.date {
+    color: #828282;
+}
+.save {
+    float: right;
+} */
+.record-form textarea, .record-form input {
+    width: 100%;
+}
+/* .top-menu, .top-menu:hover, .top-menu:visited {
+    color: #ffffff;
+    float: right;
+    font-size: 26pt;
+    margin-right: 20px;
+} */
+.record {
+    margin-bottom: 30px;
+    /* original was 70px; */
+}
+.record h2 a, .record h2 a:visited {
+    color: #000000;
+}
+.record h4 a, .record h4 a:visited {
+    color: #f80707;
+}
