@@ -15,11 +15,11 @@ from pathlib import Path
 # from dotenv import load_dotenv
 import environ
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
-# for building the separated settings.py
+# Change base path phrase for building the separated settings.py.
+# however, original was => BASE_DIR = Path(__file__).resolve().parent.parent.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-#PARENT_DIR = BASE_DIR.parent
+# if it would required, would add parent directory path as below. 
+# PARENT_DIR = BASE_DIR.parent
 #if use environ
 #env_path = BASE_DIR / "auth/.env"
 env = environ.Env()
@@ -29,7 +29,7 @@ env.read_env('.env.dev')
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#if use environ
+# if use environ
 # load_dotenv(env_path)
 # SECRET_KEY = os.environ.get("SECRET_KEY")
 SECRET_KEY = env("SECRET_KEY")
@@ -76,9 +76,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'templates',
-            #BASE_DIR / 'devolution/templates'
         ],
-        #'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -93,9 +91,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
+# The below definition would be overridden with local.py or production.py 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -122,7 +121,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

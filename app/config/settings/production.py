@@ -1,6 +1,5 @@
 from .base import *
 
-# 2023.7.14 Need to set env file later 
 # if based on auth/.env 
 ALLOWED_HOSTS =  os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 # if based on .env.dev
@@ -14,7 +13,6 @@ DATABASES = {
         # 'USER': env('DB_USER'),
         # 'PASSWORD': env('DB_PASSWORD'),
         # 'PORT': env('DB_PORT')
-        
         'ENGINE': env('SQL_ENGINE'),
         'NAME': env('SQL_DATABASE'),
         'USER': env('SQL_USER'),
@@ -24,5 +22,6 @@ DATABASES = {
     }
 }
 
+# The static and media files path on the deploy
 STATIC_ROOT = '/usr/share/nginx/html/static'
 MEDIA_ROOT = '/usr/share/nginx/html/media'
