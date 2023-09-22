@@ -1,5 +1,9 @@
 body {
     background-color: white;
+    font-family: 'Noto Sans JP', sans-serif;
+    /* font-family: 'Tangerine', serif; */
+    font-size: 18px;
+    text-shadow: 1px 1px 1px #aaa;
 }
 .page-header {
     background-color: #1c83e2;
