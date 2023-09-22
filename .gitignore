@@ -1,6 +1,7 @@
 # Custome issue
 *.pyc
 *~
+.gitignore
 # Virtual Environments
 venv/
 .venv/
@@ -14,7 +15,7 @@ base.py
 .env.dev
 .env.prod
 .env.prod.db
-#staticfiles/
+staticfiles/
 .DS_Store
 #VScode related
 projects.code-workspace
