@@ -72,11 +72,11 @@ p {
    background-color: white;          /* 背景色：白色 */
    font-weight: bold;                /* 太字 */
    position: relative;               /* JavaScriptでz-indexを調整するために必要 */
- }
- /* ▼タブにマウスポインタが載った際 */
- #tabcontrol a:hover {
+}
+/* ▼タブにマウスポインタが載った際 */
+#tabcontrol a:hover {
    text-decoration: underline;       /* 文字に下線を引く */
- }
+}
 
  /* ▼タブの中身 */
 #tabbody div {
@@ -86,7 +86,7 @@ p {
     background-color: white; /* 背景色：白色 */
     position: relative;      /* z-indexを調整するために必要 */
     z-index: 0;              /* 重なり順序を「最も背面」にするため */
- }
+}
  /* ▼タブの配色 */
 #tabcontrol a:nth-child(1), #tabbody div:nth-child(1) { background-color: #ccffff; }   /* はじめに */
 #tabcontrol a:nth-child(2), #tabbody div:nth-child(2) { background-color: #99e5ff; }   /* 概要 */
