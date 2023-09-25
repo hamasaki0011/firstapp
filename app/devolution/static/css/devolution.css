@@ -90,10 +90,10 @@ p {
  /* ▼タブの配色 */
 #tabcontrol a:nth-child(1), #tabbody div:nth-child(1) { background-color: #ccffff; }   /* はじめに */
 #tabcontrol a:nth-child(2), #tabbody div:nth-child(2) { background-color: #99e5ff; }   /* 概要 */
-#tabcontrol a:nth-child(3), #tabbody div:nth-child(3) { background-color: #ddffdd; }   /* Webアプリ開発環境 */
-#tabcontrol a:nth-child(4), #tabbody div:nth-child(4) { background-color: #ffffdd; }   /* python開発環境構築 */
-#tabcontrol a:nth-child(5), #tabbody div:nth-child(5) { background-color: #ddddff; }   /* 実験検証用のサーバー */
-#tabcontrol a:nth-child(6), #tabbody div:nth-child(6) { background-color: #ddddff; }   /* Webアプリ構造 */
-#tabcontrol a:nth-child(7), #tabbody div:nth-child(7) { background-color: #ccffff; }   /* csrf対策 */
-#tabcontrol a:nth-child(8), #tabbody div:nth-child(8) { background-color: #e77ad0; }   /* SSL通信 */
-#tabcontrol a:nth-child(9), #tabbody div:nth-child(9) { background-color: #e77ad0; }   /* 参考情報 */
+#tabcontrol a:nth-child(3), #tabbody div:nth-child(3) { background-color: #99e5ff; }   /* Webアプリ開発環境 */
+#tabcontrol a:nth-child(4), #tabbody div:nth-child(4) { background-color: #99e5ff; }   /* python開発環境構築 */
+#tabcontrol a:nth-child(5), #tabbody div:nth-child(5) { background-color: #99e5ff; }   /* 実験検証用のサーバー */
+#tabcontrol a:nth-child(6), #tabbody div:nth-child(6) { background-color: #99e5ff; }   /* Webアプリ構造 */
+#tabcontrol a:nth-child(7), #tabbody div:nth-child(7) { background-color: #99e5ff; }   /* csrf対策 */
+#tabcontrol a:nth-child(8), #tabbody div:nth-child(8) { background-color: #99e5ff; }   /* SSL通信 */
+#tabcontrol a:nth-child(9), #tabbody div:nth-child(9) { background-color: #99e5ff; }   /* 参考情報 */
