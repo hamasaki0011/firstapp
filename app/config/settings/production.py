@@ -24,6 +24,6 @@ DATABASES = {
 
 # The static and media files path on the deploy
 # STATIC_ROOT = '/usr/share/nginx/html/static'
-STATIC_ROOT = '/var/www/html/static'
+STATIC_ROOT = '/home/app/web/static'
 # MEDIA_ROOT = '/usr/share/nginx/html/media'
-MEDIA_ROOT = '/var/www/html/media'
+MEDIA_ROOT = '/home/app/web/media'
