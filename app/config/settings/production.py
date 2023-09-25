@@ -23,7 +23,10 @@ DATABASES = {
 }
 
 # The static and media files path on the deploy
+# These are from docker-compose.prod.yml
+STATIC_ROOT = '/home/app/web/staticfiles'
+MEDIA_ROOT = '/home/app/web/mediafiles'
+
+# The below codes were generated from django-debug-toolbar settings
 # STATIC_ROOT = '/usr/share/nginx/html/static'
-STATIC_ROOT = '/home/app/web/static'
 # MEDIA_ROOT = '/usr/share/nginx/html/media'
-MEDIA_ROOT = '/home/app/web/media'
