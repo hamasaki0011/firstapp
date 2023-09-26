@@ -319,78 +319,88 @@ class MainDetailView(generic.ListView):
         latest=30
         # Get sensor device point's number
         sensor_list=Sensors.objects.filter(site_id=id.pk)
+        
         # Get the number of sensor device point's 
-        pointNum=len(sensor_list)
+        pointNum = len(sensor_list)
+
         # Get the smallest number of the point_id
         # 23.7.4 change 'sensor.id' to 'id' for django' revision up 3.2.17 to 4.2.3
         # startPoint=sensor_list.order_by('sensor.id').first().id
-        startPoint=sensor_list.order_by('id').first().id # type: ignore
-        #startPoint=sensor_list.order_by('id').first().id
+        if pointNum > 0:
+            # If there were some data, 
+            startPoint=sensor_list.order_by('id').first().id
+            #startPoint=sensor_list.order_by('id').first().id
+            # Generate a graph data from sensor's measured_value   
+            # Generate the table data including the device name and the most recent measured_data
+            # recent_update=datetime.date(2023,2,27)
+            # TD=9    # time differences
+            # today = datetime.datetime.now() + datetime.timedelta(hours=TD)
+            # 注意：最終的にはtimedeltaで1分前のデータを表示するように調整する
+            today = datetime.datetime.now()
+            start_date=today-datetime.timedelta(hours=1)
+            results=Result.objects.all().filter(place_id=id.pk, created_date__range=(start_date,today))
+            # results=Result.objects.all().filter(place_id=id.pk)
+            if results.first() is None:
+                message="最新の測定データが取得できません"
+            else:
+                message="1分毎に更新(工事中は30分毎)"     
         
-        # Generate a graph data from sensor's measured_value   
-        # Generate the table data including the device name and the most recent measured_data
-        # recent_update=datetime.date(2023,2,27)
-        # TD=9    # time differences
-        # today = datetime.datetime.now() + datetime.timedelta(hours=TD)
-        # 注意：最終的にはtimedeltaで1分前のデータを表示するように調整する
-        today = datetime.datetime.now()
-        start_date=today-datetime.timedelta(hours=1)
-        results=Result.objects.all().filter(place_id=id.pk, created_date__range=(start_date,today))
-        # results=Result.objects.all().filter(place_id=id.pk)
-        if results.first() is None:
-            message="最新の測定データが取得できません"
+            # Prepare the Legend' array    
+            legend=[]
+            # First of drawing the chart, prepare the legend's list as legend
+            for sensor in sensor_list:
+                legend.append(sensor.device)
+            # Prepare the xAxis data array            
+            xdata=[]
+            # Create the x_axis data
+            n=int(latest)
+            while(n>=0):
+                xdata.append(-n)
+                n-=1
+
+            # Create y_Axis data
+            #2023.5.8 try it later y_tmp=[[]*latest for j in range(6)]
+            y_tmp=[[] for j in range(latest)]
+            """ this means followings; 
+                device0 : y_tmp[0][0] ~ y_tmp[0][29]
+                device1 : y_tmp[1][0] ~ y_tmp[1][29]
+                ...
+                device5 : y_tmp[5][0] ~ y_tmp[1][29]
+            """
+            # Prepare the array to memory the y_axis data as ydata[][]
+            ydata=[[] for j in range(latest)]        
+            data_list=Result.objects.all().filter(place_id=id.pk) 
+
+            for i in range(pointNum):
+                # 課題：センサー番号がシリーズであることが前提のquery設定
+                y_tmp[startPoint-1+i]=data_list.filter(point_id=startPoint+i).order_by('measured_date')[:latest]
+
+                for data in y_tmp[startPoint-1+i]:
+                    ydata[startPoint-1+i].append(data.measured_value)
+        
+                """
+                'if' and 'for' Statements both do not form scopes in Python. 
+                Therefore, the variable if inside the sentence is the same as the variable outside.
+                Variables, 'start_at' and 'd_tmp' later appeared are effective both inside and outside.
+                """
+        
+            context={
+                # for confirmation
+                # For the latest measured value table 
+                "location":location,
+                "results":results,
+                "message":message,
+                # For chart drawing
+                "plot":line_charts(xdata,ydata,startPoint,pointNum,legend), 
+            }
+            return render(request, "main/main_detail.html", context)
         else:
-            message="1分毎に更新(工事中は30分毎)"     
-        
-        # Prepare the Legend' array    
-        legend=[]
-        # First of drawing the chart, prepare the legend's list as legend
-        for sensor in sensor_list:
-            legend.append(sensor.device)
-        # Prepare the xAxis data array            
-        xdata=[]
-        # Create the x_axis data
-        n=int(latest)
-        while(n>=0):
-            xdata.append(-n)
-            n-=1
-
-        # Create y_Axis data
-        #2023.5.8 try it later y_tmp=[[]*latest for j in range(6)]
-        y_tmp=[[] for j in range(latest)]
-        """ this means followings; 
-            device0 : y_tmp[0][0] ~ y_tmp[0][29]
-            device1 : y_tmp[1][0] ~ y_tmp[1][29]
-            ...
-            device5 : y_tmp[5][0] ~ y_tmp[1][29]
-        """
-        # Prepare the array to memory the y_axis data as ydata[][]
-        ydata=[[] for j in range(latest)]        
-        data_list=Result.objects.all().filter(place_id=id.pk) 
-
-        for i in range(pointNum):
-            # 課題：センサー番号がシリーズであることが前提のquery設定
-            y_tmp[startPoint-1+i]=data_list.filter(point_id=startPoint+i).order_by('measured_date')[:latest]
-
-            for data in y_tmp[startPoint-1+i]:
-                ydata[startPoint-1+i].append(data.measured_value)
-        
-            """
-            'if' and 'for' Statements both do not form scopes in Python. 
-            Therefore, the variable if inside the sentence is the same as the variable outside.
-            Variables, 'start_at' and 'd_tmp' later appeared are effective both inside and outside.
-            """
-        
-        context={
-            # for confirmation
-            # For the latest measured value table 
-            "location":location,
-            "results":results,
-            "message":message,
-            # For chart drawing
-            "plot":line_charts(xdata,ydata,startPoint,pointNum,legend), 
-        }
-        return render(request, "main/main_detail.html", context)
+            # There are no data
+            message = "センサーが設定されていません。"
+            context = {
+                "message" :message
+            }
+            return render(request, 'main/not_main_detail.html', context)
 # -----------------------------------------------------------------
 # Locations' list view 
 class LocationListView(generic.ListView):
