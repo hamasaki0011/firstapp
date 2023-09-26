@@ -7,7 +7,7 @@ urlpatterns=[
     # Top index view
     path('', views.IndexView.as_view(), name='main_index'),
     # path('user/', views.user_view, name='main_user'),
-    path('other/', views.other_view, name='main_other'),
+    path('regist/user/', views.regist_user_view, name='regist_user'),
     # Main detail view
     path('detail/<int:pk>/', views.MainDetailView.as_view(), name='main_detail'),
     path('user/', views.MainDetailView.as_view(), name='main_user'),

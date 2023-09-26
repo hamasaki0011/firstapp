@@ -50,7 +50,6 @@ logger = logging.getLogger('development')
 
 # Color palette for chart drawing which prepared 10 colors
 COLOR=['darkturquoise','orange','green','red','blue','brown','violet','magenta','gray','black']
-# COMPANY={'saga':'A株式会社','kumamoto':'株式会社B','fukuoka':'C株式会社',}
 
 class OwnerOnly(UserPassesTestMixin):
     def test_func(self):
@@ -60,15 +59,6 @@ class OwnerOnly(UserPassesTestMixin):
     def handle_no_permission(self):
         messages.error(self.request,"You can edit and delete only for your's.")
         return redirect("main:location_detail", pk=self.kwargs["pk"]) 
-# -----------------------------------------------------------------
-def other_view(request):
-    
-    # user=request.user    
-    users=User.objects.exclude(email=request.user)
-    context={
-        'users':users
-    }
-    return render(request, 'main/main_other.html',context)
 # -----------------------------------------------------------------
 # Top view, you can select a target site for remote monitoring
 class IndexView(LoginRequiredMixin,generic.ListView):
@@ -92,6 +82,19 @@ class IndexView(LoginRequiredMixin,generic.ListView):
     #     kwgs["user"]=self.request.user    
     #     return kwgs
     # user=AnonymousUser or authenticatedUser
+# -----------------------------------------------------------------
+def regist_user_view(request):
+    usr = str(request.user)
+    if('fujico@kfjc.co.jp' in usr): # type: ignore
+        users=User.objects.exclude(email=usr)
+    #     
+    else:
+        users=User.objects.filter(email=usr)
+    #     return users 
+    context={
+        'users':users
+    }
+    return render(request, 'main/regist_user.html',context)
 # -----------------------------------------------------------------
 # Chart drawing function
 def line_charts(x_data,y_data,start,points,legend):
