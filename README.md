@@ -1,20 +1,33 @@
 # firstapp
-2023.9.26   Add Sensor Not Found.
-2023.9.22   Fix static file handling, FONTs settings and .gitignore.
-2023.8.3    Change The repository caused by re-setting the SSH configuration.
-2023.8.2    Start to prepare the document.  
-2023.7.28   Come back to webapp.  
-2023.7.21   Reduce dotenv function and integrate to django_environ  
+2023.9.27
+    Edit README.md
+2023.9.26
+    Add Sensor Not Found.
+    Add registered user' information page. 
+2023.9.22   
+    Fix static file handlings.
+    Fix google FONTs settings.
+    Fitting .gitignore to production.
+2023.8.3
+    Change The repository caused by re-setting the SSH configuration.
+2023.8.2
+    Start to prepare the document.
+2023.7.21
+    Change webapp1 into firstapp 
+    Reduce dotenv function and build in django_environ.  
 
 # webapp1
-2023.7.6 make some modification in order to use PostgreSQL    
-    Django framework up version to 4.2.3  
-2023.7.20 install django_debug_toolbar for development  
+2023.7.20
+    Install django_debug_toolbar for development.
     as a result Django framework version should be down grade to 3.2.17  
     because version 4.2.3 does NOT support "is.ajax()" function  
     not only above but also modification to separate a settings.py configuration   
 
-# webapp
+2023.7.6
+    Make some modification in order to use PostgreSQL.    
+    Django framework up version to 4.2.3.  
+
+2022.8.3 Start development
 This is my first web application.  
 Sever OS: Ubuntu 22.04 LTS  
 Construction:  
