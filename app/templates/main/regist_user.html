@@ -1,42 +1,57 @@
 {% extends 'main/main_base.html' %}
 
 {% block content %}
-
 <div class="container">
     <br>
-    <h2>ユーザー登録の情報</h2>
+    <h2>登録ユーザー情報</h2>
     <table class="table caption-top table-bordered borderless">
-        <caption>登録ユーザー情報</caption>
+        <caption>ログインユーザー：{{ request.user }}</caption>
         <thead class="table-primary table-bordered border-dark">
             <tr align="center">
-                <th scope="col">ユーザー名(email)</th>
+                <!--<th scope="col">ユーザー名(email)</th>-->
                 <th scope="col">ユーザー名(任意)</th>
-                <th scope="col">会社名</th>
-                <th scope="col">電話</th>
+                <th scope="col">会社名(任意)</th>
+                <th scope="col">E-Mail</th>
+                <th scope="col">緊急連絡先</th>
                 <th scope="col">最新のログイン</th>
-                <th scope="col">ロケーション</th>
-                <th scope="col">ログエントリー</th>
-                <th scope="col">admin</th>
-                <th scope="col">staff</th>
+                <!--<th scope="col">ロケーション</th>-->
+                <!--<th scope="col">ログエントリー</th>-->
+                <th scope="col">active</th>
+                <!--<th scope="col">staff</th>-->
+                <th>編集</th>
             </tr>
         </thead>
         <tbody class="table-warning table-bordered border-dark">
-            {% for user in users %}
+            {% for user in user_list %}
             <tr>
-                <td colspan="1">{{ user }}</td>
+                <!--<td colspan="1">{{ user }}</td>-->
                 <td colspan="1">{{ user.profile }}</td>
                 <td colspan="1">{{ user.profile.company }}</td>
-                <td colspan="1">{{ user.profile.pone_number }}</td>
+                <td colspan="1">{{ user }}</td>
+                <td colspan="1">{{ user.profile.tel_number }}</td>
                 <td colspan="1">{{ user.last_login }}</td>
-                <td colspan="1">{{ user.location }}</td>
-                <td colspan="1">{{ user.logentry }}</td>
-                <td colspan="1">{{ user.admin }}</td>
-                <td colspan="1">{{ user.staff }}</td>
+                <!--<td colspan="1">{{ user.location }}</td>-->
+                <!--<td colspan="1">{{ user.logentry }}</td>-->
+                <td colspan="1" align="center">{{ user.active }}</td>
+                <!--<td colspan="1" align="center">{{ user.staff }}</td>-->
+                <td>
+                    {% if user.admin %}
+                    <!--2023.9.27　登録ユーザー情報からuser.pkを取得してprofile編集画面に飛ぶ-->
+                    <a href="{% url 'main:profile-update' user.pk %}" class="btn btn-primary btn-sm">更新する</a>
+                    {% else %}
+                    <a href="#" class="btn btn-primary btn-sm">更新権限がありません</a>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
+
         <tfoot class="table-bordered borderless">
         </tfoot>
     </table>
+    <pre>凡例：
+        active: 有効な登録ユーザー
+        staff: システム情報を閲覧することができるユーザー
+    </pre>
     <br>
 {% endblock %}

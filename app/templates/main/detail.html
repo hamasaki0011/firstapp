@@ -1,10 +1,18 @@
 {% extends 'main/main_base.html' %}
 
 {% block content %}
-
-<div class="container">
+{% if error %}
+<div class = "container"><br>
+    <h2 align = "center"><u>{{ location.name }} 様現場</u></h2>
     <br>
-    <h2 align="center"><u>{{ location.name }} 様現場</u></h2>
+    <h4>
+        <p>{{ message }}</p><br>
+        <a class="btn btn-warning" href="{% url 'main:sensors_list' %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録できます。</a>
+    </h4><br>
+</div>
+{% else %}
+<div class="container"><br>
+    <h2 align = "center"><u>{{ location.name }} 様現場</u></h2>
     <table class="table caption-top table-bordered borderless">
         <caption>各センサー毎の最新測定値</caption>
         <thead class="table-primary table-bordered border-dark">
@@ -31,6 +39,7 @@
         </tfoot>
     </table>
 </div>
+
 <br>
 <div class="container">
     <!-- <h5 align="center">直近30分間のデータ推移</h5> -->
@@ -116,4 +125,6 @@
         });
     </script>
 </div>
+{% endif %}
+
 {% endblock %}

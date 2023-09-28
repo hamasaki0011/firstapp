@@ -28,8 +28,6 @@ class Location(models.Model):
     created_date=models.DateTimeField(verbose_name='作成日', auto_now_add=True)
     updated_date=models.DateTimeField(verbose_name='更新日', blank=True, null=True)
  
-
-
     def __str__(self):
         return self.name
     

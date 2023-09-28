@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db.models.signals import post_save
+from django.core.validators import RegexValidator
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -74,7 +75,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     username = models.CharField(max_length=100, verbose_name="ユーザー名")
     belongs = models.CharField(max_length=100, blank=True, null=True, verbose_name="会社名")
-    phone_number = models.IntegerField(blank=True, null=True, verbose_name="連絡先")
+    # tel_number_regex = RegexValidator(regex=r'^[0-9]+$', message = ("Tel Number must be entered in the format: '09012345678'. Up to 15 digits allowed."))
+    tel_number_regex = RegexValidator(regex=r'^[0-9]+$', message = ("電話番号は、'09012345678'のようにハイフンを省略して入力してください！"))
+    tel_number = models.CharField(validators=[tel_number_regex], max_length=15, blank=True, null=True, verbose_name='緊急連絡先')
 
     def __str__(self):
         return self.username

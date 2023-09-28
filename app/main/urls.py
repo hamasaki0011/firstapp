@@ -6,11 +6,14 @@ app_name='main'
 urlpatterns=[
     # Top index view
     path('', views.IndexView.as_view(), name='main_index'),
-    # path('user/', views.user_view, name='main_user'),
-    path('regist/user/', views.regist_user_view, name='regist_user'),
+    # /regist/user/'
+    path('regist/user/', views.RegistUserView.as_view(), name='regist_user'),
+    # /user/update
+    # path('user/update/', views.user_update_view, name='user_update'),
+    # path('location/update/<int:pk>/', views.LocationUpdateModelFormView.as_view(), name='location_update'), 
+        
     # Main detail view
-    path('detail/<int:pk>/', views.MainDetailView.as_view(), name='main_detail'),
-    path('user/', views.MainDetailView.as_view(), name='main_user'),
+    path('detail/<int:pk>/', views.DetailView.as_view(), name='detail'),
     # Location list view
     path('location/list', views.LocationListView.as_view(), name='location_list'),
     # Location list view

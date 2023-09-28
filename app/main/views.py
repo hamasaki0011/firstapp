@@ -6,6 +6,7 @@ from .forms import LocationForm,SensorsForm
 from accounts.models import User
 # ページへのアクセスをログインユーザーのみに制限する
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
+
 from django.contrib.auth import get_user, get_user_model
 from django.contrib import messages
 from django.utils import timezone
@@ -61,7 +62,7 @@ class OwnerOnly(UserPassesTestMixin):
         return redirect("main:location_detail", pk=self.kwargs["pk"]) 
 # -----------------------------------------------------------------
 # Top view, you can select a target site for remote monitoring
-class IndexView(LoginRequiredMixin,generic.ListView):
+class IndexView(LoginRequiredMixin, generic.ListView):
     template_name='main/main_index.html'
     model=Location
     
@@ -83,18 +84,61 @@ class IndexView(LoginRequiredMixin,generic.ListView):
     #     return kwgs
     # user=AnonymousUser or authenticatedUser
 # -----------------------------------------------------------------
-def regist_user_view(request):
-    usr = str(request.user)
-    if('fujico@kfjc.co.jp' in usr): # type: ignore
-        users=User.objects.exclude(email=usr)
-    #     
-    else:
-        users=User.objects.filter(email=usr)
-    #     return users 
+class RegistUserView(LoginRequiredMixin,generic.ListView):
+    template_name = 'main/regist_user.html'
+    model = User
+    
+    def get_queryset(self):
+
+        login_user=self.request.user
+        
+        if login_user.is_authenticated:
+            if('fujico@kfjc.co.jp' in login_user.email): # type: ignore
+                users=User.objects.all()                
+            else:
+                users=User.objects.filter(email = login_user.email)
+        
+        print("login_user = ",self.request.user)
+                    
+        return users.order_by()
+# -----------------------------------------------------------------
+# Update location's information
+# class LocationUpdateModelFormView(OwnerOnly,generic.UpdateView):
+#     template_name = "main/location_form.html"
+#     form_class = LocationForm
+#     success_url = reverse_lazy("main:location_list")
+#     # Following get_queryset() is mandatory required.
+#     # in case of using a FormView
+#     def get_queryset(self):
+#         qs = Location.objects.all()
+#         return qs
+#     # Update updated_date
+#     def form_valid(self, form):
+#         location = form.save(commit=False)
+#         location.updated_date = timezone.now()
+#         location.save()
+#         return super().form_valid(form)
+# class LocationUpdateView(LoginRequiredMixin,generic.UpdateView):
+def user_update_view(request):
+    print("we are now here!!")
+    user = request.user
+    print("user = ", user.pk)
+    # template_name = 'main/user_update.html'
+    # model = User
+    # form_class = LocationForm
+    #fields = ('name', 'memo',)
+    #success_url = reverse_lazy('main:location_list')
+ 
+    # def form_valid(self, form):
+    #     location = form.save(commit=False)
+    #     # location.author = self.request.user
+    #     location.updated_date = timezone.now()
+    #     location.save()
+    #     return super().form_valid(form)
     context={
-        'users':users
+        
     }
-    return render(request, 'main/regist_user.html',context)
+    return render(request, 'main/user_update.html',context)
 # -----------------------------------------------------------------
 # Chart drawing function
 def line_charts(x_data,y_data,start,points,legend):
@@ -307,8 +351,8 @@ def line_charts(x_data,y_data,start,points,legend):
     return fig.to_html(include_plotlyjs='cdn',full_html=False).encode().decode('unicode-escape')
 # -----------------------------------------------------------------
 # Main detail view, List view for sensor devices at each site 
-class MainDetailView(generic.ListView):
-    template_name='main/main_detail.html'
+class DetailView(generic.ListView):
+    template_name='main/detail.html'
     model=Result
 
     def get(self, request, *args, **kwargs):
@@ -316,8 +360,8 @@ class MainDetailView(generic.ListView):
         id=Location.objects.get(pk=self.kwargs['pk'])
         # Get the name of monitoring site
         location=Location.objects.get(pk=id.pk)
-        # Get queryset for Measured_data, result
         
+        # Get queryset for Measured_data, result
         # Horizontal point's number
         latest=30
         # Get sensor device point's number
@@ -330,6 +374,7 @@ class MainDetailView(generic.ListView):
         # 23.7.4 change 'sensor.id' to 'id' for django' revision up 3.2.17 to 4.2.3
         # startPoint=sensor_list.order_by('sensor.id').first().id
         if pointNum > 0:
+            error = False
             # If there were some data, 
             startPoint=sensor_list.order_by('id').first().id
             #startPoint=sensor_list.order_by('id').first().id
@@ -380,7 +425,6 @@ class MainDetailView(generic.ListView):
 
                 for data in y_tmp[startPoint-1+i]:
                     ydata[startPoint-1+i].append(data.measured_value)
-        
                 """
                 'if' and 'for' Statements both do not form scopes in Python. 
                 Therefore, the variable if inside the sentence is the same as the variable outside.
@@ -389,21 +433,25 @@ class MainDetailView(generic.ListView):
         
             context={
                 # for confirmation
-                # For the latest measured value table 
+                # For the latest measured value table
+                "error":error, 
                 "location":location,
                 "results":results,
                 "message":message,
                 # For chart drawing
                 "plot":line_charts(xdata,ydata,startPoint,pointNum,legend), 
             }
-            return render(request, "main/main_detail.html", context)
+            return render(request, "main/detail.html", context)
         else:
             # There are no data
-            message = "センサーが設定されていません。"
+            error = True
+            message = "デバイス(センサー)登録が未了で、まだ表示できるものがありません！"
             context = {
+                "error":error, 
+                "location":location,
                 "message" :message
             }
-            return render(request, 'main/not_main_detail.html', context)
+        return render(request, 'main/detail.html', context)
 # -----------------------------------------------------------------
 # Locations' list view 
 class LocationListView(generic.ListView):
