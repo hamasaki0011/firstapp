@@ -35,11 +35,11 @@
                 <td colspan="1" align="center">{{ user.active }}</td>
                 <!--<td colspan="1" align="center">{{ user.staff }}</td>-->
                 <td>
-                    {% if user.admin %}
+                    {% if request.user.admin or request.user == user %}
                     <!--2023.9.27　登録ユーザー情報からuser.pkを取得してprofile編集画面に飛ぶ-->
-                    <a href="{% url 'main:profile-update' user.pk %}" class="btn btn-primary btn-sm">更新する</a>
+                    <a href="{% url 'main:profile-update' user.pk %}" class="btn btn-primary btn-sm">更新</a>
                     {% else %}
-                    <a href="#" class="btn btn-primary btn-sm">更新権限がありません</a>
+                    <a href="#" class="btn btn-secondary btn-sm">更新権限なし</a>
                     {% endif %}
                 </td>
             </tr>

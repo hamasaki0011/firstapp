@@ -7,20 +7,21 @@ from accounts.models import User
 # ページへのアクセスをログインユーザーのみに制限する
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 
-from django.contrib.auth import get_user, get_user_model
+# 2023.9.29 from django.contrib.auth import get_user, get_user_model
 from django.contrib import messages
 from django.utils import timezone
 import datetime
 # Chart drawing with Plotly
 import os
 import logging
+# Add cvs function
 from main import addCsv
 from .forms import FileUploadForm
 # from .forms import UploadFileForm
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 # ajax trial
-from django.conf import settings
+# 2023.9.29 from django.conf import settings
 from django.http import JsonResponse
 
 # import dateutil
@@ -34,9 +35,6 @@ from django.http import JsonResponse
 # import csv, io
 # from django.http import HttpResponse 
 # from sensor.forms import FileUploadForm
-# import numpy as np
-# from sensor import writeCsv
-# embedded watchdog module
 # import sys
 # import time
 # from watchdog.observers import Observer
@@ -60,7 +58,8 @@ class OwnerOnly(UserPassesTestMixin):
     def handle_no_permission(self):
         messages.error(self.request,"You can edit and delete only for your's.")
         return redirect("main:location_detail", pk=self.kwargs["pk"]) 
-# -----------------------------------------------------------------
+
+# --- Main index view --------------------------------------------------------------
 # Top view, you can select a target site for remote monitoring
 class IndexView(LoginRequiredMixin, generic.ListView):
     template_name='main/main_index.html'
@@ -71,19 +70,19 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         user=self.request.user
         # ログインユーザーに許可されたQuery情報を渡す
         if user.is_authenticated:
-            if('fujico@kfjc.co.jp' in user.email): # type: ignore
+            if('fujico@kfjc.co.jp' in user.email):
                 locations = Location.objects.all()
             else:
                 locations = Location.objects.filter(name=user.profile.belongs) # type: ignore
         return locations
 
-    # Get user infromation
+    # Get user information
     # def get_form_kwargs(self):
     #     kwgs=super().get_form_kwargs()
     #     kwgs["user"]=self.request.user    
     #     return kwgs
     # user=AnonymousUser or authenticatedUser
-# -----------------------------------------------------------------
+# --- Registered users' view --------------------------------------------------------------
 class RegistUserView(LoginRequiredMixin,generic.ListView):
     template_name = 'main/regist_user.html'
     model = User
@@ -97,50 +96,10 @@ class RegistUserView(LoginRequiredMixin,generic.ListView):
                 users=User.objects.all()                
             else:
                 users=User.objects.filter(email = login_user.email)
-        
-        print("login_user = ",self.request.user)
                     
         return users.order_by()
-# -----------------------------------------------------------------
-# Update location's information
-# class LocationUpdateModelFormView(OwnerOnly,generic.UpdateView):
-#     template_name = "main/location_form.html"
-#     form_class = LocationForm
-#     success_url = reverse_lazy("main:location_list")
-#     # Following get_queryset() is mandatory required.
-#     # in case of using a FormView
-#     def get_queryset(self):
-#         qs = Location.objects.all()
-#         return qs
-#     # Update updated_date
-#     def form_valid(self, form):
-#         location = form.save(commit=False)
-#         location.updated_date = timezone.now()
-#         location.save()
-#         return super().form_valid(form)
-# class LocationUpdateView(LoginRequiredMixin,generic.UpdateView):
-def user_update_view(request):
-    print("we are now here!!")
-    user = request.user
-    print("user = ", user.pk)
-    # template_name = 'main/user_update.html'
-    # model = User
-    # form_class = LocationForm
-    #fields = ('name', 'memo',)
-    #success_url = reverse_lazy('main:location_list')
- 
-    # def form_valid(self, form):
-    #     location = form.save(commit=False)
-    #     # location.author = self.request.user
-    #     location.updated_date = timezone.now()
-    #     location.save()
-    #     return super().form_valid(form)
-    context={
-        
-    }
-    return render(request, 'main/user_update.html',context)
-# -----------------------------------------------------------------
-# Chart drawing function
+    
+# --- Chart drawing function --------------------------------------------------------------
 def line_charts(x_data,y_data,start,points,legend):
     # fig=go.Figure()    
     fig = make_subplots(
@@ -349,8 +308,8 @@ def line_charts(x_data,y_data,start,points,legend):
                     secondary_y=True,
                 )          
     return fig.to_html(include_plotlyjs='cdn',full_html=False).encode().decode('unicode-escape')
-# -----------------------------------------------------------------
-# Main detail view, List view for sensor devices at each site 
+# --- Main detail view --------------------------------------------------------------
+# List view for sensor devices at each site 
 class DetailView(generic.ListView):
     template_name='main/detail.html'
     model=Result
@@ -407,7 +366,7 @@ class DetailView(generic.ListView):
                 n-=1
 
             # Create y_Axis data
-            #2023.5.8 try it later y_tmp=[[]*latest for j in range(6)]
+            # 2023.5.8 try it later y_tmp=[[]*latest for j in range(6)]
             y_tmp=[[] for j in range(latest)]
             """ this means followings; 
                 device0 : y_tmp[0][0] ~ y_tmp[0][29]
@@ -443,8 +402,8 @@ class DetailView(generic.ListView):
             }
             return render(request, "main/detail.html", context)
         else:
-            # There are no data
             error = True
+            # There are no data
             message = "デバイス(センサー)登録が未了で、まだ表示できるものがありません！"
             context = {
                 "error":error, 

@@ -1,20 +1,26 @@
 # firstapp
 2023.9.28  
     Build-in Registered user information page.  
+
 2023.9.27  
     Modify main_detail.html in order to display a message to regist Sensor devices.   
     Edit README.md.  
+
 2023.9.26  
     Add Sensor Not Found.  
     Add registered user' information page.   
+
 2023.9.22     
     Fix static file handlings.  
     Fix google FONTs settings.  
     Fitting .gitignore to production.  
+
 2023.8.3  
     Change The repository caused by re-setting the SSH configuration.  
+
 2023.8.2   
     Start to prepare the document.  
+
 2023.7.21  
     Change webapp1 into firstapp.   
     Reduce dotenv function and build in django_environ.    

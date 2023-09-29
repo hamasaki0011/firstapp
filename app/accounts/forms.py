@@ -47,6 +47,7 @@ class CustomAdminChangeForm(UserChangeForm):
             user_obj.save()
         return user_obj
     
+# --- User' profile form --------------------------------------------------------------    
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
