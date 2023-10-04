@@ -10,7 +10,7 @@ class CustomAdminChangeForm(UserChangeForm):
 #Profileクラスのフィールドを追記します
     username = forms.CharField(max_length=100)
     belongs = forms.CharField(max_length=100, required=False)
-    phone_number = forms.IntegerField(required=False) 
+    tel_number = forms.IntegerField(required=False) 
 
     class Meta:
         model = User
@@ -23,7 +23,7 @@ class CustomAdminChangeForm(UserChangeForm):
             profile_obj = user_obj.profile
             self.base_fields["username"].initial = profile_obj.username
             self.base_fields["belongs"].initial = profile_obj.belongs
-            self.base_fields["phone_number"].initial = profile_obj.phone_number
+            self.base_fields["tel_number"].initial = profile_obj.tel_number
         super().__init__(*args, **kwargs)
 
 # Define 保存機能
@@ -31,7 +31,7 @@ class CustomAdminChangeForm(UserChangeForm):
         user_obj = super().save(commit=False)
         username = self.cleaned_data.get("username")
         belongs = self.cleaned_data.get("belongs")
-        phone_number = self.cleaned_data.get("phone_number")
+        tel_number = self.cleaned_data.get("tel_number")
         if hasattr(user_obj, "profile"):
             profile_obj = user_obj.profile
         else:
@@ -40,8 +40,8 @@ class CustomAdminChangeForm(UserChangeForm):
             profile_obj.username = username
         if belongs is not None:
             profile_obj.belongs = belongs
-        if phone_number is not None:
-            profile_obj.phone_number = phone_number
+        if tel_number is not None:
+            profile_obj.tel_number = tel_number
         profile_obj.save()
         if commit:
             user_obj.save()

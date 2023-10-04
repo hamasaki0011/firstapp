@@ -28,7 +28,7 @@ class UserAdmin(BaseUserAdmin):
         ('プロフィール', {'fields':(
             'username',
             'belongs',
-            'phone_number',
+            'tel_number',
         )}),
         ('Permissions', {'fields': ('staff','admin',)}),
     )
