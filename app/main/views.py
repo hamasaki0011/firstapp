@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import generic
 from django.urls import reverse_lazy
 from .models import Location,Sensors,Result
-from .forms import LocationForm,SensorsForm
+from .forms import LocationForm, LocationFormClass,SensorsForm
 from accounts.models import User
 # ページへのアクセスをログインユーザーのみに制限する
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
@@ -62,7 +62,7 @@ class OwnerOnly(UserPassesTestMixin):
 # --- Main index view --------------------------------------------------------------
 # Top view, you can select a target site for remote monitoring
 class IndexView(LoginRequiredMixin, generic.ListView):
-    template_name='main/main_index.html'
+    template_name='main/index.html'
     model=Location
     
     def get_queryset(self):
@@ -518,7 +518,7 @@ class LocationDeleteView(OwnerOnly,generic.DeleteView):
 # -----------------------------------------------------------------
 # Sensors' list view 
 class SensorsListView(generic.ListView):
-    template_name='main/sensor_list.html'
+    template_name='main/sensors_list2.html'
     model=Sensors
 
     # user情報を取得する
@@ -527,18 +527,52 @@ class SensorsListView(generic.ListView):
         kwgs["user"]=self.request.user
         return kwgs
     
-    # def get_queryset(self):
-    #     qs = Sensors.objects.all()
-    #     # ユーザーがログインしていれば、リストを表示する
-    #     # q = self.request.GET.get("search")
-    #     # qs = Record.objects.search(query=q)
-    #     # if self.request.user.is_authenticated:
-    #     #     qs = qs.filter(Q(public=True)|Q(user=self.request.user))
-    #     # else:
-    #     #     qs = qs.filter(public=True)
-    #     # # the selected records are re-ordered  by "created_date"         
-    #     # qs = qs.order_by("created_date")[:7]
-    #     return qs
+    def get_queryset(self):
+        user = self.request.user
+        qs = Sensors.objects.all()
+        # ユーザーがログインしていれば、リストを表示する
+        # q = self.request.GET.get("search")
+        # qs = Record.objects.search(query=q)
+        if user.is_authenticated:
+            if user == "admin.fujico@kfjc.co.jp":
+                print("user = ", user)
+            # qs = qs.filter(Q(public=True)|Q(user=self.request.user))
+        else:
+            print("user = ", user)
+            # qs = qs.filter(public=True)
+        # the selected records are re-ordered  by "created_date"         
+        # qs = qs.order_by("created_date")[:7]
+        return qs
+    
+# Sensors' list view 
+class SensorListView(generic.ListView):
+    template_name='main/sensor_list.html'
+    model=Sensors
+
+    # # user情報を取得する
+    # def get_form_kwargs(self):
+    #     kwgs=super().get_form_kwargs()
+    #     kwgs["user"]=self.request.user
+    #     return kwgs
+    
+    # Queryを取得する
+    def get_queryset(self):
+        qs = Sensors.objects.all()
+        # print("pk = ", pk)
+        # ユーザーがログインしていれば、リストを表示する
+        # q = self.request.GET.get("search")
+        # qs = Record.objects.search(query=q)
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            print("user =", user)
+            print("user =", user.profile.belongs)
+            # qs = qs.filter(Q(public=True)|Q(user=self.request.user))
+        else:
+            print("user =", self.request.user)
+            # qs = qs.filter(public=True)
+        # # the selected records are re-ordered  by "created_date"         
+        qs = qs.order_by("created_date")[:7]
+        return qs
 # -----------------------------------------------------------------
 # Each Sensors's detail information view
 class SensorsDetailView(generic.DetailView):
@@ -568,7 +602,14 @@ class SensorsDetailView(generic.DetailView):
 class SensorsCreateModelFormView(generic.CreateView):
     template_name = "main/sensors_create.html"
     form_class = SensorsForm
-    success_url = reverse_lazy("main:sensors_list")
+    success_url = reverse_lazy("main:sensors_list2")
+
+# Create a new Sensor place information view
+# 2023.10.5 tentatively omitted
+# class SensorsCreateModelFormView(generic.CreateView):
+#     template_name = "main/sensors_create.html"
+#     form_class = SensorsForm
+#     success_url = reverse_lazy("main:sensor_list")
     
     # place情報を取得する
     # def get_form_kwargs(self):
@@ -605,7 +646,7 @@ class SensorsCreateView(generic.CreateView):
 class SensorsUpdateModelFormView(generic.UpdateView):
     template_name = "main/sensors_update.html"
     form_class = SensorsForm
-    success_url = reverse_lazy("main:sensors_list")
+    success_url = reverse_lazy("main:sensors_list2")
     
     # Following get_queryset() is mandatory required.
     # in order to get place data
@@ -640,7 +681,7 @@ class SensorsDeleteView(generic.DeleteView):
     template_name = 'main/sensors_delete.html'
     model = Sensors
     # form_class=LocationForm
-    success_url = reverse_lazy('main:sensors_list')
+    success_url = reverse_lazy('main:sensors_list2')
 # -----------------------------------------------------------------
 # 2022/11/8 CSV file uploading
 # it does need as reverse url path, does not it need? at 2022/11/11  

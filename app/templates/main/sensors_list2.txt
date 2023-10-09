@@ -1,0 +1,1 @@
+          <td colspan="1"><a href="{% url 'main:sensors_detail' %}">{{ sensors.device}}</a></td>

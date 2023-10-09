@@ -6,8 +6,9 @@
     <h2 align = "center"><u>{{ location.name }} 様現場</u></h2>
     <br>
     <h4>
-        <p>{{ message }}</p><br>
-        <a class="btn btn-warning" href="{% url 'main:sensors_list' %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録できます。</a>
+        <p align = "center">{{ message }}</p><br>
+        <a class="btn btn-warning" href="{% url 'main:sensors_list2' %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録できます。</a><br>
+        <a class="btn btn-secondary" href="{% url 'main:sensor_list' location.pk %}"><span class="glyphicon glyphicon-list"></span>>>DB改良版:ここから登録できます。</a>
     </h4><br>
 </div>
 {% else %}

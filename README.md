@@ -1,6 +1,6 @@
 # firstapp
 2023.10.4  
-    Fix a bug after adding a tel_number insted of phone_number inprofile model.  
+    Fix a bug after adding a tel_number insted of phone_number in profile model.  
 
 2023.9.28  
     Build-in Registered user information page.  

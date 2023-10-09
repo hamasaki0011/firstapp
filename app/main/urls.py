@@ -5,12 +5,11 @@ from . import views
 app_name='main'
 urlpatterns=[
     # Top index view
-    path('', views.IndexView.as_view(), name='main_index'),
+    path('', views.IndexView.as_view(), name='index'),
+    path('index/', views.IndexView.as_view(), name='index'),
     # /regist/user/'
     path('regist/user/', views.RegistUserView.as_view(), name='regist_user'),
-    # /user/update
-    # path('user/update/', views.user_update_view, name='user_update'),
-    # path('location/update/<int:pk>/', views.LocationUpdateModelFormView.as_view(), name='location_update'), 
+    # user' profile update is handled in accout application 
         
     # Main detail view
     path('detail/<int:pk>/', views.DetailView.as_view(), name='detail'),
@@ -28,7 +27,9 @@ urlpatterns=[
     path('location/delete/<int:pk>/', views.LocationDeleteView.as_view(), name='location_delete'),
     
     # Sensors list view
-    path('sensors/list', views.SensorsListView.as_view(), name='sensors_list'),
+    path('sensors/list', views.SensorsListView.as_view(), name='sensors_list2'),
+    # Sensors list view with pk
+    path('sensor/list/<int:pk>/', views.SensorListView.as_view(), name='sensor_list'),
     # Sensors detail view
     path('sensors/detail/<int:pk>/', views.SensorsDetailView.as_view(), name='sensors_detail'),
     # Sensors create view
