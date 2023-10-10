@@ -26,8 +26,8 @@ urlpatterns=[
     # Location delete view
     path('location/delete/<int:pk>/', views.LocationDeleteView.as_view(), name='location_delete'),
     
-    # Sensors list view
-    path('sensors/list', views.SensorsListView.as_view(), name='sensors_list2'),
+    # All sensors list view
+    path('sensors/', views.SensorsAllView.as_view(), name='sensors_all'),
     # Sensors list view with pk
     path('sensor/list/<int:pk>/', views.SensorListView.as_view(), name='sensor_list'),
     # Sensors detail view

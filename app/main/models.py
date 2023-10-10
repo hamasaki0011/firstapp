@@ -33,7 +33,7 @@ class Location(models.Model):
     
     # @staticmethod
     # def get_absolute_url(self):
-    #     return reverse('main/main_index')
+    #     return reverse('main/index')
 
 # Sensors model
 class Sensors(models.Model):

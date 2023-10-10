@@ -101,7 +101,7 @@ class AdapterTestCase(TestCase):
         adapter_obj = adapter(self.user_obj)
         self.request.user = self.user_obj
         redirect_url = adapter_obj.get_login_redirect_url(self.request)
-        self.assertEqual(redirect_url, reverse("main:main_index"))
+        self.assertEqual(redirect_url, reverse("main:index"))
 
     #プロフィールが同一のユーザーのテスト
     def test_login_without_profile(self):

@@ -1,4 +1,7 @@
 # firstapp
+2023.10.10  
+    Add sensor_all.html.  
+
 2023.10.4  
     Fix a bug after adding a tel_number insted of phone_number in profile model.  
 

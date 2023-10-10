@@ -30,7 +30,7 @@
     {% else %}
     <br>
     <div>
-        <h4>■システム管理者向け</h4>
+        <h4>■サイト管理者向け</h4>
         <h6>
             <p>・登録ユーザー確認
                 <a class="btn btn-warning" href="{% url 'main:regist_user' %}"><span class="glyphicon glyphicon-list"></span>確認する</a>
@@ -39,22 +39,31 @@
                 <a class="btn btn-warning" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>登録/編集する</a>
             </p>
             <p>・デバイス(センサー)の登録/編集
-                <a class="btn btn-warning" href="{% url 'main:sensors_list2' %}"><span class="glyphicon glyphicon-list"></span>登録/編集する</a>
+                <a class="btn btn-warning" href="{% url 'main:sensors_all' %}"><span class="glyphicon glyphicon-list"></span>登録/編集する</a>
             </p>
             
         </h6>
     </div>
     <br>
     <div>
-        <h4>■システム開発者向け</h4>
+        <h4>■システム管理者向け</h4>
         <h5>
-            <a class="btn btn-default" href="/admin/"><span class= "glyphicon glyphicon-list"></span>Django管理サイトへ</a>
-            <a class="btn btn-secondary" href="{% url 'record:record_list' %}"><span class="glyphicon glyphicon-book"></span> 開発記録メモ</a>
-            <a class="btn btn-secondary" href="{% url 'devolution:index'%}"><span class="glyphicon glyphicon-book"></span> システム設計書</a>
-        </h5>
+        <p>・Django管理ページから各種設定を行う。
+        <a class="btn btn-default" href="/admin/"><span class= "glyphicon glyphicon-list"></span> → Django管理サイトへ</a>
+        </p>
+        <p>・システムドキュメントを開く。
+        <a class="btn btn-secondary" href="{% url 'devolution:index'%}"><span class="glyphicon glyphicon-book"></span> → システム設計書</a>
+        </p>
+        <p>・システム開発/メンテナンス記録を確認する。
+        <a class="btn btn-secondary" href="{% url 'record:record_list' %}"><span class="glyphicon glyphicon-book"></span> → 開発・メンテナンス記録を確認</a>
+
+        <p>・システム開発/メンテナンスの記録を残す。
+        <a class="btn btn-secondary" href="{% url 'record:record_list' %}"><span class="glyphicon glyphicon-book"></span> → 記録を更新</a>
+        </p>
+        </h5><br>
         <h5>
-            <a class="btn btn-default" href="{% url 'main:upload' %}"><span class="glyphicon glyphicon-pencil"></span>データファイルをアップロード</a>
-            <p>※グラフ描画機能確認用</p>
+        <p>・HTTPリクエストによる表示データの更新およびグラフ描画機能を確認する</p>
+        <a class="btn btn-default" href="{% url 'main:upload' %}"><span class="glyphicon glyphicon-pencil"></span>データファイルをアップロード</a>    
         </h5>
         
     </div>

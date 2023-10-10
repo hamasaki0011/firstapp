@@ -163,7 +163,7 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 #ログイン後のリダイレクト先を指定
 from django.urls import reverse_lazy
-LOGIN_REDIRECT_URL = reverse_lazy('main:main_index')
+LOGIN_REDIRECT_URL = reverse_lazy('main:index')
 #ログアウト後のリダイレクト先を指定
 ACCOUNT_LOGOUT_REDIRECT_URL = reverse_lazy("account_login")
 #メールアドレスが確認済みである必要がある

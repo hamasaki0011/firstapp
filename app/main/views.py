@@ -516,9 +516,8 @@ class LocationDeleteView(OwnerOnly,generic.DeleteView):
     # form_class=LocationForm
     success_url = reverse_lazy('main:location_list')
 # -----------------------------------------------------------------
-# Sensors' list view 
-class SensorsListView(generic.ListView):
-    template_name='main/sensors_list2.html'
+class SensorsAllView(generic.ListView):
+    template_name='main/sensors_all.html'
     model=Sensors
 
     # user情報を取得する
@@ -543,7 +542,8 @@ class SensorsListView(generic.ListView):
         # the selected records are re-ordered  by "created_date"         
         # qs = qs.order_by("created_date")[:7]
         return qs
-    
+
+# -----------------------------------------------------------------    
 # Sensors' list view 
 class SensorListView(generic.ListView):
     template_name='main/sensor_list.html'
