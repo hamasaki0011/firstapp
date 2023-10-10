@@ -7,24 +7,16 @@
 
 2023.9.28  
     Build-in Registered user information page.  
-
-2023.9.27  
     Modify main_detail.html in order to display a message to regist Sensor devices.   
     Edit README.md.  
-
-2023.9.26  
     Add Sensor Not Found.  
-    Add registered user' information page.   
-
-2023.9.22     
+    Add registered user' information page.      
     Fix static file handlings.  
     Fix google FONTs settings.  
     Fitting .gitignore to production.  
 
 2023.8.3  
     Change The repository caused by re-setting the SSH configuration.  
-
-2023.8.2   
     Start to prepare the document.  
 
 2023.7.21  
@@ -32,11 +24,9 @@
     Reduce dotenv function and build in django_environ.    
 
 # webapp1
-2023.7.20  
+2023.7.20    
     Install django_debug_toolbar for development as a result Django framework version should be down grade to 3.2.17, because version 4.2.3 does NOT support "is.ajax()" function.    
-    It was not only above action but also modification to separate a settings.py configuration.     
-
-2023.7.6  
+    It was not only above action but also modification to separate a settings.py configuration.       
     Make some modification in order to use PostgreSQL.      
     Django framework up version to 4.2.3.    
 

@@ -40,37 +40,30 @@
 
           {% if "fujico@kfjc.co.jp" in user.email %}
             <li><a class="dropdown-item" href="{% url 'main:regist_user' %}">
-              アカウント設定</a></li>
+            アカウント設定</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'account_logout' %}">
-              ログアウト</a></li>
+            ログアウト</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'record:record_list' %}">
-              開発記録一覧</a></li>
+            開発記録一覧</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'record:record_create' %}">
-              開発記録作成</a></li>
+            開発記録作成</a></li>
           {% else %}
             <li><a class="dropdown-item" href="{% url 'main:regist_user' %}">
-              アカウント設定</a></li>
+            アカウント設定</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'account_logout' %}">
-              ログアウト</a></li>
+            ログアウト</a></li>
           {% endif %}
 
         {% else %}
-
-            <li><a class="dropdown-item" href="{% url 'account_login' %}">
-              ログイン</a></li>
-            <!-- <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'account_signup' %}">
-              サインアップ</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'record:record_list' %}">
-              開発記録一覧</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'record:record_create' %}">
-              開発記録作成</a></li> -->
+          <li><a class="dropdown-item" href="{% url 'account_login' %}">
+          ログイン</a></li>
+          <!-- <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="{% url 'account_signup' %}">
+          サインアップ</a></li>-->
         {% endif %}
       </ul>
     </div>
