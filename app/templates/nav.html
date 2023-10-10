@@ -38,6 +38,7 @@
       <ul class="dropdown-menu endposition" aria-labelledby="navbarDropdown">
         {% if request.user.is_authenticated %}
 
+          {% if "fujico@kfjc.co.jp" in user.email %}
             <li><a class="dropdown-item" href="{% url 'main:regist_user' %}">
               アカウント設定</a></li>
             <li><hr class="dropdown-divider"></li>
@@ -49,6 +50,13 @@
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'record:record_create' %}">
               開発記録作成</a></li>
+          {% else %}
+            <li><a class="dropdown-item" href="{% url 'main:regist_user' %}">
+              アカウント設定</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'account_logout' %}">
+              ログアウト</a></li>
+          {% endif %}
 
         {% else %}
 
