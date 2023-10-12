@@ -1,23 +1,25 @@
 {% extends 'main/main_base.html' %}
 
-{% block title %}センサー一覧{% endblock %}
+{% block title %}サイト別センサー一覧{% endblock %}
 
 {% block content %}
 
 <div class="container">
   <br>
+  <p>This is the sensor list page for each site</P>
   <div>
-    <h3>センサー一覧(登録順)</h3>
-    <h2 align = center>You are Right!, This page will show all of sensor devices</h2>
+    <h3>センサー一覧</h3>
+    <p>sensors_list: {{sensors_list}}</p>
+    <p>sensors: {{sensors}}</p>
+    <p>context: {{context}}</p>
   </div>
-  <div>  
+  <div>
       {% for sensors in sensors_list %}
           <table class="table caption-top table-bordered border-dark">
       <!--<caption>センサー全体の一覧</caption>-->
       {{ sensors.site.name }} 様の現場
       <thead class="table-primary table-bordered border-dark">
         <tr>
-          <!--<th scope="col">現場</th>-->
           <th scope="col">センサー名</th>
           <th scope="col">メモ</th>
           <th scope="col">更新日</th>

@@ -26,7 +26,7 @@
             <tr>
                 <!--<td colspan="1">{{ user }}</td>-->
                 <td colspan="1">{{ user.profile }}</td>
-                <td colspan="1">{{ user.profile.company }}</td>
+                <td colspan="1">{{ user.profile.belongs }}</td>
                 <td colspan="1">{{ user }}</td>
                 <td colspan="1">{{ user.profile.tel_number }}</td>
                 <td colspan="1">{{ user.last_login }}</td>
@@ -37,7 +37,7 @@
                 <td>
                     {% if request.user.admin or request.user == user %}
                     <!--2023.9.27　登録ユーザー情報からuser.pkを取得してprofile編集画面に飛ぶ-->
-                    <a href="{% url 'main:profile-update' user.pk %}" class="btn btn-primary btn-sm">更新</a>
+                    <a href="{% url 'main:profile-update' user.pk %}" class="btn btn-primary btn-sm">情報修正</a>
                     {% else %}
                     <a href="#" class="btn btn-secondary btn-sm">更新権限なし</a>
                     {% endif %}
@@ -51,7 +51,6 @@
     </table>
     <pre>凡例：
         active: 有効な登録ユーザー
-        staff: システム情報を閲覧することができるユーザー
     </pre>
     <br>
 {% endblock %}

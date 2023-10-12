@@ -3,17 +3,18 @@
 {% block content %}
 {% if error %}
 <div class = "container"><br>
-    <h2 align = "center"><u>{{ location.name }} 様現場</u></h2>
+    <h2 align = "center"><u>{{ location.name }} 様現場 (Location.pk: {{location.pk}}) (user.id: {{user.id}})</u></h2>
     <br>
     <h4>
         <p align = "center">{{ message }}</p><br>
-        <a class="btn btn-warning" href="{% url 'main:sensors_all' %}"><span class="glyphicon glyphicon-list"></span>>>センサー全体リストから登録できます。</a><br>
-        <a class="btn btn-secondary" href="{% url 'main:sensor_list' location.pk %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録できます。</a>
+        <a class="btn btn-warning" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>>>センサー全体リストから登録できます。</a><br>
+        location.pk: {{location.pk}}の
+        <a class="btn btn-secondary" href="{% url 'main:sensors_create' %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録してください。</a>
     </h4><br>
 </div>
 {% else %}
 <div class="container"><br>
-    <h2 align = "center"><u>{{ location.name }} 様現場</u></h2>
+    <h2 align = "center"><u>{{ location.name }} 様現場 (Location.id: {{location.pk}})</u></h2>
     <table class="table caption-top table-bordered borderless">
         <caption>各センサー毎の最新測定値</caption>
         <thead class="table-primary table-bordered border-dark">

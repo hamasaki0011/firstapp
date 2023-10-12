@@ -27,13 +27,14 @@ urlpatterns=[
     path('location/delete/<int:pk>/', views.LocationDeleteView.as_view(), name='location_delete'),
     
     # All sensors list view
-    path('sensors/', views.SensorsAllView.as_view(), name='sensors_all'),
+    path('sensors/all/list/', views.SensorsAllListView.as_view(), name='sensors_all_list'),
     # Sensors list view with pk
-    path('sensor/list/<int:pk>/', views.SensorListView.as_view(), name='sensor_list'),
+    path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensor_each_list'),
     # Sensors detail view
     path('sensors/detail/<int:pk>/', views.SensorsDetailView.as_view(), name='sensors_detail'),
     # Sensors create view
     path('sensors/create/', views.SensorsCreateModelFormView.as_view(), name='sensors_create'),
+    # path('sensors/create/', views.SensorsCreateView.as_view(), name='sensors_create'),
     # Sensors update view
     path('sensors/update/<int:pk>/', views.SensorsUpdateModelFormView.as_view(), name='sensors_update'),
     # Sensor's delete view

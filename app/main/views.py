@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import generic
 from django.urls import reverse_lazy
 from .models import Location,Sensors,Result
-from .forms import LocationForm, LocationFormClass,SensorsForm
+from .forms import LocationForm, SensorsForm
 from accounts.models import User
 # ページへのアクセスをログインユーザーのみに制限する
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
@@ -68,12 +68,14 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         # ここに来た時点でuser情報は取得できている @2023.3.24
         user=self.request.user
+        # print("user.id = ",user.id)
         # ログインユーザーに許可されたQuery情報を渡す
         if user.is_authenticated:
             if('fujico@kfjc.co.jp' in user.email):
                 locations = Location.objects.all()
             else:
-                locations = Location.objects.filter(name=user.profile.belongs) # type: ignore
+                locations = Location.objects.filter(name=user.profile.belongs)
+                # locations = Location.objects.filter(id=user.id)
         return locations
 
     # Get user information
@@ -83,21 +85,19 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     #     return kwgs
     # user=AnonymousUser or authenticatedUser
 # --- Registered users' view --------------------------------------------------------------
+# Show all of registered users
 class RegistUserView(LoginRequiredMixin,generic.ListView):
     template_name = 'main/regist_user.html'
     model = User
     
     def get_queryset(self):
-
         login_user=self.request.user
-        
         if login_user.is_authenticated:
             if('fujico@kfjc.co.jp' in login_user.email): # type: ignore
                 users=User.objects.all()                
             else:
                 users=User.objects.filter(email = login_user.email)
-                    
-        return users.order_by()
+        return users
     
 # --- Chart drawing function --------------------------------------------------------------
 def line_charts(x_data,y_data,start,points,legend):
@@ -309,7 +309,7 @@ def line_charts(x_data,y_data,start,points,legend):
                 )          
     return fig.to_html(include_plotlyjs='cdn',full_html=False).encode().decode('unicode-escape')
 # --- Main detail view --------------------------------------------------------------
-# List view for sensor devices at each site 
+# View detail data of each site' sensor devices 
 class DetailView(generic.ListView):
     template_name='main/detail.html'
     model=Result
@@ -411,8 +411,9 @@ class DetailView(generic.ListView):
                 "message" :message
             }
         return render(request, 'main/detail.html', context)
-# -----------------------------------------------------------------
-# Locations' list view 
+
+# --- Location List view --------------------------------------------------------------
+# View of Locations' list 
 class LocationListView(generic.ListView):
     template_name='main/location_list.html'
     model=Location
@@ -429,16 +430,18 @@ class LocationListView(generic.ListView):
         # the selected records are re-ordered  by "created_date"         
         qs = qs.order_by("created_date")[:7]
         return qs
-# -----------------------------------------------------------------
-# Each location's detail information view
+    
+# --- Location' detail view --------------------------------------------------------------
+# View of the detail information for each location'
 class LocationDetailView(generic.DetailView):
     template_name='main/location_detail.html'
     model=Location
     
     # def get_object(self):
     #     return super().get_object()
-# -----------------------------------------------------------------
-# Create a new location's information view
+    
+# --- Location create view --------------------------------------------------------------
+# Create a new location's information
 class LocationCreateModelFormView(LoginRequiredMixin,generic.CreateView):
     template_name = "main/location_form.html"
     form_class = LocationForm
@@ -474,7 +477,8 @@ class LocationCreateView(LoginRequiredMixin,generic.CreateView):
         location.save()
         return super().form_valid(form)
 """
-# -----------------------------------------------------------------
+
+# --- Location Update view --------------------------------------------------------------
 # Update location's information
 class LocationUpdateModelFormView(OwnerOnly,generic.UpdateView):
     template_name = "main/location_form.html"
@@ -508,16 +512,19 @@ class LocationUpdateView(generic.UpdateView):
         location.save()
         return super().form_valid(form)
 """
-# -----------------------------------------------------------------
-# Delete location information
+
+# --- Location delete view --------------------------------------------------------------
+# Location delete view
 class LocationDeleteView(OwnerOnly,generic.DeleteView):
     template_name = 'main/location_delete.html'
     model = Location
     # form_class=LocationForm
     success_url = reverse_lazy('main:location_list')
-# -----------------------------------------------------------------
-class SensorsAllView(generic.ListView):
-    template_name='main/sensors_all.html'
+
+# --- All sensors' view --------------------------------------------------------------
+# You can view the all sensors' listy
+class SensorsAllListView(generic.ListView):
+    template_name='main/sensors_all_list.html'
     model=Sensors
 
     # user情報を取得する
@@ -543,38 +550,54 @@ class SensorsAllView(generic.ListView):
         # qs = qs.order_by("created_date")[:7]
         return qs
 
-# -----------------------------------------------------------------    
-# Sensors' list view 
-class SensorListView(generic.ListView):
-    template_name='main/sensor_list.html'
+# --- Sensor list view --------------------------------------------------------------
+# You can view the each site' sensors list
+class SensorsEachListView(generic.ListView):
+    template_name='main/sensors_each_list.html'
     model=Sensors
 
-    # # user情報を取得する
-    # def get_form_kwargs(self):
-    #     kwgs=super().get_form_kwargs()
-    #     kwgs["user"]=self.request.user
-    #     return kwgs
+    # urlのpkを取得する
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs['pk']
+        data_list = Sensors.objects.filter(id = pk) # pkを指定してデータを絞り込む
+        context['qs'] = data_list
+        print("pk = ", id)
+        print("context = ", context)
+        return context
     
     # Queryを取得する
-    def get_queryset(self):
-        qs = Sensors.objects.all()
-        # print("pk = ", pk)
-        # ユーザーがログインしていれば、リストを表示する
-        # q = self.request.GET.get("search")
-        # qs = Record.objects.search(query=q)
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            print("user =", user)
-            print("user =", user.profile.belongs)
-            # qs = qs.filter(Q(public=True)|Q(user=self.request.user))
-        else:
-            print("user =", self.request.user)
-            # qs = qs.filter(public=True)
-        # # the selected records are re-ordered  by "created_date"         
-        qs = qs.order_by("created_date")[:7]
-        return qs
-# -----------------------------------------------------------------
-# Each Sensors's detail information view
+    # def get_queryset(self, **kwargs): 
+    #     context = super().get_context_data(**kwargs)
+    #     pk = self.kwargs['pk']
+    #     print("pk = ", pk)
+    #     object_list = Sensors.objects.filter(id = pk)
+    #     login_user = self.request.user
+    #     print("login_user =", login_user)
+        
+    #     if object_list is None:
+    #         print("オブジェクトが登録されていません\r\n代わりにすべて表示します。")
+            
+    #     else:
+    #         print("なぜかオブジェクトがあります")
+        
+    #     # # ユーザーがログインしていれば、リストを表示する
+    #     # if self.request.user.is_authenticated:
+    #     #     # print("site =", Sensors.site(user.id))  
+    #     #     qs = qs.filter(id = context['pk'])
+    #     #     print("qs =", qs)
+    #     #     # qs = qs.filter(Q(public=True)|Q(user=self.request.user))
+    #     # else:
+    #     #     print("user =", self.request.user)
+    #     #     # print("Sensors.site =", Sensors.site.location)
+    #     #     # qs = qs.filter(public=True)
+    #     # # # the selected records are re-ordered  by "created_date"         
+    #     # qs = qs.order_by("created_date")[:7]
+    #     qs = Sensors.objects.all()
+    #     return qs
+
+# --- Sensors' detail view  --------------------------------------------------------------
+# You can view the each site' sensors detail
 class SensorsDetailView(generic.DetailView):
     template_name='main/sensors_detail.html'
     model=Sensors
@@ -597,13 +620,23 @@ class SensorsDetailView(generic.DetailView):
 # # class SensorDeviceDetailView(generic.DetailView):
 # #     template_name='sensor/sensor_device_detail.html'
 # #     model=SensorDevice
-# -----------------------------------------------------------------
-# Create a new Sensor place information view
+
+# --- sensor create view --------------------------------------------------------------
+# Create sensor'
 class SensorsCreateModelFormView(generic.CreateView):
     template_name = "main/sensors_create.html"
     form_class = SensorsForm
-    success_url = reverse_lazy("main:sensors_list2")
-
+    success_url = reverse_lazy("main:sensors_all_list")
+    
+    # 2023.10.11　site情報をview関数から取得する必要がある
+    
+    # place情報を取得する
+    # def get_form_kwargs(self):
+    #     kwgs=super().get_form_kwargs()
+    #     kwgs["place"]=self.place
+    #     print('place = ',self.place)
+    #     return kwgs
+    
 # Create a new Sensor place information view
 # 2023.10.5 tentatively omitted
 # class SensorsCreateModelFormView(generic.CreateView):
@@ -641,12 +674,13 @@ class SensorsCreateView(generic.CreateView):
         sensors.save()
         return super().form_valid(form)
 """
-# -----------------------------------------------------------------
-# Update location's information
+
+# --- Sensor update view --------------------------------------------------------------
+# Update sensor' informtion
 class SensorsUpdateModelFormView(generic.UpdateView):
     template_name = "main/sensors_update.html"
     form_class = SensorsForm
-    success_url = reverse_lazy("main:sensors_list2")
+    success_url = reverse_lazy("main:sensors_all_list")
     
     # Following get_queryset() is mandatory required.
     # in order to get place data
@@ -675,13 +709,14 @@ class LocationUpdateView(generic.UpdateView):
         location.save()
         return super().form_valid(form)
 """
-# -----------------------------------------------------------------
+
+# --- Senor delete view --------------------------------------------------------------
 # Delete Sensor information
 class SensorsDeleteView(generic.DeleteView):
     template_name = 'main/sensors_delete.html'
     model = Sensors
     # form_class=LocationForm
-    success_url = reverse_lazy('main:sensors_list2')
+    success_url = reverse_lazy('main:sensors_all_list')
 # -----------------------------------------------------------------
 # 2022/11/8 CSV file uploading
 # it does need as reverse url path, does not it need? at 2022/11/11  
@@ -718,7 +753,8 @@ class SensorsDeleteView(generic.DeleteView):
 #     # except SensorDevice.DoesNotExist:
 #     #     raise Http404("SensorDevice does not exist")
 #     # return render(request, 'sensor/detail.html', {'device': device })
-# -----------------------------------------------------------------
+
+# --- handle uploading function --------------------------------------------------------------
 # handling the uploading file
 def handle_uploaded_file(f):
     path = os.path.join(UPLOAD_DIR, f.name)
@@ -745,7 +781,8 @@ def handle_uploaded_file(f):
         logger.error(exc)
     # Delete the uploaded file
     os.remove(path)                         
-# -----------------------------------------------------------------
+
+# --- Upload view --------------------------------------------------------------
 # CSV file uploading
 class Upload(generic.FormView):
     template_name = 'main/upload.html'
@@ -785,7 +822,8 @@ def upload(request):
         form = FileUploadForm()
     return render(request, 'main/upload.html', {'form': form})
 """
-# -----------------------------------------------------------------
+
+# --- Upload complete view --------------------------------------------------------------
 # Complete the file uploading
 class UploadComplete(generic.FormView):
     template_name = 'main/upload_complete.html'
@@ -851,7 +889,9 @@ def upload_complete(request):
 #         return HttpResponse(data)
 #         # writeの場合のリターン
 #         #return HttpResponse()
-# -----------------------------------------------------------------
+
+# --- Ajax number function --------------------------------------------------------------
+# Testing an ajax function
 def ajax_number(request):
     number1 = int(request.POST.get('number1'))
     number2 = int(request.POST.get('number2'))

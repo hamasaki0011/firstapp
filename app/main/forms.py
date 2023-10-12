@@ -45,6 +45,7 @@ class SensorsForm(forms.ModelForm):
     class Meta:
         model=Sensors
         # fields=('device', 'note',)
+        # fields=('place', 'device', 'note',)
         fields="__all__"
         # exclude=["place"]
 
