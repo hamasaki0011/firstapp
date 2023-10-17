@@ -39,7 +39,7 @@ class Sensors(models.Model):
         各センサーを定義 """
     class Meta:
         db_table='sensors'
-        unique_together=(('site','device'),)
+        # unique_together=(('site','device'),)
         verbose_name='センサー'
         verbose_name_plural='センサー一覧'
     
@@ -61,7 +61,7 @@ class Result(models.Model):
         unique_together=(('point','measured_date',),)
         verbose_name='測定結果'
         verbose_name_plural='測定結果一覧'
-    place=models.ForeignKey(Location, verbose_name='場所', on_delete=models.CASCADE,default="")
+    place=models.ForeignKey(Location, verbose_name='場所', on_delete=models.CASCADE,default="") # type: ignore
     point=models.ForeignKey(Sensors, verbose_name='センサー',on_delete=models.CASCADE)
     measured_date=models.DateTimeField(verbose_name='測定日時',default=dt.strptime('2001-01-01 00:00:00','%Y-%m-%d %H:%M:%S'))
     measured_value=models.FloatField(verbose_name='測定値',default=0.0,blank=True,null=True)

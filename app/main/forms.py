@@ -45,12 +45,18 @@ class SensorsForm(forms.ModelForm):
     class Meta:
         model=Sensors
         # fields=('device', 'note',)
-        # fields=('place', 'device', 'note',)
+        # fields=('site', 'device', 'note',)
         fields="__all__"
-        # exclude=["place"]
+        # exclude=["site"]
+        
+        site = forms.ModelChoiceField(
+            queryset=Sensors.objects.none(), #空のクエリセット
+        widget=forms.widgets.Select
+        )
 
-    # # viewで取得したplace情報を受け取る    
-    def __init__(self,place=None, *args, **kwargs):
+    # # viewで取得したplace情報を受け取る
+    def __init__(self, place=None, *args, **kwargs):    
+        # print("fields = ", self.base_fields.values())
         for field in self.base_fields.values():
             field.widget.attrs.update({"class":"form-control"})
         self.place=place
@@ -69,6 +75,26 @@ class SensorsFormClass(forms.Form):
     name = forms.CharField()
     memo = forms.CharField(widget=forms.Textarea())
 
+class SensorsLocationForm(forms.ModelForm):
+    class Meta:
+        model=Sensors
+        # fields=('device', 'note',)
+        # fields=('site', 'device', 'note',)
+        fields="__all__"
+        # exclude=["site"]
+                
+        # site = forms.ModelChoiceField(
+        #     queryset=Sensors.objects.none(), #空のクエリセット
+        # widget=forms.widgets.Select
+        # )
+
+    # # viewで取得したplace情報を受け取る
+    def __init__(self, place=None, *args, **kwargs):    
+        # print("fields = ", self.base_fields.values())
+        for field in self.base_fields.values():
+            field.widget.attrs.update({"class":"form-control"})
+        self.place=place
+        super().__init__(*args, **kwargs)
 
 class ResultForm(forms.ModelForm):
     class Meta:

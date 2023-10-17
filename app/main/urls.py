@@ -31,10 +31,11 @@ urlpatterns=[
     # Sensors list view with pk
     path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensor_each_list'),
     # Sensors detail view
-    path('sensors/detail/<int:pk>/', views.SensorsDetailView.as_view(), name='sensors_detail'),
+    path('sensors/detail/c/', views.SensorsDetailView.as_view(), name='sensors_detail'),
     # Sensors create view
     path('sensors/create/', views.SensorsCreateModelFormView.as_view(), name='sensors_create'),
     # path('sensors/create/', views.SensorsCreateView.as_view(), name='sensors_create'),
+    path('sensors/location/create/<int:pk>/', views.SensorsLocationCreateView.as_view(), name='sensors_location_create'),
     # Sensors update view
     path('sensors/update/<int:pk>/', views.SensorsUpdateModelFormView.as_view(), name='sensors_update'),
     # Sensor's delete view

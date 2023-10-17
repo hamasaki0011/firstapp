@@ -17,7 +17,7 @@ class UserTestCase(TestCase):
         self.password = "somepass"
         self.res = self.client.post(signup_url, {"email": self.email, "password1": self.password, "password2": self.password})
         self.user_obj = User.objects.first()
-        self.email_obj = self.user_obj.emailaddress_set.first()
+        self.email_obj = self.user_obj.emailaddress_set.first() # type: ignore
         self.email_obj.verified = True
         self.email_obj.save()
 
@@ -30,7 +30,7 @@ class UserTestCase(TestCase):
     def test_single_user(self):
         counter = User.objects.count()
         self.assertEqual(counter, 1)
-        self.assertEqual(self.user_obj.email, self.email)
+        self.assertEqual(self.user_obj.email, self.email) # type: ignore
 
     #メールアドレスがverifiedになっているか？
     def test_emailaddress_verified(self):
@@ -90,16 +90,16 @@ class AdapterTestCase(TestCase):
                                                  "password1": self.password, 
                                                  "password2": self.password})
         self.user_obj = User.objects.first()
-        self.email_obj = self.user_obj.emailaddress_set.first()
+        self.email_obj = self.user_obj.emailaddress_set.first() # type: ignore
         self.email_obj.verified = True
         self.email_obj.save()
-        self.user_obj.profile.username = "something_changed"
+        self.user_obj.profile.username = "something_changed" # type: ignore
 
     #プロフィールが変わったユーザーのテスト
     def test_login_with_profile_user(self):
         from accounts.adapter import ProfileAdapter as adapter
         adapter_obj = adapter(self.user_obj)
-        self.request.user = self.user_obj
+        self.request.user = self.user_obj # type: ignore
         redirect_url = adapter_obj.get_login_redirect_url(self.request)
         self.assertEqual(redirect_url, reverse("main:index"))
 
@@ -109,12 +109,12 @@ class AdapterTestCase(TestCase):
                                             "password1": self.password, 
                                             "password2": self.password})
         user2 = User.objects.last()
-        email_obj2 = user2.emailaddress_set.first()
+        email_obj2 = user2.emailaddress_set.first() # type: ignore
         email_obj2.verified = True
         email_obj2.save()
         from accounts.adapter import ProfileAdapter as adapter
         adapter_obj = adapter(user2)
-        self.request.user = user2
+        self.request.user = user2 # type: ignore
         redirect_url = adapter_obj.get_login_redirect_url(self.request)
-        self.assertEqual(redirect_url, reverse("main:profile-update", kwargs={"pk": user2.profile.pk}))
+        self.assertEqual(redirect_url, reverse("main:profile-update", kwargs={"pk": user2.profile.pk})) # type: ignore
         

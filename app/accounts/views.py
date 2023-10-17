@@ -10,9 +10,9 @@ from .forms import ProfileUpdateForm
 # --- Does permit only owner --------------------------------------------------------------
 class OwnProfileOnly(UserPassesTestMixin):
     def test_func(self):
-        profile_obj = self.get_object()
+        profile_obj = self.get_object() # type: ignore
         try:
-            return profile_obj == self.request.user.profile 
+            return profile_obj == self.request.user.profile  # type: ignore
         except:
             return False
 
@@ -21,20 +21,20 @@ class SuperUserOnly(UserPassesTestMixin):
     login_user: str
     
     def test_func(self):
-        profile_obj = self.get_object()
-        login_user = self.request.user
+        profile_obj = self.get_object() # type: ignore
+        login_user = self.request.user # type: ignore
         print("login_user = ",login_user)
         try:
-            return profile_obj == self.request.user.profile
+            return profile_obj == self.request.user.profile # type: ignore
         except:
             return False
     
     def handle_no_permission(self,login_user):
         # messages.error(self.request,"You can edit and delete only for your's.")
-        pk=self.kwargs["pk"]
+        pk=self.kwargs["pk"] # type: ignore
         print("pk = ",pk)
         if login_user.admin:
-            return redirect("main:profile-update", pk=self.kwargs["pk"])
+            return redirect("main:profile-update", pk=self.kwargs["pk"]) # type: ignore
             
         else:
             return

@@ -529,7 +529,7 @@ class SensorsAllListView(generic.ListView):
 
     # user情報を取得する
     def get_form_kwargs(self):
-        kwgs=super().get_form_kwargs()
+        kwgs=super().get_form_kwargs() # type: ignore
         kwgs["user"]=self.request.user
         return kwgs
     
@@ -549,6 +549,22 @@ class SensorsAllListView(generic.ListView):
         # the selected records are re-ordered  by "created_date"         
         # qs = qs.order_by("created_date")[:7]
         return qs
+
+# --- Sensor each location create view --------------------------------------------------------------
+# You can view the each site' sensors create
+class SensorsLocationCreateView(generic.CreateView):
+    template_name='main/sensors_location_create.html'
+    # model=Sensors
+    form_class = SensorsForm
+    # SensorsForm.fields['site'].queryset = Sensors.objects.filter(pk=3)
+    success_url = reverse_lazy("main:sensors_all_list")
+    
+    # place情報を取得する
+    def get_form_kwargs(self):
+        kwgs=super().get_form_kwargs()
+        kwgs["pk"]=self.kwargs
+        print('pk = ', kwgs['pk'])
+        return kwgs
 
 # --- Sensor list view --------------------------------------------------------------
 # You can view the each site' sensors list
@@ -626,15 +642,18 @@ class SensorsDetailView(generic.DetailView):
 class SensorsCreateModelFormView(generic.CreateView):
     template_name = "main/sensors_create.html"
     form_class = SensorsForm
+    
+    # SensorsForm.fields['site'].queryset = Sensors.objects.filter(pk=3)
+    
     success_url = reverse_lazy("main:sensors_all_list")
     
     # 2023.10.11　site情報をview関数から取得する必要がある
-    
+        
     # place情報を取得する
     # def get_form_kwargs(self):
     #     kwgs=super().get_form_kwargs()
-    #     kwgs["place"]=self.place
-    #     print('place = ',self.place)
+    #     # kwgs["place"]=self.place # type: ignore
+    #     print('self = ',self.get_context_data) # type: ignore
     #     return kwgs
     
 # Create a new Sensor place information view
@@ -650,13 +669,6 @@ class SensorsCreateModelFormView(generic.CreateView):
     #     kwgs["place"]=self.place
     #     return kwgs
     
-    # このviewではデータの取り込み、保存も一括して行われるので以下はいらない。  
-    # # Received and saved data 
-    # def form_valid(self, form):
-    #     data = form.cleaned_data    # 入力したデータを辞書型で取り出す
-    #     obj=Location(**data)        # 入力したデータでオブジェクトを作成し保存する
-    #     obj.save()
-    #     return super().form_valid(form)
 """Another way to create
 # class SensorsCreateView(LoginRequiredMixin,generic.CreateView):
 class SensorsCreateView(generic.CreateView):
