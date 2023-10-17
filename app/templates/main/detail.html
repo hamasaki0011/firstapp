@@ -9,7 +9,7 @@
         <p align = "center">{{ message }}</p><br>
         <a class="btn btn-warning" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>>>センサー全体リストから登録できます。</a><br>
         location.pk: {{location.pk}}の
-        <a class="btn btn-secondary" href="{% url 'main:sensors_location_create' location.pk %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録してください。</a>
+        <a class="btn btn-secondary" href="{% url 'main:sensors_each_list' location.pk %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録してください。</a>
     </h4><br>
 </div>
 {% else %}

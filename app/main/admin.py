@@ -8,9 +8,9 @@ class SensorsInline(admin.TabularInline):
     extra=0
 
 class LocationAdmin(admin.ModelAdmin):
-    fields = ['name', 'memo',]
+    fields = ['id', 'name', 'memo',]
     inlines=[SensorsInline]
-    list_display = ('name', 'memo',)
+    list_display = ('id', 'name', 'memo',)
     list_filter=['name']
     # search_fields=['name']
 
@@ -18,6 +18,11 @@ admin.site.register(Location, LocationAdmin)
 # admin.site.register(Location)
 
 admin.site.register(Sensors)
+# class SensorsAdmin(admin.ModelAdmin):
+#     fields = ['id', 'site', 'device',]
+#     list_display = ('id', 'site', 'device',)
+#     list_filter=['id']
+#     # search_fields=['name']
 
 class ResultInline(admin.TabularInline):
     model=Result

@@ -29,7 +29,7 @@ urlpatterns=[
     # All sensors list view
     path('sensors/all/list/', views.SensorsAllListView.as_view(), name='sensors_all_list'),
     # Sensors list view with pk
-    path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensor_each_list'),
+    path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensors_each_list'),
     # Sensors detail view
     path('sensors/detail/c/', views.SensorsDetailView.as_view(), name='sensors_detail'),
     # Sensors create view
