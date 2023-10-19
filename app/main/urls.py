@@ -9,12 +9,13 @@ urlpatterns=[
     path('index/', views.IndexView.as_view(), name='index'),
     # /regist/user/'
     path('regist/user/', views.RegistUserView.as_view(), name='regist_user'),
-    # user' profile update is handled in accout application 
+    # user' profile update is handled in account application 
         
     # Main detail view
     path('detail/<int:pk>/', views.DetailView.as_view(), name='detail'),
     # Location list view
     path('location/list', views.LocationListView.as_view(), name='location_list'),
+    path('location/list/<int:pk>/', views.LocationListView.as_view(), name='location_list'),
     # Location list view
     # path('location/select', views.LocationSelectView.as_view(), name='location_select'),
     # Detail view

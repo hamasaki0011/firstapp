@@ -6,7 +6,6 @@
 
 <div class="container">
     <br>
-    {{message}}
     <div>
         <h3>遠隔監視対象サイト一覧(登録順)</h3>
     </div>
@@ -21,17 +20,6 @@
                   <th scope="col">編集</th>
               </tr>
           </thead>
-          {%if location_list.first is None%}
-          <tbody>
-            <tr class="table-warning table-bordered border-dark">
-              <td colspan="1">None</td>  <!--現場-->
-              <td colspan="1">--</td>  <!--メモ-->
-              <td colspan="1">None</td>  <!--更新日-->
-              <td colspan="1">None</td> <!--登録日-->
-              <td></td>
-            </tr>
-          </tbody>
-          {%else%}
           <tbody>
           {% for location in location_list %}
             <tr class="table-warning table-bordered border-dark">
@@ -47,7 +35,6 @@
             </tr>
           {% endfor %}
           </tbody>
-          {%endif%}
         </table>
         <div>
             <a class="form-control btn btn-primary" href="{% url 'main:location_create' %}"><span class="glyphicon glyphicon-log-in"></span> サイトを追加する</a>

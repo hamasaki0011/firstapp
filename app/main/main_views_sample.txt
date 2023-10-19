@@ -1,3 +1,5 @@
+# This code is for related version of main:views.py
+ 
 from django.shortcuts import render, redirect
 from django.views import generic
 from django.urls import reverse_lazy
@@ -66,64 +68,38 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     model=Location
     
     def get_queryset(self):
-        # ログインしているuser情報を取得する
+        # ここに来た時点でuser情報は取得できている @2023.3.24
         user=self.request.user
-        # 空のクエリーを設定する
-        location_list = Location.objects.none()        
+        # print("user.id = ",user.id)
         # ログインユーザーに許可されたQuery情報を渡す
         if user.is_authenticated:
-            if 'fujico@kfjc.co.jp' in user.email: # type: ignore
-                location_list = Location.objects.all()
+            if('fujico@kfjc.co.jp' in user.email):
+                locations = Location.objects.all()
             else:
-                location_list = Location.objects.filter(name=user.profile.belongs) # type: ignore
-        return location_list
+                locations = Location.objects.filter(name=user.profile.belongs)
+                # locations = Location.objects.filter(id=user.id)
+        return locations
 
+    # Get user information
+    # def get_form_kwargs(self):
+    #     kwgs=super().get_form_kwargs()
+    #     kwgs["user"]=self.request.user    
+    #     return kwgs
+    # user=AnonymousUser or authenticatedUser
 # --- Registered users' view --------------------------------------------------------------
 # Show all of registered users
-class RegistUserView(LoginRequiredMixin, generic.ListView):
+class RegistUserView(LoginRequiredMixin,generic.ListView):
     template_name = 'main/regist_user.html'
     model = User
     
     def get_queryset(self):
         login_user=self.request.user
-        user_list = User.objects.none()
-        
         if login_user.is_authenticated:
             if('fujico@kfjc.co.jp' in login_user.email): # type: ignore
-                user_list=User.objects.all().order_by()
+                users=User.objects.all()                
             else:
-                user_list=User.objects.filter(email = login_user.email) # type: ignore
-        print("users", user_list)
-        return user_list
-
-# --- Location List view --------------------------------------------------------------
-# View of Locations' list 
-class LocationListView(LoginRequiredMixin, generic.ListView):
-    template_name='main/location_list.html'
-    model=Location
-    
-    # Generating a query
-    def get_context_data(self, **kwargs):
-        login_user = self.request.user
-        context = super().get_context_data(**kwargs)
-        location_list = Location.objects.none()
-        
-        if "fujico@kfjc.co.jp" in login_user.email: # type: ignore
-            # 管理者ログインなのでurlにpkはない！
-            message = "管理者ログインです！"
-            location_list = Location.objects.all()
-        else:
-            # urlからpk情報を取得する
-            message = "管理者ではありません、" + login_user.profile.username + "です。" # type: ignore
-            pk = self.kwargs['pk']  # This "pk" indicates the location.pk and also site_id
-            location_list = Location.objects.filter(pk = pk)
-        
-        context = {
-            # 'sensors_list': sensors_list,
-            'location_list': location_list,
-            'message': message,
-        }
-        return context
+                users=User.objects.filter(email = login_user.email)
+        return users
     
 # --- Chart drawing function --------------------------------------------------------------
 def line_charts(x_data,y_data,start,points,legend):
@@ -438,6 +414,25 @@ class DetailView(generic.ListView):
             }
         return render(request, 'main/detail.html', context)
 
+# --- Location List view --------------------------------------------------------------
+# View of Locations' list 
+class LocationListView(generic.ListView):
+    template_name='main/location_list.html'
+    model=Location
+    
+    def get_queryset(self):
+        qs = Location.objects.all()
+        # ユーザーがログインしていれば、リストを表示する
+        # q = self.request.GET.get("search")
+        # qs = Record.objects.search(query=q)
+        # if self.request.user.is_authenticated:
+        #     qs = qs.filter(Q(public=True)|Q(user=self.request.user))
+        # else:
+        #     qs = qs.filter(public=True)
+        # the selected records are re-ordered  by "created_date"         
+        qs = qs.order_by("created_date")[:7]
+        return qs
+    
 # --- Location' detail view --------------------------------------------------------------
 # View of the detail information for each location'
 class LocationDetailView(generic.DetailView):
