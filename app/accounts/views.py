@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from .models import Profile
 from .forms import ProfileUpdateForm
 
-# --- Does permit only owner --------------------------------------------------------------
+# --- Does permit only for owner --------------------------------------------------------------
 class OwnProfileOnly(UserPassesTestMixin):
     def test_func(self):
         profile_obj = self.get_object() # type: ignore

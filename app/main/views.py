@@ -3,7 +3,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 from .models import Location,Sensors,Result
 from .forms import LocationForm, SensorsForm
-from accounts.models import User
+from accounts.models import User, Profile
 # ページへのアクセスをログインユーザーのみに制限する
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 
@@ -90,10 +90,31 @@ class RegistUserView(LoginRequiredMixin, generic.ListView):
         
         if login_user.is_authenticated:
             if('fujico@kfjc.co.jp' in login_user.email): # type: ignore
-                user_list=User.objects.all().order_by()
+                user_list=User.objects.all()
+                print("Users are ", user_list) # type: ignore
+                print("Login_user is ", user_list.get(pk = login_user.pk))
+                # print("Filtered_users are ", user_list.order_by(user_id))
             else:
-                user_list=User.objects.filter(email = login_user.email) # type: ignore
-        print("users", user_list)
+                user_list=User.objects.all()
+                # login_userメールアドレスドメインが一致するユーザーをセレクトする。
+                tmp = "@" + str(login_user.email.rsplit('@',1)[1])
+                print("related_mail is ", tmp)
+                # print("belongs ", login_user.username)
+                for user in user_list:
+                    print("user.belongs =", user.company)
+                # user.email is ok but belongs is bad
+                # user.pk is ok but that is user.profile.pk
+                # user.company is ok
+                
+                # user.profile.user is ok but that is user.email
+                # user.profile.belongs is ok
+                # user.profile.username is ok but user.profile.name
+                # user.profile.pk is ok but that is user.pk
+                
+                # user_list = User.objects.get(location = login_user.natural_key)
+                # print("user_list ", user_list)
+                # user_list=User.objects.filter(User.profile.belongs = login_user.profile.belongs) # type: ignore
+                # user_list=User.objects.filter(email = login_user.email) # type: ignore
         return user_list
 
 # --- Location List view --------------------------------------------------------------
@@ -110,12 +131,12 @@ class LocationListView(LoginRequiredMixin, generic.ListView):
         
         if "fujico@kfjc.co.jp" in login_user.email: # type: ignore
             # 管理者ログインなのでurlにpkはない！
-            message = "管理者ログインです！"
             location_list = Location.objects.all()
+            message = "管理者ログインです！"
         else:
-            # urlからpk情報を取得する
-            message = "管理者ではありません、" + login_user.profile.username + "です。" # type: ignore
+            # 登録ユーザーのログイン、urlからpk情報を取得する
             pk = self.kwargs['pk']  # This "pk" indicates the location.pk and also site_id
+            message = "管理者ではありません、" + login_user.profile.username + "です。user.pkは" + str(pk) + "で、profileの所属は" + login_user.profile.belongs + "です。"
             location_list = Location.objects.filter(pk = pk)
         
         context = {
@@ -124,7 +145,54 @@ class LocationListView(LoginRequiredMixin, generic.ListView):
             'message': message,
         }
         return context
+
+# --- Location create view --------------------------------------------------------------
+# Create a new location's information
+class LocationCreateModelFormView(LoginRequiredMixin,generic.CreateView):
+    template_name = "main/location_form.html"
+    form_class = LocationForm
+    success_url = reverse_lazy("main:location_list")
     
+    # user情報を取得する
+    def get_form_kwargs(self):
+        kwgs=super().get_form_kwargs()
+        kwgs["user"]=self.request.user
+        return kwgs
+    
+    # このviewではデータの取り込み、保存も一括して行われるので以下はいらない。  
+    # # Received and saved data 
+    # def form_valid(self, form):
+    #     data = form.cleaned_data    # 入力したデータを辞書型で取り出す
+    #     obj=Location(**data)        # 入力したデータでオブジェクトを作成し保存する
+    #     obj.save()
+    #     return super().form_valid(form)
+"""
+Another way to create
+class LocationCreateView(LoginRequiredMixin,generic.CreateView):
+    template_name='main/location_create.html'
+    # model=Location
+    form_class=LocationForm
+    success_url=reverse_lazy('main:location_list')
+    
+    # Received and saved data 
+    def form_valid(self, form):
+        location = form.save(commit=False)
+        # location.author = self.request.user
+        location.created_date = timezone.now()
+        location.updated_date = timezone.now()
+        location.save()
+        return super().form_valid(form)
+"""
+
+# --- Location' detail view --------------------------------------------------------------
+# View of the detail information for each location'
+class LocationDetailView(generic.DetailView):
+    template_name='main/location_detail.html'
+    model=Location
+    
+    # def get_object(self):
+    #     return super().get_object()
+
 # --- Chart drawing function --------------------------------------------------------------
 def line_charts(x_data,y_data,start,points,legend):
     # fig=go.Figure()    
@@ -437,53 +505,6 @@ class DetailView(generic.ListView):
                 "message" :message
             }
         return render(request, 'main/detail.html', context)
-
-# --- Location' detail view --------------------------------------------------------------
-# View of the detail information for each location'
-class LocationDetailView(generic.DetailView):
-    template_name='main/location_detail.html'
-    model=Location
-    
-    # def get_object(self):
-    #     return super().get_object()
-    
-# --- Location create view --------------------------------------------------------------
-# Create a new location's information
-class LocationCreateModelFormView(LoginRequiredMixin,generic.CreateView):
-    template_name = "main/location_form.html"
-    form_class = LocationForm
-    success_url = reverse_lazy("main:location_list")
-    
-    # user情報を取得する
-    def get_form_kwargs(self):
-        kwgs=super().get_form_kwargs()
-        kwgs["user"]=self.request.user
-        return kwgs
-    
-    # このviewではデータの取り込み、保存も一括して行われるので以下はいらない。  
-    # # Received and saved data 
-    # def form_valid(self, form):
-    #     data = form.cleaned_data    # 入力したデータを辞書型で取り出す
-    #     obj=Location(**data)        # 入力したデータでオブジェクトを作成し保存する
-    #     obj.save()
-    #     return super().form_valid(form)
-"""
-Another way to create
-class LocationCreateView(LoginRequiredMixin,generic.CreateView):
-    template_name='main/location_create.html'
-    # model=Location
-    form_class=LocationForm
-    success_url=reverse_lazy('main:location_list')
-    
-    # Received and saved data 
-    def form_valid(self, form):
-        location = form.save(commit=False)
-        # location.author = self.request.user
-        location.created_date = timezone.now()
-        location.updated_date = timezone.now()
-        location.save()
-        return super().form_valid(form)
-"""
 
 # --- Location Update view --------------------------------------------------------------
 # Update location's information

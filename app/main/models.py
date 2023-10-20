@@ -20,6 +20,23 @@ class Location(models.Model):
         verbose_name_plural='現場一覧'
     # author=models.ForeignKey('auth.User',on_delete=models.CASCADE)    
     # CASCADE指定で、userデータが削除されたとき、locationデータも削除される
+    # ↓この場合、Userが親モデル、Locationが子モデルになる
+    # "on_delete"は、「子オブジェクトを持つ親オブジェクトが削除される際のアプリの動作を設定する引数」
+    """_summary_ 2023.10.20
+    子オブジェクトを削除したときに親オブジェクトを別のオブジェクトに切り替える
+        from django.db import models
+        from django.contrib.auth.models import User
+        
+        def get_first_user():
+            users = User.objects.order_by('username')
+            return users[0].pk
+            
+        class Comment(models.Model):
+            contributor = models.ForeignKey(User, on_delete=models.SET(get_first_user))
+        
+        Returns:
+            _type_: _description_
+    """
     user=models.ForeignKey(User, on_delete=models.CASCADE)
     name=models.CharField(verbose_name='現場', max_length=100)
     memo=models.CharField(verbose_name='メモ', max_length=500, default='',blank=True,null=True)

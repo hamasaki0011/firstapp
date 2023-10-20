@@ -12,14 +12,14 @@
     <h4>■遠隔監視サイト</h4>
     <div>
         {%if location_list.first is None%}
-            <p>現場が設定されていません。</p>
-            <p>location.pk: None 
-                {%if 'fujico@kfjc.co.jp' in user.email%}
-                    <p>Yes admin-user logged in</p>
-                    <p><a class="btn btn-primary" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>遠隔監視現場を登録</a></p>
-                {%else%}
-                    <p><a class="btn btn-primary" href="{% url 'main:location_list' user.pk %}"><span class="glyphicon glyphicon-list"></span>遠隔監視現場を登録</a></p>
-                {%endif%}
+            <p>現場設定がまだされていません。</p>
+            {%if 'fujico@kfjc.co.jp' in user.email%}
+                <p>管理者でログイン：</p>
+                <p><a class="btn btn-primary" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>遠隔監視現場を登録</a></p>
+            {%else%}
+                <p>登録ユーザーでログイン: Location.pkがないので、user.pkで次頁に遷移</p>
+                <p><a class="btn btn-primary" href="{% url 'main:location_list' user.pk %}"><span class="glyphicon glyphicon-list"></span>遠隔監視現場を登録</a></p>
+            {%endif%}
         {%else%}
             {% for location in location_list %}
                 <p>設定されている現場(location.pk: {{ location.pk }})</p>
@@ -28,7 +28,7 @@
             {% endfor %}
                 <br>                
                 {%if 'fujico@kfjc.co.jp' in user.email %}
-                <p>管理者権限で全リストを表示
+                <p>管理者権限で全リストを表示</P>
                     <a class="btn btn-primary" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>現場設定を追加</a></p>
                     <!--あとでセンサー追加を入れる-->
                 {%else%}
