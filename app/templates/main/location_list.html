@@ -40,7 +40,7 @@
               <td colspan="1">{{ location.updated_date }}</td>
               <td colspan="1">{{ location.created_date }}</td>
               <td>
-                location.pk
+                location.pk: {{location.pk}}
                 <a href="{% url 'main:location_update' location.pk %}" class="btn btn-primary btn-sm">更新する</a>
                 <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{location.pk}}">削除する</button>
                 {% include 'main/location_delete.html' %}

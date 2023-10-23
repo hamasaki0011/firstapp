@@ -42,7 +42,6 @@ class User(AbstractBaseUser):
         unique=True,
     )
     company = models.CharField(max_length=100, blank=True, null=True, verbose_name="所属")
-    # company = models.ForeignKey(Profile, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False) 
     admin = models.BooleanField(default=False)

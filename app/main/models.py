@@ -9,7 +9,6 @@ from django.utils import timezone
 #23.7.6 from django.urls import reverse
 
 User=get_user_model()
-
 # Location model
 class Location(models.Model):
     """ Location model
@@ -37,6 +36,7 @@ class Location(models.Model):
         Returns:
             _type_: _description_
     """
+    # 2023.10.23 name はprofileから参照できない？
     user=models.ForeignKey(User, on_delete=models.CASCADE)
     name=models.CharField(verbose_name='現場', max_length=100)
     memo=models.CharField(verbose_name='メモ', max_length=500, default='',blank=True,null=True)

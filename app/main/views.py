@@ -79,7 +79,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         return location_list
 
 # --- Registered users' view --------------------------------------------------------------
-# Show all of registered users
+# 2023.10.23 display the user's profile
 class RegistUserView(LoginRequiredMixin, generic.ListView):
     template_name = 'main/regist_user.html'
     model = User
@@ -90,31 +90,12 @@ class RegistUserView(LoginRequiredMixin, generic.ListView):
         
         if login_user.is_authenticated:
             if('fujico@kfjc.co.jp' in login_user.email): # type: ignore
-                user_list=User.objects.all()
-                print("Users are ", user_list) # type: ignore
-                print("Login_user is ", user_list.get(pk = login_user.pk))
-                # print("Filtered_users are ", user_list.order_by(user_id))
+                # 2023.10.23 users list display with being ordered by user.pk (=id) 
+                user_list=User.objects.all().order_by('pk').reverse()
             else:
-                user_list=User.objects.all()
-                # login_userメールアドレスドメインが一致するユーザーをセレクトする。
-                tmp = "@" + str(login_user.email.rsplit('@',1)[1])
-                print("related_mail is ", tmp)
-                # print("belongs ", login_user.username)
-                for user in user_list:
-                    print("user.belongs =", user.company)
-                # user.email is ok but belongs is bad
-                # user.pk is ok but that is user.profile.pk
-                # user.company is ok
-                
-                # user.profile.user is ok but that is user.email
-                # user.profile.belongs is ok
-                # user.profile.username is ok but user.profile.name
-                # user.profile.pk is ok but that is user.pk
-                
-                # user_list = User.objects.get(location = login_user.natural_key)
-                # print("user_list ", user_list)
-                # user_list=User.objects.filter(User.profile.belongs = login_user.profile.belongs) # type: ignore
-                # user_list=User.objects.filter(email = login_user.email) # type: ignore
+                # 2023.10.23 Modify only for the logged in user's profile information  
+                user_list=User.objects.filter(pk = login_user.pk)                   
+        
         return user_list
 
 # --- Location List view --------------------------------------------------------------
@@ -136,11 +117,11 @@ class LocationListView(LoginRequiredMixin, generic.ListView):
         else:
             # 登録ユーザーのログイン、urlからpk情報を取得する
             pk = self.kwargs['pk']  # This "pk" indicates the location.pk and also site_id
-            message = "管理者ではありません、" + login_user.profile.username + "です。user.pkは" + str(pk) + "で、profileの所属は" + login_user.profile.belongs + "です。"
-            location_list = Location.objects.filter(pk = pk)
-        
+            message = "管理者ではありません、" + login_user.profile.username + "です。user.pkは" + str(pk) + "で、profileの所属は" + login_user.profile.belongs + "です。" # type: ignore
+            # 2023.10.23 Select the correct query of login_user's with login_user.profile.belongs
+            location_list = Location.objects.filter(name = login_user.profile.belongs) # type: ignore
+                
         context = {
-            # 'sensors_list': sensors_list,
             'location_list': location_list,
             'message': message,
         }
