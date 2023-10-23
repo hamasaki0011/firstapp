@@ -21,6 +21,7 @@ urlpatterns=[
     # Detail view
     path('location/detail/<int:pk>/', views.LocationDetailView.as_view(), name='location_detail'),
     # Location create view
+    # path('location/create/<int:pk>/', views.LocationCreateModelFormView.as_view(), name='location_create'),
     path('location/create/', views.LocationCreateModelFormView.as_view(), name='location_create'),
     # Location update view
     path('location/update/<int:pk>/', views.LocationUpdateModelFormView.as_view(), name='location_update'),    

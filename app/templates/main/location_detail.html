@@ -5,20 +5,27 @@
 <div class="container">
     <div class="card mx-auto my-3 w-150" style="min-width:300px;">
         <div class="card-header">
-            <p>情報更新日:{{ location.updated_date }}</p>
+            <p>更新日:{{ location.updated_date }}</p>
         </div>
         <div class="card-body">
+            <!-- 2023.10.23 queryセットの確認 -->
+            <p class="card-text"><small>location.pk</small> {{ location.pk }}</p>
             <h3 class="card-title">{{ location.name }} 様</h3>
             <p class="card-text"><small>【メモ】</small> {{ location.memo }}</p>
             <div class="mt-3 d-flex justify-content-end">
+                {%if "fujico@kfjc.co.jp" in login_user.email%}
                 <a href="{% url 'main:location_update' location.pk %}" class="btn btn-primary btn-sm">更新する</a>
                 <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{location.pk}}">削除する</button>
                 {% include 'main/location_delete.html' %}
+              {%else%}
+                <a href="{% url 'main:location_update' location.pk %}" class="btn btn-default btn-sm">管理者以外更新/削除できません</a>
+                <!--<button type="button" class="btn btn-default btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{location.pk}}"></button>-->
+              {%endif%}
             </div>
         </div>
 
         <div class="card-footer">
-            <a href="{% url 'main:location_list' %}" class="btn btn-primary btn-sm">リスト表示に戻る</a>
+            <a href="{% url 'main:location_list' location.pk %}" class="btn btn-primary btn-sm">リスト表示に戻る</a>
         </div>
     </div>
 </div>

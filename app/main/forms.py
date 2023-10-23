@@ -12,20 +12,23 @@ class LocationForm(forms.ModelForm):
         model=Location
         # fields="__all__"
         # fields=('name','memo',)
+        # exclude=["user", "name"]
         exclude=["user"]
     
     # viewで取得したuser情報を受け取る    
     def __init__(self,user=None, *args, **kwargs):
         for field in self.base_fields.values():
+            # field.name = "???"
             field.widget.attrs.update({"class":"form-control"})
         self.user=user
         super().__init__(*args, **kwargs)
     
     # 受け取ったuser情報を保存する
-    def save(self,commit=True):
+    def save(self, commit=True):
         location_obj=super().save(commit=False)
         if self.user:
             location_obj.user=self.user
+            # location_obj.name=self.user.profile.belongs
         if commit:
             location_obj.save()
         return location_obj

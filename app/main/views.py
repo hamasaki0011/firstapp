@@ -124,9 +124,56 @@ class LocationListView(LoginRequiredMixin, generic.ListView):
         context = {
             'location_list': location_list,
             'message': message,
+            'login_user': login_user
         }
         return context
 
+# --- Location' detail view --------------------------------------------------------------
+# Display the detail information for each location'
+class LocationDetailView(LoginRequiredMixin, generic.DetailView):
+    template_name='main/location_detail.html'
+    model=Location
+    
+    # 2023.10.23 It seems ok if not below codes
+    def get_object(self):
+        return super().get_object()
+
+# --- Location Update view --------------------------------------------------------------
+# Update location's information
+class LocationUpdateModelFormView(OwnerOnly,generic.UpdateView):
+    template_name = "main/location_form.html"
+    form_class = LocationForm
+    success_url = reverse_lazy("main:location_list")
+    # Following get_queryset() is mandatory required.
+    # in case of using a FormView
+    def get_queryset(self):
+        qs = Location.objects.all()
+        # print("qs = ", qs)
+        return qs
+    
+    # Update updated_date
+    def form_valid(self, form):
+        location = form.save(commit=False)
+        location.updated_date = timezone.now()
+        location.save()
+        return super().form_valid(form)
+"""
+Another way
+class LocationUpdateView(LoginRequiredMixin,generic.UpdateView):
+class LocationUpdateView(generic.UpdateView):
+    template_name = 'main/location_update.html'
+    model = Location
+    # form_class = LocationForm
+    fields = ('name', 'memo',)
+    success_url = reverse_lazy('main:location_list')
+ 
+    def form_valid(self, form):
+        location = form.save(commit=False)
+        # location.author = self.request.user
+        location.updated_date = timezone.now()
+        location.save()
+        return super().form_valid(form)
+"""
 # --- Location create view --------------------------------------------------------------
 # Create a new location's information
 class LocationCreateModelFormView(LoginRequiredMixin,generic.CreateView):
@@ -138,7 +185,26 @@ class LocationCreateModelFormView(LoginRequiredMixin,generic.CreateView):
     def get_form_kwargs(self):
         kwgs=super().get_form_kwargs()
         kwgs["user"]=self.request.user
+        print('user = ', self.request.user)
+        print('user.pk = ', self.request.user.pk)
+        print('user.belongs = ', self.request.user.profile.belongs)
+        # print('location.objects = ', location.objects)
         return kwgs
+    
+    # def get_queryset(self):
+    #     qs = Location.objects.all()
+    #     print("qs = ", qs)
+    #     return qs
+    
+    # # Update updated_date
+    # def form_valid(self, form):
+    #     location = form.save(commit=False)
+    #     # location.updated_date = timezone.now()
+    #     location.created_date = timezone.now()
+    #     location.save()
+    #     return super().form_valid(form)
+    
+
     
     # このviewではデータの取り込み、保存も一括して行われるので以下はいらない。  
     # # Received and saved data 
@@ -164,15 +230,6 @@ class LocationCreateView(LoginRequiredMixin,generic.CreateView):
         location.save()
         return super().form_valid(form)
 """
-
-# --- Location' detail view --------------------------------------------------------------
-# View of the detail information for each location'
-class LocationDetailView(generic.DetailView):
-    template_name='main/location_detail.html'
-    model=Location
-    
-    # def get_object(self):
-    #     return super().get_object()
 
 # --- Chart drawing function --------------------------------------------------------------
 def line_charts(x_data,y_data,start,points,legend):
@@ -487,41 +544,6 @@ class DetailView(generic.ListView):
             }
         return render(request, 'main/detail.html', context)
 
-# --- Location Update view --------------------------------------------------------------
-# Update location's information
-class LocationUpdateModelFormView(OwnerOnly,generic.UpdateView):
-    template_name = "main/location_form.html"
-    form_class = LocationForm
-    success_url = reverse_lazy("main:location_list")
-    # Following get_queryset() is mandatory required.
-    # in case of using a FormView
-    def get_queryset(self):
-        qs = Location.objects.all()
-        return qs
-    # Update updated_date
-    def form_valid(self, form):
-        location = form.save(commit=False)
-        location.updated_date = timezone.now()
-        location.save()
-        return super().form_valid(form)
-"""
-Another way
-class LocationUpdateView(LoginRequiredMixin,generic.UpdateView):
-class LocationUpdateView(generic.UpdateView):
-    template_name = 'main/location_update.html'
-    model = Location
-    # form_class = LocationForm
-    fields = ('name', 'memo',)
-    success_url = reverse_lazy('main:location_list')
- 
-    def form_valid(self, form):
-        location = form.save(commit=False)
-        # location.author = self.request.user
-        location.updated_date = timezone.now()
-        location.save()
-        return super().form_valid(form)
-"""
-
 # --- Location delete view --------------------------------------------------------------
 # Location delete view
 class LocationDeleteView(OwnerOnly,generic.DeleteView):
@@ -587,7 +609,7 @@ class SensorsEachListView(generic.ListView):
         pk = self.kwargs['pk']  # This "pk" indicates the site_id and also location.id 
         sensors_list = Sensors.objects.filter(site_id = pk) # pkを指定してデータを絞り込む
         
-        # Put message whther adapt query is there or not
+        # Put message whether adapt query is there or not
         if sensors_list.first() is not None:
             message = "There are some query data"
         else:
@@ -706,7 +728,7 @@ class SensorsCreateView(generic.CreateView):
 """
 
 # --- Sensor update view --------------------------------------------------------------
-# Update sensor' informtion
+# Update sensor' information
 class SensorsUpdateModelFormView(generic.UpdateView):
     template_name = "main/sensors_update.html"
     form_class = SensorsForm
