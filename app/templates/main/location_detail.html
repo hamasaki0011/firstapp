@@ -9,18 +9,20 @@
         </div>
         <div class="card-body">
             <!-- 2023.10.23 queryセットの確認 -->
-            <p class="card-text"><small>location.pk</small> {{ location.pk }}</p>
-            <h3 class="card-title">{{ location.name }} 様</h3>
+            <h3 class="card-title">
+                {{ location.name }} 様 <small>(location.pk {{ location.pk }})</small>
+                {{ self.request.user }}
+            </h3>
             <p class="card-text"><small>【メモ】</small> {{ location.memo }}</p>
+            <p>ここに所有するセンサーデバイス一覧を掲載したい</p>
+            <!--<p class="card-text">
+                センサーデバイス：({{login_user}})
+                {%for sensor in sensor_list%}
+                {{ sensor }}
+                {%endfor%}
+            </p>-->
             <div class="mt-3 d-flex justify-content-end">
-                {%if "fujico@kfjc.co.jp" in login_user.email%}
-                <a href="{% url 'main:location_update' location.pk %}" class="btn btn-primary btn-sm">更新する</a>
-                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{location.pk}}">削除する</button>
-                {% include 'main/location_delete.html' %}
-              {%else%}
-                <a href="{% url 'main:location_update' location.pk %}" class="btn btn-default btn-sm">管理者以外更新/削除できません</a>
-                <!--<button type="button" class="btn btn-default btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{location.pk}}"></button>-->
-              {%endif%}
+                <a href="#" class="btn btn-default btn-sm">管理者以外更新/削除できません</a>
             </div>
         </div>
 

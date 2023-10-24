@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='result',
             name='place',
-            field=models.ForeignKey(default='', on_delete=django.db.models.deletion.CASCADE, to='main.location', verbose_name='場所'),
+            field=models.ForeignKey(default='', on_delete=django.db.models.deletion.CASCADE, to='main.location', verbose_name='場所'), # type: ignore
         ),
-    ]
+    ] # type: ignore

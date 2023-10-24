@@ -42,7 +42,7 @@ class Location(models.Model):
     memo=models.CharField(verbose_name='メモ', max_length=500, default='',blank=True,null=True)
     created_date=models.DateTimeField(verbose_name='作成日', auto_now_add=True)
     updated_date=models.DateTimeField(verbose_name='更新日', blank=True, null=True)
- 
+
     def __str__(self):
         return self.name
     
@@ -60,13 +60,13 @@ class Sensors(models.Model):
         verbose_name='センサー'
         verbose_name_plural='センサー一覧'
     
-    site=models.ForeignKey(Location, verbose_name='現場', on_delete=models.PROTECT)
+    site=models.ForeignKey(Location, verbose_name='現場', on_delete=models.CASCADE)
     # site=models.ForeignKey(Location, on_delete=models.PROTECT)
     device=models.CharField(verbose_name='センサー', max_length=127,default='',blank=True,null=True)
     note=models.CharField(verbose_name='補足', max_length=255,default='',blank=True,null=True)
     created_date=models.DateTimeField(verbose_name='作成日', auto_now_add=True)
     updated_date=models.DateTimeField(verbose_name='更新日', blank=True, null=True)
-  
+
     def __str__(self):
         return self.device 
 
@@ -88,7 +88,14 @@ class Result(models.Model):
 
     def __str__(self):
         # return "("+ self.place.name + ")" + "センサー: " + self.point.device + " 日付・時間: " +  str(self.measured_at) + " 測定値: " + str(self.data_value)
-        return self.point.device + str(self.measured_value)+ " 日付・時間: " +  str(self.measured_date)  
+        res: str
+        if self.point.device is not None:
+            res = self.point.device + str(self.measured_value)+ " 日付・時間: " +  str(self.measured_date)
+        else:
+            res = str(self.measured_value)+ " 日付・時間: " +  str(self.measured_date) 
+        
+        # return self.point.device + str(self.measured_value)+ " 日付・時間: " +  str(self.measured_date)
+        return res  
 
     @admin.display(
         boolean=True,

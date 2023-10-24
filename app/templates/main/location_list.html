@@ -13,8 +13,8 @@
     <table class="table caption-top table-bordered border-dark">
         <caption>現場一覧</caption>
           <thead class="table-primary table-bordered border-dark">
-              <tr>
-                  <th scope="col">現場</th>
+              <tr align = center>
+                  <th scope="col">お客様</th>
                   <th scope="col">メモ</th>
                   <th scope="col">更新日</th>
                   <th scope="col">登録日</th>
@@ -24,7 +24,7 @@
           {%if location_list.first is None%}
           <tbody>
             <tr class="table-warning table-bordered border-dark">
-              <td colspan="1">None</td>  <!--現場-->
+              <td colspan="1">None</td>  <!--顧客-->
               <td colspan="1">--</td>  <!--メモ-->
               <td colspan="1">None</td>  <!--更新日-->
               <td colspan="1">None</td> <!--登録日-->
@@ -45,7 +45,8 @@
                   <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{location.pk}}">削除する</button>
                   {% include 'main/location_delete.html' %}
                 {%else%}
-                  <a href="{% url 'main:location_update' location.pk %}" class="btn btn-default btn-sm">管理者以外更新/削除できません</a>
+                  <a href="#" class="btn btn-default btn-sm">管理者以外更新/削除できません</a>
+                  <!--<a href="{% url 'main:location_update' location.pk %}" class="btn btn-default btn-sm">管理者以外更新/削除できません</a>-->
                   <!--<button type="button" class="btn btn-default btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{location.pk}}"></button>-->
                 {%endif%}
               </td>

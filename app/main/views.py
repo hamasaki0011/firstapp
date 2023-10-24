@@ -51,13 +51,25 @@ logger = logging.getLogger('development')
 COLOR=['darkturquoise','orange','green','red','blue','brown','violet','magenta','gray','black']
 
 class OwnerOnly(UserPassesTestMixin):
+    # 2023.10.23 所有者であるか否かを検証する。test_fuc()の返り値がTrueであれば所有者と判定
     def test_func(self):
-        location_instance = self.get_object()
-        return location_instance.user == self.request.user
+        # Compare self.request.user and location_instance.user
+        location_instance = self.get_object() # type: ignore
+        # 2023.10.24 tentative
+        # print("views#60_self.request.user = ", self.request.user) # type: ignore
+        # print("views#61_location_instance.user = ", location_instance.user)
+        
+        return location_instance.user == self.request.user # type: ignore
     
     def handle_no_permission(self):
-        messages.error(self.request,"You can edit and delete only for your's.")
-        return redirect("main:location_detail", pk=self.kwargs["pk"]) 
+        # 2023.10.24 tentative
+        pk=self.kwargs["pk"] # type: ignore
+        # print("views#68_pk = ", pk)
+        # print("views#69_user = ", self.request.user) # type: ignore
+        # print("views#70_user.pk = ", self.request.user.pk) # type: ignore
+        messages.error(self.request,f"情報の更新および削除ができるのは所有者のみです！: {pk}") # type: ignore
+        # return redirect("main:location_detail", pk=self.kwargs["pk"])  # type: ignore
+        return redirect("main:location_detail", pk)
 
 # --- Main index view --------------------------------------------------------------
 # Top view, you can select a target site for remote monitoring
@@ -66,17 +78,18 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     model=Location
     
     def get_queryset(self):
-        # ログインしているuser情報を取得する
-        user=self.request.user
+        # Get the logged in user's information
+        login_user=self.request.user
         # 空のクエリーを設定する
         location_list = Location.objects.none()        
         # ログインユーザーに許可されたQuery情報を渡す
-        if user.is_authenticated:
-            if 'fujico@kfjc.co.jp' in user.email: # type: ignore
+        if login_user.is_authenticated:
+            if 'fujico@kfjc.co.jp' in login_user.email: # type: ignore
                 location_list = Location.objects.all()
             else:
-                location_list = Location.objects.filter(name=user.profile.belongs) # type: ignore
-        return location_list
+                location_list = Location.objects.filter(name=login_user.profile.belongs) # type: ignore
+                # location_list = Location.objects.filter(location.id = user.profile) # type: ignore
+        return location_list.order_by('location.id')
 
 # --- Registered users' view --------------------------------------------------------------
 # 2023.10.23 display the user's profile
@@ -113,16 +126,16 @@ class LocationListView(LoginRequiredMixin, generic.ListView):
         if "fujico@kfjc.co.jp" in login_user.email: # type: ignore
             # 管理者ログインなのでurlにpkはない！
             location_list = Location.objects.all()
-            message = "管理者ログインです！"
+            message = "管理者ログイン！"
         else:
             # 登録ユーザーのログイン、urlからpk情報を取得する
-            pk = self.kwargs['pk']  # This "pk" indicates the location.pk and also site_id
-            message = "管理者ではありません、" + login_user.profile.username + "です。user.pkは" + str(pk) + "で、profileの所属は" + login_user.profile.belongs + "です。" # type: ignore
+            # pk = self.kwargs['pk']  # This "pk" indicates the location.pk and also site_id
+            message = "Not 管理者/" + login_user.profile.username + "(" + login_user.profile.belongs + "所属)" # type: ignore
             # 2023.10.23 Select the correct query of login_user's with login_user.profile.belongs
             location_list = Location.objects.filter(name = login_user.profile.belongs) # type: ignore
                 
         context = {
-            'location_list': location_list,
+            'location_list': location_list.order_by('location.created_date'),
             'message': message,
             'login_user': login_user
         }
@@ -136,7 +149,15 @@ class LocationDetailView(LoginRequiredMixin, generic.DetailView):
     
     # 2023.10.23 It seems ok if not below codes
     def get_object(self):
-        return super().get_object()
+        location = super().get_object()
+        
+        # print('super().get_object() = ',tmp)
+        # print('location.user = ',location.user)
+        # print('login_user = ',self.request.user)
+        # print('location = ', type(location))
+        
+        # return super().get_object()
+        return location
 
 # --- Location Update view --------------------------------------------------------------
 # Update location's information
@@ -144,11 +165,11 @@ class LocationUpdateModelFormView(OwnerOnly,generic.UpdateView):
     template_name = "main/location_form.html"
     form_class = LocationForm
     success_url = reverse_lazy("main:location_list")
-    # Following get_queryset() is mandatory required.
-    # in case of using a FormView
+    
     def get_queryset(self):
+        # in case of using a FormView, this function: get_queryset() is mandatory required 
         qs = Location.objects.all()
-        # print("qs = ", qs)
+        # print("view#172_qs = ", qs)
         return qs
     
     # Update updated_date
@@ -157,23 +178,7 @@ class LocationUpdateModelFormView(OwnerOnly,generic.UpdateView):
         location.updated_date = timezone.now()
         location.save()
         return super().form_valid(form)
-"""
-Another way
-class LocationUpdateView(LoginRequiredMixin,generic.UpdateView):
-class LocationUpdateView(generic.UpdateView):
-    template_name = 'main/location_update.html'
-    model = Location
-    # form_class = LocationForm
-    fields = ('name', 'memo',)
-    success_url = reverse_lazy('main:location_list')
- 
-    def form_valid(self, form):
-        location = form.save(commit=False)
-        # location.author = self.request.user
-        location.updated_date = timezone.now()
-        location.save()
-        return super().form_valid(form)
-"""
+
 # --- Location create view --------------------------------------------------------------
 # Create a new location's information
 class LocationCreateModelFormView(LoginRequiredMixin,generic.CreateView):
@@ -181,38 +186,22 @@ class LocationCreateModelFormView(LoginRequiredMixin,generic.CreateView):
     form_class = LocationForm
     success_url = reverse_lazy("main:location_list")
     
-    # user情報を取得する
+    # 2023.10.24 Get the logged in user information
     def get_form_kwargs(self):
         kwgs=super().get_form_kwargs()
+        # 2023.10.24 this request.user means logged in user
         kwgs["user"]=self.request.user
-        print('user = ', self.request.user)
-        print('user.pk = ', self.request.user.pk)
-        print('user.belongs = ', self.request.user.profile.belongs)
-        # print('location.objects = ', location.objects)
+        # 2023.10.24 at this moment, it doesn't have any location objects
         return kwgs
-    
-    # def get_queryset(self):
-    #     qs = Location.objects.all()
-    #     print("qs = ", qs)
-    #     return qs
     
     # # Update updated_date
     # def form_valid(self, form):
     #     location = form.save(commit=False)
-    #     # location.updated_date = timezone.now()
+    #     location.name = "B株式会社"
     #     location.created_date = timezone.now()
     #     location.save()
     #     return super().form_valid(form)
     
-
-    
-    # このviewではデータの取り込み、保存も一括して行われるので以下はいらない。  
-    # # Received and saved data 
-    # def form_valid(self, form):
-    #     data = form.cleaned_data    # 入力したデータを辞書型で取り出す
-    #     obj=Location(**data)        # 入力したデータでオブジェクトを作成し保存する
-    #     obj.save()
-    #     return super().form_valid(form)
 """
 Another way to create
 class LocationCreateView(LoginRequiredMixin,generic.CreateView):
@@ -230,6 +219,15 @@ class LocationCreateView(LoginRequiredMixin,generic.CreateView):
         location.save()
         return super().form_valid(form)
 """
+
+# --- Location delete view --------------------------------------------------------------
+# Location delete view
+# class LocationDeleteView(generic.DeleteView):
+class LocationDeleteView(OwnerOnly,generic.DeleteView):
+    template_name = 'main/location_delete.html'
+    model = Location
+    # form_class=LocationForm
+    success_url = reverse_lazy('main:location_list')
 
 # --- Chart drawing function --------------------------------------------------------------
 def line_charts(x_data,y_data,start,points,legend):
@@ -467,7 +465,7 @@ class DetailView(generic.ListView):
         if pointNum > 0:
             error = False
             # If there were some data, 
-            startPoint=sensor_list.order_by('id').first().id
+            startPoint=sensor_list.order_by('id').first().id # type: ignore
             #startPoint=sensor_list.order_by('id').first().id
             # Generate a graph data from sensor's measured_value   
             # Generate the table data including the device name and the most recent measured_data
@@ -512,7 +510,7 @@ class DetailView(generic.ListView):
 
             for i in range(pointNum):
                 # 課題：センサー番号がシリーズであることが前提のquery設定
-                y_tmp[startPoint-1+i]=data_list.filter(point_id=startPoint+i).order_by('measured_date')[:latest]
+                y_tmp[startPoint-1+i]=data_list.filter(point_id=startPoint+i).order_by('measured_date')[:latest] # type: ignore
 
                 for data in y_tmp[startPoint-1+i]:
                     ydata[startPoint-1+i].append(data.measured_value)
@@ -544,16 +542,8 @@ class DetailView(generic.ListView):
             }
         return render(request, 'main/detail.html', context)
 
-# --- Location delete view --------------------------------------------------------------
-# Location delete view
-class LocationDeleteView(OwnerOnly,generic.DeleteView):
-    template_name = 'main/location_delete.html'
-    model = Location
-    # form_class=LocationForm
-    success_url = reverse_lazy('main:location_list')
-
 # --- All sensors' view --------------------------------------------------------------
-# You can view the all sensors' listy
+# You can view the all sensors' list
 class SensorsAllListView(generic.ListView):
     template_name='main/sensors_all_list.html'
     model=Sensors
@@ -572,10 +562,10 @@ class SensorsAllListView(generic.ListView):
         # qs = Record.objects.search(query=q)
         if user.is_authenticated:
             if user == "admin.fujico@kfjc.co.jp":
-                print("user = ", user)
+                print("dummy_print = ", user)
             # qs = qs.filter(Q(public=True)|Q(user=self.request.user))
         else:
-            print("user = ", user)
+            print("dummy_print = ", user)
             # qs = qs.filter(public=True)
         # the selected records are re-ordered  by "created_date"         
         # qs = qs.order_by("created_date")[:7]
@@ -594,7 +584,7 @@ class SensorsLocationCreateView(generic.CreateView):
     def get_form_kwargs(self):
         kwgs=super().get_form_kwargs()
         kwgs["pk"]=self.kwargs
-        print('pk = ', kwgs['pk'])
+        # print('pk = ', kwgs['pk'])
         return kwgs
 
 # --- Sensor list view --------------------------------------------------------------

@@ -23,7 +23,7 @@ class SuperUserOnly(UserPassesTestMixin):
     def test_func(self):
         profile_obj = self.get_object() # type: ignore
         login_user = self.request.user # type: ignore
-        print("login_user = ",login_user)
+        # print("login_user = ",login_user)
         try:
             return profile_obj == self.request.user.profile # type: ignore
         except:
@@ -32,7 +32,7 @@ class SuperUserOnly(UserPassesTestMixin):
     def handle_no_permission(self,login_user):
         # messages.error(self.request,"You can edit and delete only for your's.")
         pk=self.kwargs["pk"] # type: ignore
-        print("pk = ",pk)
+        # print("pk = ",pk)
         if login_user.admin:
             return redirect("main:profile-update", pk=self.kwargs["pk"]) # type: ignore
             

@@ -21,7 +21,7 @@ class UserTestCase(TestCase):
         self.email_obj.verified = True
         self.email_obj.save()
 
-    # singupページからのレスポンスが正しいか？
+    # signupページからのレスポンスが正しいか？
     def test_signup(self):
         self.assertEqual(self.res.status_code, 302)
         self.assertEqual(self.res.url, "/accounts/confirm-email/")
@@ -86,9 +86,7 @@ class AdapterTestCase(TestCase):
         self.request = RequestFactory()
         self.email = "test@kfjc.co.jp"
         self.password = "somepass"
-        self.res = self.client.post(signup_url, {"email": self.email, 
-                                                 "password1": self.password, 
-                                                 "password2": self.password})
+        self.res = self.client.post(signup_url, {"email": self.email, "password1": self.password, "password2": self.password})
         self.user_obj = User.objects.first()
         self.email_obj = self.user_obj.emailaddress_set.first() # type: ignore
         self.email_obj.verified = True

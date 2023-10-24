@@ -12,36 +12,42 @@ class LocationForm(forms.ModelForm):
         model=Location
         # fields="__all__"
         # fields=('name','memo',)
-        # exclude=["user", "name"]
         exclude=["user"]
     
     # viewで取得したuser情報を受け取る    
-    def __init__(self,user=None, *args, **kwargs):
+    def __init__(self, user = None, *args, **kwargs):
         for field in self.base_fields.values():
-            # field.name = "???"
+            # 2023.10.24 Expand the field data as location.name, location.memo and location.updated_date
+            # In case of "all", User(login_user?) and as same as the above.
             field.widget.attrs.update({"class":"form-control"})
+        # 2023.10.24 user = None, because the view function didn't get the user
         self.user=user
         super().__init__(*args, **kwargs)
     
-    # 受け取ったuser情報を保存する
     def save(self, commit=True):
-        location_obj=super().save(commit=False)
+        # 2023.10.24 save the location object which get from ~.
+        location_obj=super().save(commit=False) 
         if self.user:
+            # 2023.10.24 if the objects are belong to logged in user
             location_obj.user=self.user
-            # location_obj.name=self.user.profile.belongs
+            # 2023.10.24 add phrase
+            # location_obj.name=self.user.belongs
         if commit:
             location_obj.save()
         return location_obj
 
 # LocationForm class        
-class LocationFormClass(forms.Form):
-    name = forms.CharField()
-    memo = forms.CharField(widget=forms.Textarea())
- 
-    # def __init__(self, *args, **kwargs):
-    #     for field in self.base_fields.values():
-    #         field.widget.attrs.update({"class":"form-control"})
-    #     super().__init__(*args, **kwargs)
+# 2023.10.24 Is this necessary?
+# class LocationFormClass(forms.Form):
+#     name = forms.CharField()
+#     memo = forms.CharField(widget=forms.Textarea())
+
+#     # 2023.10.24 Already commented out
+#     # def __init__(self, *args, **kwargs):
+#     #     for field in self.base_fields.values():
+#     #         field.widget.attrs.update({"class":"form-control"})
+#     #     super().__init__(*args, **kwargs)
+
 
 # Sensors model form
 class SensorsForm(forms.ModelForm):

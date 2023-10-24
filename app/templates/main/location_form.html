@@ -1,11 +1,14 @@
 {% extends "main/main_base.html" %}
 {% block title %}
     {% if location %}
+    <!-- 2023.10.24 locationオブジェクトが存在すれば編集、update -->
         既存サイトの編集
     {% else %}
-        サイトの新規作成
+    <!-- 2023.10.24 locationオブジェクトがなければ作成、create -->
+    サイトの新規作成
     {% endif %}
 {% endblock %}
+
 {% block content %}
 <div class="container my-3" style="max-width:700px;">
     <form method="POST"> 
