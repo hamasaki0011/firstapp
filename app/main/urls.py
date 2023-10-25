@@ -15,14 +15,14 @@ urlpatterns=[
     path('detail/<int:pk>/', views.DetailView.as_view(), name='detail'),
     # Location list view
     path('location/list', views.LocationListView.as_view(), name='location_list'),
-    path('location/list/<int:pk>/', views.LocationListView.as_view(), name='location_list'),
-    # Location list view
-    # path('location/select', views.LocationSelectView.as_view(), name='location_select'),
-    # Detail view
+    # 2023.10.25 Is it ok to remove below
+    # path('location/list/<int:pk>/', views.LocationListView.as_view(), name='location_list'),
+
+    # Location detail view
     path('location/detail/<int:pk>/', views.LocationDetailView.as_view(), name='location_detail'),
     # Location create view
-    # path('location/create/<int:pk>/', views.LocationCreateModelFormView.as_view(), name='location_create'),
     path('location/create/', views.LocationCreateModelFormView.as_view(), name='location_create'),
+    # path('location/create/<int:pk>/', views.LocationCreateModelFormView.as_view(), name='location_create'),
     # Location update view
     path('location/update/<int:pk>/', views.LocationUpdateModelFormView.as_view(), name='location_update'),    
     # Location delete view
@@ -30,14 +30,17 @@ urlpatterns=[
     
     # All sensors list view
     path('sensors/all/list/', views.SensorsAllListView.as_view(), name='sensors_all_list'),
-    # Sensors list view with pk
-    path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensors_each_list'),
-    # Sensors detail view
-    path('sensors/detail/c/', views.SensorsDetailView.as_view(), name='sensors_detail'),
     # Sensors create view
     path('sensors/create/', views.SensorsCreateModelFormView.as_view(), name='sensors_create'),
-    # path('sensors/create/', views.SensorsCreateView.as_view(), name='sensors_create'),
-    path('sensors/location/create/<int:pk>/', views.SensorsLocationCreateView.as_view(), name='sensors_location_create'),
+    path('sensors/create/<int:pk>/', views.SensorsCreateModelFormView.as_view(), name='sensors_create'),
+    # path('sensors/location/create/<int:pk>/', views.SensorsLocationCreateView.as_view(), name='sensors_location_create'),
+    
+    # Sensors list view with pk
+    # path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensors_each_list'),
+    
+    # 2023.10.25 this page is not used
+    # Sensors detail view
+    path('sensors/detail/', views.SensorsDetailView.as_view(), name='sensors_detail'),
     # Sensors update view
     path('sensors/update/<int:pk>/', views.SensorsUpdateModelFormView.as_view(), name='sensors_update'),
     # Sensor's delete view

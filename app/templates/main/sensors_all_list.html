@@ -9,14 +9,12 @@
   <div>
     <h3>センサー全体一覧(登録順)</h3>
   </div>
-  <div>  
-      {% for sensors in sensors_list %}
-          <table class="table caption-top table-bordered border-dark">
+  <div>
+    <table class="table caption-top table-bordered border-dark">
       <!--<caption>センサー全体の一覧</caption>-->
-      {{ sensors.site.name }} 様の現場
       <thead class="table-primary table-bordered border-dark">
         <tr>
-          <!--<th scope="col">現場</th>-->
+          <th scope="col">現場</th>
           <th scope="col">センサー名</th>
           <th scope="col">メモ</th>
           <th scope="col">更新日</th>
@@ -24,10 +22,12 @@
           <th scope="col">編集</th>
         </tr>
       </thead>
+      {% for sensors in sensors_list %}
       <tbody>
         <tr>
+          <td colspan="1">{{ sensors.site.name}}</td>
           <td colspan="1">{{ sensors.device}}</td>
-          <td colspan="1">{{ sensors.note }}</td>
+          <td colspan="1">site.pk: {{ sensors.site.pk }} {{ sensors.note }}</td>
           <td colspan="1">{{ sensors.updated_date }}</td>
           <td colspan="1">{{ sensors.created_date }}</td>
           <td>
