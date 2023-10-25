@@ -61,7 +61,6 @@ class Sensors(models.Model):
         verbose_name_plural='センサー一覧'
     
     site=models.ForeignKey(Location, verbose_name='現場', on_delete=models.CASCADE)
-    # local=models.ForeignKey(User, verbose_name='測定点', on_delete=models.CASCADE)
     device=models.CharField(verbose_name='センサー', max_length=127, default='',blank=True,null=True)
     note=models.CharField(verbose_name='補足', max_length=255,default='',blank=True,null=True)
     created_date=models.DateTimeField(verbose_name='作成日', auto_now_add=True)

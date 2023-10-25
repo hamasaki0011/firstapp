@@ -27,10 +27,10 @@
             {% endfor %}
                 <br>                
                 {%if 'fujico@kfjc.co.jp' in user.email %}
-                    <a class="btn btn-primary" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>現場設定を追加</a></p>
-                    <p>※管理者権限で全リストを表示</P>
+                    <a class="btn btn-primary" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>現場設定を追加(※管理者権限で全リストを表示)</a></p>
                 {%endif%}
-                <p><a class="btn btn-warning" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>センサーを設定</a></p>
+                <p><a class="btn btn-warning" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>センサーを設定(※管理者権限で全リストを表示)</a></p>
+                
     
         {%endif%}
     </div><br>

@@ -36,7 +36,7 @@ urlpatterns=[
     # path('sensors/location/create/<int:pk>/', views.SensorsLocationCreateView.as_view(), name='sensors_location_create'),
     
     # Sensors list view with pk
-    # path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensors_each_list'),
+    path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensors_each_list'),
     
     # 2023.10.25 this page is not used
     # Sensors detail view

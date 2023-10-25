@@ -611,28 +611,28 @@ class SensorsCreateView(generic.CreateView):
 
 # --- Sensor list view --------------------------------------------------------------
 # You can view the each site' sensors list
-# class SensorsEachListView(generic.ListView):
-#     template_name='main/sensors_each_list.html'
-#     model=Sensors
+class SensorsEachListView(generic.ListView):
+    template_name='main/sensors_each_list.html'
+    model=Sensors
 
-#     # urlのpkを取得してクエリを生成する
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         pk = self.kwargs['pk']  # This "pk" indicates the site_id and also location.id 
-#         sensors_list = Sensors.objects.filter(site_id = pk) # pkを指定してデータを絞り込む
+    # urlのpkを取得してクエリを生成する
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs['pk']  # This "pk" indicates the site_id and also location.id 
+        sensors_list = Sensors.objects.filter(site_id = pk) # pkを指定してデータを絞り込む
         
-#         # Put message whether adapt query is there or not
-#         if sensors_list.first() is not None:
-#             message = "There are some query data"
-#         else:
-#             message = "センサーを追加してください！"
+        # Put message whether adapt query is there or not
+        if sensors_list.first() is not None:
+            message = "There are some query data"
+        else:
+            message = "センサーを追加してください！"
             
-#         context = {
-#             'sensors_list': sensors_list,
-#             'location': Location.objects.get(id = pk),
-#             'msg': message,
-#         }
-#         return context
+        context = {
+            'sensors_list': sensors_list,
+            'location': Location.objects.get(id = pk),
+            'msg': message,
+        }
+        return context
     
     # Queryを取得する
     # def get_queryset(self, **kwargs): 
