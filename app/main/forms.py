@@ -70,16 +70,27 @@ class SensorsForm(forms.ModelForm):
             field.widget.attrs.update({"class":"form-control"})
         self.place=place
         super().__init__(*args, **kwargs)
-    
-    # # 受け取ったuser情報を保存する
-    # def save(self,commit=True):
-    #     sensors_obj=super().save(commit=False)
-    #     if self.place:
-    #         sensors_obj.place=self.place
-    #     if commit:
-    #         sensors_obj.save()
-    #     return sensors_obj
-    
+
+# class SensorsEachForm(forms.ModelForm):
+#     class Meta:
+#         model=Sensors
+#         # fields=('device', 'note',)
+#         # fields=('site', 'device', 'note',)
+#         fields="__all__"
+#         # exclude=["site"]
+        
+#         site = forms.ModelChoiceField(
+#             queryset=Sensors.objects.none(), #空のクエリセット
+#         widget=forms.widgets.Select
+#         )
+
+#     # # viewで取得したplace情報を受け取る
+#     def __init__(self, place=None, *args, **kwargs):    
+#         for field in self.base_fields.values():
+#             field.widget.attrs.update({"class":"form-control"})
+#         self.place=place
+#         super().__init__(*args, **kwargs)
+
 class SensorsFormClass(forms.Form):
     name = forms.CharField()
     memo = forms.CharField(widget=forms.Textarea())

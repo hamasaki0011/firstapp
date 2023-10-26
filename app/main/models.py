@@ -86,13 +86,11 @@ class Result(models.Model):
 
 
     def __str__(self):
-        # return "("+ self.place.name + ")" + "センサー: " + self.point.device + " 日付・時間: " +  str(self.measured_at) + " 測定値: " + str(self.data_value)
         res: str
         if self.point.device is not None:
             res = self.point.device + str(self.measured_value)+ " 日付・時間: " +  str(self.measured_date)
         else:
-            res = str(self.measured_value)+ " 日付・時間: " +  str(self.measured_date) 
-        
+            res = str(self.measured_value)+ " 日付・時間: " +  str(self.measured_date)         
         # return self.point.device + str(self.measured_value)+ " 日付・時間: " +  str(self.measured_date)
         return res  
 

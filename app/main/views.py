@@ -51,14 +51,11 @@ logger = logging.getLogger('development')
 COLOR=['darkturquoise','orange','green','red','blue','brown','violet','magenta','gray','black']
 
 class OwnerOnly(UserPassesTestMixin):
-    # 2023.10.23 所有者であるか否かを検証する。test_fuc()の返り値がTrueであれば所有者と判定
+    # 2023.10.23 Check whether user who logged in is the owner or not.
+    # If that is owner, test_func() will return 'True'.
     def test_func(self):
         # Compare self.request.user and location_instance.user
         location_instance = self.get_object() # type: ignore
-        # 2023.10.24 tentative
-        # print("views#60_self.request.user = ", self.request.user) # type: ignore
-        # print("views#61_location_instance.user = ", location_instance.user)
-        
         return location_instance.user == self.request.user # type: ignore
     
     def handle_no_permission(self):
@@ -78,11 +75,11 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     model=Location
     
     def get_queryset(self):
-        # Get the logged in user's information
+        # 2023.10.26 Get the logged in user's information.
         login_user=self.request.user
-        # 空のクエリーを設定する
+        # 2023.10.26 Set a vacant query as the location_list.
         location_list = Location.objects.none()        
-        # ログインユーザーに許可されたQuery情報を渡す
+        # 2023.10.26 Pass the correct query to logged in user.
         if login_user.is_authenticated:
             if 'fujico@kfjc.co.jp' in login_user.email: # type: ignore
                 location_list = Location.objects.all()
@@ -546,53 +543,34 @@ class SensorsAllListView(LoginRequiredMixin, generic.ListView):
 
 # --- sensor create view --------------------------------------------------------------
 # Create sensor'
-# このページで現場がChoiceファームになっているのが気に入らない！
-class SensorsCreateModelFormView(generic.CreateView):
+class SensorsCreateModelFormView(LoginRequiredMixin, generic.CreateView):
     template_name = "main/sensors_create.html"
     form_class = SensorsForm
     # SensorsForm.fields['site'].queryset = Sensors.objects.filter(pk=3)
     success_url = reverse_lazy("main:sensors_all_list")
     
     # 2023.10.11　site情報をview関数から取得する必要がある
+    # place/user情報を取得する
+    # def get_form_kwargs(self, place = None, **kwargs):
+    def get_form_kwargs(self, *args, **kwargs):
+        kwgs=super().get_form_kwargs(*args, **kwargs)
+        login_user = self.request.user
         
-    # place情報を取得する
-    # def get_form_kwargs(self):
-    #     kwgs=super().get_form_kwargs()
-    #     # kwgs["place"]=self.place # type: ignore
-    #     print('self = ',self.get_context_data) # type: ignore
-    #     return kwgs
-    
-# Create a new Sensor place information view
-# 2023.10.5 tentatively omitted
-# class SensorsCreateModelFormView(generic.CreateView):
-#     template_name = "main/sensors_create.html"
-#     form_class = SensorsForm
-#     success_url = reverse_lazy("main:sensor_list")
-    
-    # place情報を取得する
-    # def get_form_kwargs(self):
-    #     kwgs=super().get_form_kwargs()
-    #     kwgs["place"]=self.place
-    #     return kwgs
-    
-"""Another way to create
-# class SensorsCreateView(LoginRequiredMixin,generic.CreateView):
-class SensorsCreateView(generic.CreateView):
-    template_name='main/sensors_create.html'
-    model=Sensors
-    # form_class=LocationForm
-    success_url=reverse_lazy('main:sensors_list')
-    
-    # Received and saved data 
-    def form_valid(self, form):
-        sensors = form.save(commit=False)
-        # sensors.author = self.request.user
-        sensors.created_date = timezone.now()
-        sensors.updated_date = timezone.now()
-        sensors.save()
-        return super().form_valid(form)
-"""
+        if 'fujico@kfjc.co.jp' in login_user.email: # type: ignore
+            print('管理者なので、選択式')
+        else:
+            # 2023.10.26 The number of location where request user is belonging. 
+            location_id = Location.objects.filter(name = login_user.profile.belongs).first().id # type: ignore
+            # 2023.10.26 Initialize site form with the above location_id number.
+            kwgs['initial'] = {'site': location_id} # type: ignore
 
+        return kwgs
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print('view#565_context = ', context)
+        return context
+    
 # --- Sensor' location create view --------------------------------------------------------------
 # You can view the each site' sensors create
 # class SensorsLocationCreateView(generic.CreateView):

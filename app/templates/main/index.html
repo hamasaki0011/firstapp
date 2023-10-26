@@ -16,7 +16,7 @@
                 <p>管理者でログイン：</p>
                 <p><a class="btn btn-primary" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>遠隔監視現場を登録</a></p>
             {%else%}
-                <p><a class="btn btn-danger" href="#"><span class="glyphicon glyphicon-list"></span>まだ設定が登録されていません、連絡をお待ちください。</a></p>
+                <p><a class="btn btn-danger" href="#"><span class="glyphicon glyphicon-list"></span>まだ設定登録されていません、連絡をお待ちください。</a></p>
                 <p>登録ユーザーでログイン: (user.pkで次頁に遷移)</p>
             {%endif%}
         {%else%}
@@ -25,13 +25,18 @@
                 <p><a class="form-control btn btn-info" href="{% url 'main:detail' location.pk %}">{{ location.name }} (Location.pk: {{ location.pk }})</a></p>
                 <p>【Memo】{{ location.memo }}</p>
             {% endfor %}
-                <br>                
-                {%if 'fujico@kfjc.co.jp' in user.email %}
-                    <a class="btn btn-primary" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>現場設定を追加(※管理者権限で全リストを表示)</a></p>
-                {%endif%}
-                <p><a class="btn btn-warning" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>センサーを設定(※管理者権限で全リストを表示)</a></p>
+            <br>                
+            {%if 'fujico@kfjc.co.jp' in user.email %}
+                location.id: {{location_list.first.id}}
+                <p><a class="btn btn-secondary" href="{% url 'main:location_create' %}"><span class="glyphicon glyphicon-list"></span>現場設定を追加(※管理者権限でのみ操作可能)</a></p>
+                <p><a class="btn btn-warning" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>各現場のセンサー設定を確認(※全リスト表示)</a></p>
+                <p><a class="btn btn-secondary" href="{% url 'main:sensors_create' location_list.first.id %}"><span class="glyphicon glyphicon-list"></span>各現場のセンサーを設定(※管理者権限で実行)</a></p>
+            {%else%}
+                <p><a class="btn btn-secondary" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>センサー設定を確認</a></p>
+                location.id: {{location_list.first.id}}
+                <p><a class="btn btn-warning" href="{% url 'main:sensors_create' location_list.first.id %}"><span class="glyphicon glyphicon-list"></span>センサー設定を追加</a></p>
+            {%endif%}
                 
-    
         {%endif%}
     </div><br>
     {% if 'fujico@kfjc.co.jp' not in user.email %}
