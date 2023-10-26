@@ -25,9 +25,9 @@
       {% for sensors in sensors_list %}
       <tbody>
         <tr>
-          <td colspan="1">{{ sensors.site.name}}</td>
-          <td colspan="1">{{ sensors.device}}</td>
-          <td colspan="1">site.pk: {{ sensors.site.pk }} {{ sensors.note }}</td>
+          <td colspan="1">{{ sensors.site.name}}(site.pk: {{ sensors.site.pk }})</td>
+          <td colspan="1">(sensors.pk: {{sensors.pk}}) {{ sensors.device}}</td>
+          <td colspan="1">{{ sensors.note }}</td>
           <td colspan="1">{{ sensors.updated_date }}</td>
           <td colspan="1">{{ sensors.created_date }}</td>
           <td>
@@ -41,9 +41,9 @@
       
     </table>
   </div>
-  location.id: {{location_list.first.id}}
+  location.id: {{sensors_list.first.id}}
   <div class="mt-3 d-flex justify-content-end">
-    <a class="form-control btn btn-primary" href="{% url 'main:sensors_create' %}"><span class="glyphicon glyphicon-log-in"></span> センサーを追加する</a>
+    <a class="form-control btn btn-primary" href="{% url 'main:sensors_create' sensors_list.first.id %}"><span class="glyphicon glyphicon-log-in"></span> センサーを追加する</a>
   </div>
   <br>
 </div>

@@ -41,7 +41,7 @@ class User(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
-    company = models.CharField(max_length=100, blank=True, null=True, verbose_name="所属")
+    # company = models.CharField(max_length=100, blank=True, null=True, verbose_name="所属")
     active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False) 
     admin = models.BooleanField(default=False)

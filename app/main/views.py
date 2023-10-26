@@ -104,7 +104,10 @@ class RegistUserView(LoginRequiredMixin, generic.ListView):
                 user_list=User.objects.all().order_by('pk').reverse()
             else:
                 # 2023.10.23 Modify only for the logged in user's profile information  
-                user_list=User.objects.filter(pk = login_user.pk)                   
+                # user_list=User.objects.filter(pk = login_user.pk)
+                user_list=User.objects.all().order_by('pk').reverse()
+                print('view#_user.pk' ,login_user.pk)
+                print('view#_user.belongs' ,login_user.profile.belongs)          # type: ignore
         
         return user_list
 
@@ -518,11 +521,6 @@ class DetailView(generic.ListView):
 class SensorsAllListView(LoginRequiredMixin, generic.ListView):
     template_name='main/sensors_all_list.html'
     model=Sensors
- 
-    # def get_form_kwargs(self):
-    #     kwgs=super().get_form_kwargs() # type: ignore
-    #     kwgs["user"]=self.request.user
-    #     return kwgs
     
     # 2023.10.25 get the user information and query, Sensors.objects
     def get_queryset(self):
@@ -534,7 +532,7 @@ class SensorsAllListView(LoginRequiredMixin, generic.ListView):
         if login_user.is_authenticated:
             if "fujico@kfjc.co.jp" in login_user.email: # type: ignore
                 # 2023.10.25 If logged in user is administrator, set all of Sensors.objects
-                sensors_list = Sensors.objects.all()
+                sensors_list = Sensors.objects.all().order_by("sensors.pk").order_by("site")
             else:
                 # 2023.10.25 Select the location.pk from Location objects which belongs to logged in user.
                 location_key = locations.filter(name = login_user.profile.belongs).first().id # type: ignore

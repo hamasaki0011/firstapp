@@ -47,5 +47,6 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = Profile
     # model = User
     form_class=ProfileUpdateForm
-    success_url = reverse_lazy("main:index")    
+    # success_url = reverse_lazy("main:index")
+    success_url = reverse_lazy("main:regist_user")    
 
