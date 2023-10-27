@@ -40,10 +40,10 @@ urlpatterns=[
     
     # Sensors individual list view with pk
     # 2023.10.25 this page is not used
-    path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensors_each_list'),
+    # path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensors_each_list'),
     
     # Sensors detail view
-    path('sensors/detail/', views.SensorsDetailView.as_view(), name='sensors_detail'),
+    path('sensors/detail/<int:pk>/', views.SensorsDetailView.as_view(), name='sensors_detail'),
     # Sensors update view
     
     path("profile/", include("accounts.urls")),

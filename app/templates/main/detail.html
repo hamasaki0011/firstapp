@@ -8,7 +8,7 @@
     <h4>
         <font color = "red"><p align = "center">{{ message }}</p></font><br>
         location.pk: {{location.pk}}の
-        <a class="btn btn-secondary" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録してください。</a>
+        <a class="btn btn-secondary" href="{% url 'main:sensors_create' location.pk %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録してください。</a>
     </h4><br>
 </div>
 {% else %}

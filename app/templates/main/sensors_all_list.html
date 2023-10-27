@@ -28,7 +28,7 @@
       <tbody>
         <tr>
           <td colspan="1">{{ sensors.site.name}}</td>
-          <td colspan="1">{{ sensors.device}}</td>
+          <td colspan="1"><a href="{% url 'main:sensors_detail' sensors.pk %}">{{ sensors.device}}</a></td>
           <td colspan="1">{{ sensors.note }}</td>
           <td colspan="1">{{ sensors.updated_date }}</td>
           <td colspan="1">{{ sensors.created_date }}</td>
@@ -48,7 +48,7 @@
       {%else%}
       <tbody>
         <tr>
-          <td colspan="1">None</td>
+          <td colspan="1">「None」は素っ気ない！{{sensors.site.name}}</td>
           <td colspan="1">None</td>
           <td colspan="1">None</td>
           <td colspan="1">None</td>

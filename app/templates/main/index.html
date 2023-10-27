@@ -28,15 +28,15 @@
             <br>                
             {%if 'fujico@kfjc.co.jp' in user.email %}
                 location.id: {{location_list.first.id}}
-                <p><a class="btn btn-warning" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>遠隔監視現場を確認(※全リスト表示)</a></p>    
-                <p><a class="btn btn-secondary" href="{% url 'main:location_create' %}"><span class="glyphicon glyphicon-list"></span>現場設定を追加(※管理者権限でのみ操作可能)</a></p>
-                <p><a class="btn btn-warning" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>各現場のセンサー設定を確認(※全リスト表示)</a></p>
-                <p><a class="btn btn-secondary" href="{% url 'main:sensors_create' location_list.first.id %}"><span class="glyphicon glyphicon-list"></span>各現場のセンサーを設定(※管理者権限で実行)</a></p><br>
-                <p><a class="btn btn-warning" href="{% url 'main:regist_user' %}"><span class="glyphicon glyphicon-list"></span>全ユーザー登録情報を確認(リスト表示)・編集</a></p>            
+                <p><a class="btn btn-warning" href="{% url 'main:location_list' %}"><span class="glyphicon glyphicon-list"></span>監視現場の設定・修正・確認　(※管理者権限必須)</a></p>    
+                <p><a class="btn btn-secondary" href="{% url 'main:location_create' %}"><span class="glyphicon glyphicon-list"></span>現場設定を追加　　　　　　　(※管理者権限必須)</a></p>
+                <p><a class="btn btn-warning" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>センサー設定全体を確認・修正(※管理者権限必須)</a></p>
+                <p><a class="btn btn-secondary" href="{% url 'main:sensors_create' location_list.first.id %}"><span class="glyphicon glyphicon-list"></span>各現場のセンサー設定追加　　(※管理者権限必須)</a></p><br>
+                <p><a class="btn btn-warning" href="{% url 'main:regist_user' %}"><span class="glyphicon glyphicon-list"></span>ユーザー登録情報を確認・編集(※管理者権限必須)</a></p>            
             {%else%}
                 location.id: {{location_list.first.id}}
-                <p><a class="btn btn-secondary" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>センサー設定確認(リスト表示)</a></p>
-                <p><a class="btn btn-warning" href="{% url 'main:sensors_create' location_list.first.id %}"><span class="glyphicon glyphicon-list"></span>センサー設定追加</a></p><br>
+                <p><a class="btn btn-secondary" href="{% url 'main:sensors_all_list' %}"><span class="glyphicon glyphicon-list"></span>センサー設定(リスト表示)</a></p>
+                <p><a class="btn btn-warning" href="{% url 'main:sensors_create' location_list.first.id %}"><span class="glyphicon glyphicon-list"></span>センサーを(直接)追加設定</a></p><br>
                 <p><a class="btn btn-warning" href="{% url 'main:regist_user' %}"><span class="glyphicon glyphicon-list"></span>ユーザー登録情報を確認・編集</a></p>            
             {%endif%}                
         {%endif%}

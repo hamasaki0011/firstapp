@@ -517,7 +517,7 @@ class DetailView(generic.ListView):
         return render(request, 'main/detail.html', context)
 
 # --- All sensors' view --------------------------------------------------------------
-# If you have signed in, you can view the all sensors' list
+# 2023.10.27 If you have signed in, you can view the all sensors' list
 class SensorsAllListView(LoginRequiredMixin, generic.ListView):
     template_name='main/sensors_all_list.html'
     model=Sensors
@@ -545,10 +545,10 @@ class SensorsAllListView(LoginRequiredMixin, generic.ListView):
                     message = "まだ、センサー設定されていません。センサーを設定してください。"
             else:
                 if sensors_list.first() is not None:
+                    # 2023.10.25 Select the location.pk from Location objects which belongs to logged in user.
                     location_key = locations.filter(name = login_user.profile.belongs).first().id # type: ignore
                     sensors_list = sensors_list.filter(site = location_key)
                     message = "センサー一覧(登録順)"
-                    # 2023.10.25 Select the location.pk from Location objects which belongs to logged in user.
                 else:
                     sensors_list = sensors.none()
                     message = "まだ、センサー設定されていません。センサーを設定してください。"
@@ -562,89 +562,60 @@ class SensorsAllListView(LoginRequiredMixin, generic.ListView):
         # return sensors_list.order_by("site")
         return context
     
-
-    # urlのpkを取得してクエリを生成する
-    # def get_context_data(self, pk = None, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['pk'] = pk
-    #     print('view#545_context = ', context)
-
-    #     if pk is not None:
-    #         print('view#550_pk = ', pk)
-    #     else:
-    #         print('view#552_pk is None')
-
-    #     sensors_list = Sensors.objects.filter(site_id = pk) # pkを指定してデータを絞り込む
-        
-    #     # Put message whether adapt query is there or not
-    #     if sensors_list.first() is not None:
-    #         message = "There are some query data"
-    #     else:
-    #         message = "センサーを追加してください！"
-            
-    #     context = {
-    #         'sensors_list': sensors_list,
-    #         'location': Location.objects.get(id = pk),
-    #         'msg': message,
-    #     }
-    #     return context
-
 # --- Sensor list view --------------------------------------------------------------
 # You can view the each site' sensors list
-class SensorsEachListView(generic.ListView):
-    template_name='main/sensors_each_list.html'
-    model=Sensors
+# class SensorsEachListView(generic.ListView):
+#     template_name='main/sensors_each_list.html'
+#     model=Sensors
 
-    # urlのpkを取得してクエリを生成する
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        pk = self.kwargs['pk']  # This "pk" indicates the site_id and also location.id 
-        sensors_list = Sensors.objects.filter(site_id = pk) # pkを指定してデータを絞り込む
+#     # urlのpkを取得してクエリを生成する
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         pk = self.kwargs['pk']  # This "pk" indicates the site_id and also location.id 
+#         sensors_list = Sensors.objects.filter(site_id = pk) # pkを指定してデータを絞り込む
         
-        # Put message whether adapt query is there or not
-        if sensors_list.first() is not None:
-            message = "There are some query data"
-        else:
-            message = "センサーを追加してください！"
+#         # Put message whether adapt query is there or not
+#         if sensors_list.first() is not None:
+#             message = "There are some query data"
+#         else:
+#             message = "センサーを追加してください！"
             
-        context = {
-            'sensors_list': sensors_list,
-            'location': Location.objects.get(id = pk),
-            'msg': message,
-        }
-        return context
+#         context = {
+#             'sensors_list': sensors_list,
+#             'location': Location.objects.get(id = pk),
+#             'msg': message,
+#         }
+#         return context
     
-    # Queryを取得する
-    # def get_queryset(self, **kwargs): 
-    #     context = super().get_context_data(**kwargs)
-    #     pk = self.kwargs['pk']
-    #     print("pk = ", pk)
-    #     object_list = Sensors.objects.filter(id = pk)
-    #     login_user = self.request.user
-    #     print("login_user =", login_user)
+#     # Queryを取得する
+#     # def get_queryset(self, **kwargs): 
+#     #     context = super().get_context_data(**kwargs)
+#     #     pk = self.kwargs['pk']
+#     #     print("pk = ", pk)
+#     #     object_list = Sensors.objects.filter(id = pk)
+#     #     login_user = self.request.user
+#     #     print("login_user =", login_user)
         
-    #     if object_list is None:
-    #         print("オブジェクトが登録されていません\r\n代わりにすべて表示します。")
+#     #     if object_list is None:
+#     #         print("オブジェクトが登録されていません\r\n代わりにすべて表示します。")
             
-    #     else:
-    #         print("なぜかオブジェクトがあります")
+#     #     else:
+#     #         print("なぜかオブジェクトがあります")
         
-    #     # # ユーザーがログインしていれば、リストを表示する
-    #     # if self.request.user.is_authenticated:
-    #     #     # print("site =", Sensors.site(user.id))  
-    #     #     qs = qs.filter(id = context['pk'])
-    #     #     print("qs =", qs)
-    #     #     # qs = qs.filter(Q(public=True)|Q(user=self.request.user))
-    #     # else:
-    #     #     print("user =", self.request.user)
-    #     #     # print("Sensors.site =", Sensors.site.location)
-    #     #     # qs = qs.filter(public=True)
-    #     # # # the selected records are re-ordered  by "created_date"         
-    #     # qs = qs.order_by("created_date")[:7]
-    #     qs = Sensors.objects.all()
-    #     return qs
-
-
+#     #     # # ユーザーがログインしていれば、リストを表示する
+#     #     # if self.request.user.is_authenticated:
+#     #     #     # print("site =", Sensors.site(user.id))  
+#     #     #     qs = qs.filter(id = context['pk'])
+#     #     #     print("qs =", qs)
+#     #     #     # qs = qs.filter(Q(public=True)|Q(user=self.request.user))
+#     #     # else:
+#     #     #     print("user =", self.request.user)
+#     #     #     # print("Sensors.site =", Sensors.site.location)
+#     #     #     # qs = qs.filter(public=True)
+#     #     # # # the selected records are re-ordered  by "created_date"         
+#     #     # qs = qs.order_by("created_date")[:7]
+#     #     qs = Sensors.objects.all()
+#     #     return qs
 
 # --- sensor create view --------------------------------------------------------------
 # Create sensor'
@@ -681,6 +652,18 @@ class SensorsCreateModelFormView(LoginRequiredMixin, generic.CreateView):
 class SensorsDetailView(generic.DetailView):
     template_name='main/sensors_detail.html'
     model=Sensors
+
+    def get_object(self):
+        sensors = super().get_object()
+        
+        # print('super().get_object() = ',tmp)
+        # print('location.user = ',location.user)
+        # print('login_user = ',self.request.user)
+        # print('location = ', type(location))
+        
+        # return super().get_object()
+        return sensors
+        
 # class SensorDeviceDetailView(generic.DetailView):
 #     def get(self,request, *args,**kwargs):
 #         id=SensorDevice.objects.get(pk=self.kwargs['pk'])
