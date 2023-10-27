@@ -33,17 +33,18 @@ urlpatterns=[
     # Sensors create view
     path('sensors/create/', views.SensorsCreateModelFormView.as_view(), name='sensors_create'),
     path('sensors/create/<int:pk>/', views.SensorsCreateModelFormView.as_view(), name='sensors_create'),
+    # Sensors update view
+    path('sensors/update/<int:pk>/', views.SensorsUpdateModelFormView.as_view(), name='sensors_update'),
+    # Sensors delete view
+    path('sensors/delete/<int:pk>/', views.SensorsDeleteView.as_view(), name='sensors_delete'),
     
-    # Sensors list view with pk
+    # Sensors individual list view with pk
+    # 2023.10.25 this page is not used
     path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensors_each_list'),
     
-    # 2023.10.25 this page is not used
     # Sensors detail view
     path('sensors/detail/', views.SensorsDetailView.as_view(), name='sensors_detail'),
     # Sensors update view
-    path('sensors/update/<int:pk>/', views.SensorsUpdateModelFormView.as_view(), name='sensors_update'),
-    # Sensor's delete view
-    path('sensors/delete/<int:pk>/', views.SensorsDeleteView.as_view(), name='sensors_delete'),
     
     path("profile/", include("accounts.urls")),
     

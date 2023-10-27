@@ -521,54 +521,74 @@ class DetailView(generic.ListView):
 class SensorsAllListView(LoginRequiredMixin, generic.ListView):
     template_name='main/sensors_all_list.html'
     model=Sensors
-    
-    # 2023.10.25 get the user information and query, Sensors.objects
-    def get_queryset(self):
+        
+    # 2023.10.25 get the user information and query, Sensors.objects；
+    # def get_queryset(self):
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
         # 2023.10.25 This case of self.request.user is logged in user
         login_user = self.request.user
-        sensors_list = Sensors.objects.none()
-        locations =Location.objects.all()
+        locations =Location.objects
+        location_key = 1
+        sensors = Sensors.objects
+        sensors_list = sensors.all()
+        message = " "
 
         if login_user.is_authenticated:
             if "fujico@kfjc.co.jp" in login_user.email: # type: ignore
-                # 2023.10.25 If logged in user is administrator, set all of Sensors.objects
-                sensors_list = Sensors.objects.all().order_by("sensors.pk").order_by("site")
+                if sensors_list.first() is not None:
+                    # 2023.10.25 If logged in user is administrator, set all of Sensors.objects
+                    sensors_list = sensors_list.order_by("sensors.pk").order_by("site")
+                    message = "センサー全体一覧(登録順)"
+                else:
+                    sensors_list = sensors.none()
+                    message = "まだ、センサー設定されていません。センサーを設定してください。"
             else:
-                # 2023.10.25 Select the location.pk from Location objects which belongs to logged in user.
-                location_key = locations.filter(name = login_user.profile.belongs).first().id # type: ignore
-                sensors_list = Sensors.objects.filter(site = location_key)
-        return sensors_list.order_by("site")
+                if sensors_list.first() is not None:
+                    location_key = locations.filter(name = login_user.profile.belongs).first().id # type: ignore
+                    sensors_list = sensors_list.filter(site = location_key)
+                    message = "センサー一覧(登録順)"
+                    # 2023.10.25 Select the location.pk from Location objects which belongs to logged in user.
+                else:
+                    sensors_list = sensors.none()
+                    message = "まだ、センサー設定されていません。センサーを設定してください。"
 
-# --- sensor create view --------------------------------------------------------------
-# Create sensor'
-class SensorsCreateModelFormView(LoginRequiredMixin, generic.CreateView):
-    template_name = "main/sensors_create.html"
-    form_class = SensorsForm
-    # SensorsForm.fields['site'].queryset = Sensors.objects.filter(pk=3)
-    success_url = reverse_lazy("main:sensors_all_list")
-    
-    # 2023.10.11　site情報をview関数から取得する必要がある
-    # place/user情報を取得する
-    # def get_form_kwargs(self, place = None, **kwargs):
-    def get_form_kwargs(self, *args, **kwargs):
-        kwgs=super().get_form_kwargs(*args, **kwargs)
-        login_user = self.request.user
-        kwgs['login_user'] = login_user
-        
-        if 'fujico@kfjc.co.jp' not in login_user.email: # type: ignore
-            # 2023.10.26 The number of location where request user is belonging. 
-            location_id = Location.objects.filter(name = login_user.profile.belongs).first().id # type: ignore
-            # 2023.10.26 Initialize site form with the above location_id number.
-            kwgs['initial'] = {'site': location_id} # type: ignore
-
-        return kwgs
-    
-    def get_context_data(self, **kwargs):
-        # Add user information for page context.
-        context = super().get_context_data(**kwargs)
-        context['login_user'] = self.request.user
+        context = {
+            'sensors_list': sensors_list,
+            'message': message,
+            'location': locations.get(id = location_key),
+            'location_key': location_key,
+        }
+        # return sensors_list.order_by("site")
         return context
     
+
+    # urlのpkを取得してクエリを生成する
+    # def get_context_data(self, pk = None, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['pk'] = pk
+    #     print('view#545_context = ', context)
+
+    #     if pk is not None:
+    #         print('view#550_pk = ', pk)
+    #     else:
+    #         print('view#552_pk is None')
+
+    #     sensors_list = Sensors.objects.filter(site_id = pk) # pkを指定してデータを絞り込む
+        
+    #     # Put message whether adapt query is there or not
+    #     if sensors_list.first() is not None:
+    #         message = "There are some query data"
+    #     else:
+    #         message = "センサーを追加してください！"
+            
+    #     context = {
+    #         'sensors_list': sensors_list,
+    #         'location': Location.objects.get(id = pk),
+    #         'msg': message,
+    #     }
+    #     return context
+
 # --- Sensor list view --------------------------------------------------------------
 # You can view the each site' sensors list
 class SensorsEachListView(generic.ListView):
@@ -624,6 +644,38 @@ class SensorsEachListView(generic.ListView):
     #     qs = Sensors.objects.all()
     #     return qs
 
+
+
+# --- sensor create view --------------------------------------------------------------
+# Create sensor'
+class SensorsCreateModelFormView(LoginRequiredMixin, generic.CreateView):
+    template_name = "main/sensors_create.html"
+    form_class = SensorsForm
+    # SensorsForm.fields['site'].queryset = Sensors.objects.filter(pk=3)
+    success_url = reverse_lazy("main:sensors_all_list")
+    
+    # 2023.10.11　site情報をview関数から取得する必要がある
+    # place/user情報を取得する
+    # def get_form_kwargs(self, place = None, **kwargs):
+    def get_form_kwargs(self, *args, **kwargs):
+        kwgs=super().get_form_kwargs(*args, **kwargs)
+        login_user = self.request.user
+        kwgs['login_user'] = login_user
+        
+        if 'fujico@kfjc.co.jp' not in login_user.email: # type: ignore
+            # 2023.10.26 The number of location where request user is belonging. 
+            location_id = Location.objects.filter(name = login_user.profile.belongs).first().id # type: ignore
+            # 2023.10.26 Initialize site form with the above location_id number.
+            kwgs['initial'] = {'site': location_id} # type: ignore
+
+        return kwgs
+    
+    def get_context_data(self, **kwargs):
+        # Add user information for page context.
+        context = super().get_context_data(**kwargs)
+        context['login_user'] = self.request.user
+        return context
+    
 # --- Sensors' detail view  --------------------------------------------------------------
 # You can view the each site' sensors detail
 class SensorsDetailView(generic.DetailView):
