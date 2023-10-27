@@ -104,8 +104,8 @@ class RegistUserView(LoginRequiredMixin, generic.ListView):
                 user_list=User.objects.all().order_by('pk').reverse()
             else:
                 # 2023.10.23 Modify only for the logged in user's profile information  
-                # user_list=User.objects.filter(pk = login_user.pk)
-                user_list=User.objects.all().order_by('pk').reverse()
+                user_list=User.objects.filter(pk = login_user.pk)
+                # user_list=User.objects.all().order_by('pk').reverse()
                 print('view#_user.pk' ,login_user.pk)
                 print('view#_user.belongs' ,login_user.profile.belongs)          # type: ignore
         
@@ -553,10 +553,9 @@ class SensorsCreateModelFormView(LoginRequiredMixin, generic.CreateView):
     def get_form_kwargs(self, *args, **kwargs):
         kwgs=super().get_form_kwargs(*args, **kwargs)
         login_user = self.request.user
+        kwgs['login_user'] = login_user
         
-        if 'fujico@kfjc.co.jp' in login_user.email: # type: ignore
-            print('管理者なので、選択式')
-        else:
+        if 'fujico@kfjc.co.jp' not in login_user.email: # type: ignore
             # 2023.10.26 The number of location where request user is belonging. 
             location_id = Location.objects.filter(name = login_user.profile.belongs).first().id # type: ignore
             # 2023.10.26 Initialize site form with the above location_id number.
@@ -565,26 +564,11 @@ class SensorsCreateModelFormView(LoginRequiredMixin, generic.CreateView):
         return kwgs
     
     def get_context_data(self, **kwargs):
+        # Add user information for page context.
         context = super().get_context_data(**kwargs)
-        print('view#565_context = ', context)
+        context['login_user'] = self.request.user
         return context
     
-# --- Sensor' location create view --------------------------------------------------------------
-# You can view the each site' sensors create
-# class SensorsLocationCreateView(generic.CreateView):
-#     template_name='main/sensors_location_create.html'
-#     # model=Sensors
-#     form_class = SensorsForm
-#     # SensorsForm.fields['site'].queryset = Sensors.objects.filter(pk=3)
-#     success_url = reverse_lazy("main:sensors_all_list")
-    
-#     # place情報を取得する
-#     def get_form_kwargs(self):
-#         kwgs=super().get_form_kwargs()
-#         kwgs["pk"]=self.kwargs
-#         # print('pk = ', kwgs['pk'])
-#         return kwgs
-
 # --- Sensor list view --------------------------------------------------------------
 # You can view the each site' sensors list
 class SensorsEachListView(generic.ListView):
@@ -672,10 +656,24 @@ class SensorsUpdateModelFormView(generic.UpdateView):
     form_class = SensorsForm
     success_url = reverse_lazy("main:sensors_all_list")
     
+    def get_form_kwargs(self, *args, **kwargs):
+        kwgs=super().get_form_kwargs(*args, **kwargs)
+        login_user = self.request.user
+        kwgs['login_user'] = login_user
+        
+        if 'fujico@kfjc.co.jp' not in login_user.email: # type: ignore
+            # 2023.10.26 The number of location where request user is belonging. 
+            location_id = Location.objects.filter(name = login_user.profile.belongs).first().id # type: ignore
+            # 2023.10.26 Initialize site form with the above location_id number.
+            kwgs['initial'] = {'site': location_id} # type: ignore
+
+        return kwgs
+    
     # Following get_queryset() is mandatory required.
     # in order to get place data
     def get_queryset(self):
         return Sensors.objects.all()
+    
     # Update updated_date
     def form_valid(self, form):
         sensors = form.save(commit=False)

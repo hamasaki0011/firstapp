@@ -2,6 +2,12 @@
 
 {% block content %}
 <div class="container my-3" style="max-width:700px;">
+<div class="container my-3" style="max-width:700px;">
+    {% if login_user.admin %}
+    <h4 align = center >登録済み現場を指定してセンサーを追加</h4><br>
+    {%else%}
+    <h4 align = center >{{login_user.profile.belongs}}様現場のセンサー追加設定</h4><br>
+    {%endif%}
     <form method="POST"> 
     {% csrf_token %}
     {{ form.as_p }}

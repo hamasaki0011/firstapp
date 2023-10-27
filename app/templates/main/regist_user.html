@@ -14,10 +14,12 @@
                 <th scope="col">E-Mail</th>
                 <th scope="col">緊急連絡先(任意)</th>
                 <th scope="col">最新のログイン</th>
-                <!--<th scope="col">ロケーション</th>-->
                 <!--<th scope="col">ログエントリー</th>-->
                 <th scope="col">active</th>
-                <!--<th scope="col">staff</th>-->
+                {% if request.user.admin %}
+                <th scope="col">staff</th>
+                <th scope="col">admin</th>
+                {% endif %}
                 <th>編集</th>
             </tr>
         </thead>
@@ -30,27 +32,39 @@
                 <td colspan="1">{{ user }}</td>
                 <td colspan="1">{{ user.profile.tel_number }}</td>
                 <td colspan="1">{{ user.last_login }}</td>
-                <!--<td colspan="1">{{ user.location }}</td>-->
                 <!--<td colspan="1">{{ user.logentry }}</td>-->
                 <td colspan="1" align="center">{{ user.active }}</td>
-                <!--<td colspan="1" align="center">{{ user.staff }}</td>-->
+                {% if request.user.admin %}
+                <td colspan="1" align="center">{{ user.staff }}</td>
+                <td colspan="1" align="center">{{ user.admin }}</td>
+                {% endif %}
                 <td>
-                    {% if request.user.admin or request.user == user %}
-                    <!--2023.9.27　登録ユーザー情報からuser.pkを取得してprofile編集画面に飛ぶ-->
                     <a href="{% url 'main:profile-update' user.pk %}" class="btn btn-primary btn-sm">情報修正</a>
-                    {% else %}
-                    <a href="#" class="btn btn-secondary btn-sm">更新権限なし</a>
+
+                    {% if request.user.admin or request.user == user%}
+                    <!--2023.9.27　登録ユーザー情報からuser.pkを取得してprofile編集画面に飛ぶ-->
                     {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </tbody>
-
         <tfoot class="table-bordered borderless">
+            <small><p>
+                <p>凡例：</p>
+                <p>active: 有効な登録ユーザー</p>
+                {% if request.user.admin %}
+                    <p>staff: 検討中</p>
+                    <p>admin: システム管理権限</p>
+                {%endif%}
+            </P></small>
         </tfoot>
     </table>
-    <pre>凡例：
-        active: 有効な登録ユーザー
-    </pre>
-    <br>
+    <small><p>
+        <a>凡例：</a>
+        <a>active: 有効な登録ユーザー, </a>
+        {% if request.user.admin %}
+        <a>staff: 検討中, </a>
+        <a>admin: システム管理権限</a>
+        {%endif%}
+    </P></small><br>
 {% endblock %}

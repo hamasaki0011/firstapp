@@ -33,7 +33,6 @@ urlpatterns=[
     # Sensors create view
     path('sensors/create/', views.SensorsCreateModelFormView.as_view(), name='sensors_create'),
     path('sensors/create/<int:pk>/', views.SensorsCreateModelFormView.as_view(), name='sensors_create'),
-    # path('sensors/location/create/<int:pk>/', views.SensorsLocationCreateView.as_view(), name='sensors_location_create'),
     
     # Sensors list view with pk
     path('sensors/each/list/<int:pk>/', views.SensorsEachListView.as_view(), name='sensors_each_list'),

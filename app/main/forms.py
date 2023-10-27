@@ -1,5 +1,6 @@
 from django import forms
-from .models import Location,Sensors,Result
+from .models import Location, Sensors, Result
+from accounts.models import User, Profile
 import os
 # import io, csv
 from django.core.exceptions import ValidationError
@@ -38,16 +39,9 @@ class LocationForm(forms.ModelForm):
 
 # LocationForm class        
 # 2023.10.24 Is this necessary?
-# class LocationFormClass(forms.Form):
-#     name = forms.CharField()
-#     memo = forms.CharField(widget=forms.Textarea())
-
-#     # 2023.10.24 Already commented out
-#     # def __init__(self, *args, **kwargs):
-#     #     for field in self.base_fields.values():
-#     #         field.widget.attrs.update({"class":"form-control"})
-#     #     super().__init__(*args, **kwargs)
-
+class LocationFormClass(forms.Form):
+    name = forms.CharField()
+    memo = forms.CharField(widget=forms.Textarea())
 
 # Sensors model form
 class SensorsForm(forms.ModelForm):
@@ -63,33 +57,19 @@ class SensorsForm(forms.ModelForm):
         widget=forms.widgets.Select
         )
 
-    # # viewで取得したplace情報を受け取る
-    def __init__(self, place=None, *args, **kwargs):    
-        # print("fields = ", self.base_fields.values())
+    # 2023.10.27 Receive the login_user information which view function gets.
+    # def __init__(self, place=None, *args, **kwargs):
+    def __init__(self, login_user = None, *args, **kwargs):    
         for field in self.base_fields.values():
             field.widget.attrs.update({"class":"form-control"})
-        self.place=place
-        super().__init__(*args, **kwargs)
-
-# class SensorsEachForm(forms.ModelForm):
-#     class Meta:
-#         model=Sensors
-#         # fields=('device', 'note',)
-#         # fields=('site', 'device', 'note',)
-#         fields="__all__"
-#         # exclude=["site"]
+        self.user = login_user
+        # print('form#66_self.user', login_user)
         
-#         site = forms.ModelChoiceField(
-#             queryset=Sensors.objects.none(), #空のクエリセット
-#         widget=forms.widgets.Select
-#         )
-
-#     # # viewで取得したplace情報を受け取る
-#     def __init__(self, place=None, *args, **kwargs):    
-#         for field in self.base_fields.values():
-#             field.widget.attrs.update({"class":"form-control"})
-#         self.place=place
-#         super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        if 'fujico@kfjc.co.jp' not in login_user.email: # type: ignore
+            #2023.10.26 Except for admin user does not edit the location field.
+            self.fields['site'].widget.attrs['readonly'] = 'readonly'
+            # self.fields['site'].widget.attrs['disabled'] = 'disabled'
 
 class SensorsFormClass(forms.Form):
     name = forms.CharField()
