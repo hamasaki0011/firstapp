@@ -2,13 +2,13 @@
 
 {% block content %}
 {% if error %}
+<!--　Because ｔhere are None data at this site, it will jump to sensor setting page -->
 <div class = "container"><br>
-    <h2 align = "center"><u>{{ location.name }} 様現場 (Location.pk: {{location.pk}}) (user.id: {{user.id}})</u></h2>
+    <h2 align = "center"><u>{{ location.name }} 様現場 (Location.pk: {{location.pk}})</u></h2>
     <br>
     <h4>
         <font color = "red"><p align = "center">{{ message }}</p></font><br>
-        location.pk: {{location.pk}}の
-        <a class="btn btn-secondary" href="{% url 'main:sensors_create' location.pk %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録してください。</a>
+        <P align = center ><a class="btn btn-secondary" href="{% url 'main:sensors_create' location.pk %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録できます。</a></p>
     </h4><br>
 </div>
 {% else %}

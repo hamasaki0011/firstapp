@@ -9,8 +9,7 @@
             </div>
             <div class="modal-body">
                 <form method="POST">{% csrf_token %}
-                    <p>location.pk: {{location.pk}}</p>
-                    <p>タイトル「{{ location.name }}」を削除します。
+                    <p>遠隔監視サイト「{{ location.name }}」の情報を削除します。
                     <p>削除すると、元に戻すことはできません。</p>
                     <p>よろしければ、再度削除ボタンを押してください。</p>
                 </form>

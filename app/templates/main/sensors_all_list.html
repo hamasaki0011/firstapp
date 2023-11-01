@@ -15,6 +15,7 @@
       <thead class="table-primary table-bordered border-dark">
         <tr>
           <th scope="col">現場</th>
+          <th scope="col">sensors.pk</th>
           <th scope="col">センサー名</th>
           <th scope="col">メモ</th>
           <th scope="col">更新日</th>
@@ -28,6 +29,7 @@
       <tbody>
         <tr>
           <td colspan="1">{{ sensors.site.name}}</td>
+          <td colspan="1">{{ sensors.pk}}</td>
           <td colspan="1"><a href="{% url 'main:sensors_detail' sensors.pk %}">{{ sensors.device}}</a></td>
           <td colspan="1">{{ sensors.note }}</td>
           <td colspan="1">{{ sensors.updated_date }}</td>

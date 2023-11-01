@@ -13,21 +13,20 @@
                 {{ location.name }} 様 <small>(location.pk {{ location.pk }})</small>
                 {{ self.request.user }}
             </h3>
-            <p class="card-text"><small>【メモ】</small> {{ location.memo }}</p>
-            <p>ここに所有するセンサーデバイス一覧を掲載したい</p>
-            <!--<p class="card-text">
-                センサーデバイス：({{login_user}})
-                {%for sensor in sensor_list%}
-                {{ sensor }}
+            <p class="card-text"><small>【メモ】</small> {{ location.memo }}</p><br>
+            <p class="card-text">
+                <p>センサーデバイス一覧：</P><br>
+                {%for sensor in sensors_list%}
+                <p>センサーID: {{sensor.pk}} ~ {{ sensor }}</p>
                 {%endfor%}
-            </p>-->
+            </p>
             <div class="mt-3 d-flex justify-content-end">
                 <a href="#" class="btn btn-default btn-sm">管理者以外更新/削除できません</a>
             </div>
         </div>
 
         <div class="card-footer">
-            <a href="{% url 'main:location_list' location.pk %}" class="btn btn-primary btn-sm">リスト表示に戻る</a>
+            <a href="{% url 'main:location_list' %}" class="btn btn-primary btn-sm">リスト表示に戻る</a>
         </div>
     </div>
 </div>
