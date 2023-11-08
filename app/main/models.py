@@ -77,10 +77,10 @@ class Result(models.Model):
         unique_together=(('point','measured_date',),)
         verbose_name='測定結果'
         verbose_name_plural='測定結果一覧'
-    place=models.ForeignKey(Location, verbose_name='場所', on_delete=models.CASCADE,default="") # type: ignore
-    point=models.ForeignKey(Sensors, verbose_name='センサー',on_delete=models.CASCADE)
-    measured_date=models.DateTimeField(verbose_name='測定日時',default=dt.strptime('2001-01-01 00:00:00','%Y-%m-%d %H:%M:%S'))
-    measured_value=models.FloatField(verbose_name='測定値',default=0.0,blank=True,null=True)
+    place=models.ForeignKey(Location, verbose_name='場所', on_delete=models.CASCADE, default = None)
+    point=models.ForeignKey(Sensors, verbose_name='センサー', on_delete=models.CASCADE, default = None)
+    measured_date=models.DateTimeField(verbose_name='測定日時', default=dt.strptime('2001-01-01 00:00:00','%Y-%m-%d %H:%M:%S'))
+    measured_value=models.FloatField(verbose_name='測定値', default=0.0, blank=True, null=True)
     created_date=models.DateTimeField(verbose_name='作成日', auto_now_add=True)
     updated_date=models.DateTimeField(verbose_name='更新日', blank=True, null=True)
 

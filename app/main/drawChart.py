@@ -4,7 +4,7 @@ from plotly.subplots import make_subplots
 # Color palette for chart drawing which prepared 10 colors
 COLOR=['darkturquoise','orange','green','red','blue','brown','violet','magenta','gray','black']
 
-# --- Chart drawing function --------------------------------------------------------------
+# 2023.11.1 The chart drawing function using the plotly as a library
 # Draw chart!!
 def line_charts(x_data,y_data,start,points,legend):
     # fig=go.Figure()    
@@ -45,7 +45,7 @@ def line_charts(x_data,y_data,start,points,legend):
                 color='rgb(82,82,82)',
             )  
         ),
-        
+            
         yaxis=dict(
             title='温度[℃]',
             showline=True,
@@ -117,100 +117,57 @@ def line_charts(x_data,y_data,start,points,legend):
         )
     )
     """_summary_ グラフ描画
-        左軸：温度[℃]、マーカー● と 右軸：温度以外(以下のところ圧力[Pa]を準備)、マーカー■の2軸描画
-        色分けが9色のみ、場合分けで20個まで描画可能
+        左軸：温度[℃]、マーカー● と 右軸：温度以外(以下のところ圧力[Pa]を準備)。
+        マーカー■の2軸描画の色分けは9色のみ。
         Returns:
         _type_: _description_
     """
-    for i in range(0,points):
-        if(i<=9):
-            # 温度 [℃]軸
-            if('[℃]' in str(legend[i])):
-                fig.add_trace(
-                    go.Scatter(
-                        x=x_data,
-                        y=y_data[start-1+i],   
-                        name=str(legend[i]),        # legend table
-                        mode='lines+markers',
-                        connectgaps=True,
-                        line=dict(
-                            color=COLOR[i],         # color palette
-                            width=2,
-                        ),
-                        line_dash='solid',          # 
-                        marker=dict(
-                            symbol='circle',
-                            color=COLOR[i],         # color palette
-                            size=10,
-                        ),   
-                    )
-                )
-            # 圧力軸
-            else:
-                fig.add_trace(
-                    go.Scatter(
-                        x=x_data,
-                        y=y_data[start-1+i],
-                        # name='trace'+str(i+1),      
-                        name='右軸: '+str(legend[i]),   # legend table
-                        mode='lines+markers',
-                        connectgaps=True,
-                        line=dict(
-                            color=COLOR[i],             # color pallet
-                            width=2,
-                        ),
-                        line_dash='solid',
-                        marker=dict(
-                            symbol='square',
-                            color=COLOR[i],             # color pallet
-                            size=10,
-                        ),   
+    for i in range(0, points):
+        # 温度 [℃]軸        
+        if('[℃]' in str(legend[i])):
+            print(f'draw#133_legend[{i}] = ', legend[i])
+            fig.add_trace(
+                go.Scatter(
+                    x = x_data,
+                    # y=y_data[start + i],
+                    y = y_data[i],   
+                    name = str(legend[i]),        # legend table
+                    mode = 'lines+markers',
+                    connectgaps = True,
+                    line = dict(
+                        color = COLOR[i],         # color palette
+                        width = 2,
                     ),
-                    secondary_y=True,
-                )                    
-        elif(i<=19):
-            # 温度軸
-            if('[℃]' in str(legend[i])):
-                fig.add_trace(
-                    go.Scatter(
-                        x=x_data,
-                        y=y_data[start-1+i],
-                        name=str(legend[i]),        # legend table
-                        mode='lines+markers',
-                        connectgaps=True,
-                        line=dict(
-                        color=COLOR[i-10],      # color pallet
-                            width=2,
-                        ),
-                        line_dash="dot",
-                        marker=dict(
-                            symbol='circle',
-                            color=COLOR[i-10],      # color pallet
-                            size=10,
-                        ),
-                    )
-                )
-            # 圧力軸
-            else:
-                fig.add_trace(
-                    go.Scatter(
-                        x=x_data,
-                        y=y_data[start-1+i],
-                        # name='trace'+str(i+1),      
-                        name='右軸: '+str(legend[i]),        # legend table
-                        mode='lines+markers',
-                        connectgaps=True,
-                        line=dict(
-                            color=COLOR[i-10],      # color pallet
-                            width=2,
-                            ),
-                        line_dash="dot",
-                        marker=dict(
-                            symbol='square',
-                            color=COLOR[i-10],      # color pallet
-                            size=10,
-                        ),
+                    line_dash = 'solid',          # 
+                    marker = dict(
+                        symbol = 'circle',
+                        color = COLOR[i],         # color palette
+                        size = 10,
                     ),
-                    secondary_y=True,
-                )          
+                )
+            )
+        # 圧力軸
+        else:
+            fig.add_trace(
+                go.Scatter(
+                    x = x_data,
+                    y = y_data[i],
+                    # name='trace'+str(i+1),      
+                    name = '右軸: ' + str(legend[i]),   # legend table
+                    mode = 'lines+markers',
+                    connectgaps = True,
+                    line = dict(
+                        color = COLOR[i],             # color pallet
+                        width = 2,
+                    ),
+                    line_dash = 'solid',
+                    marker = dict(
+                        symbol = 'square',
+                        color = COLOR[i],             # color pallet
+                        size = 10,
+                    ),   
+                ),
+                secondary_y = True,
+            )
+    
     return fig.to_html(include_plotlyjs='cdn',full_html=False).encode().decode('unicode-escape')

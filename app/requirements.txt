@@ -5,7 +5,8 @@ charset-normalizer==3.0.1  ##
 crispy-bootstrap5==0.7  ##
 cryptography==39.0.1  ##
 defusedxml==0.7.1  ##
-Django==3.2.17  ##  #The newest 4.2.2 is not suitable
+# 2023.11.6 At the last it should be change into 4.2.2 later
+Django==3.2.17  ##  #The newest 4.2.2 is not suitable, 3.2.17
 django-allauth==0.52.0  ##
 django-crispy-forms==2.0  ##
 gunicorn==20.1.0  ##    # 2023.9.19 add
@@ -16,7 +17,7 @@ oauthlib==3.2.2   ##
 plotly==5.13.1   ##
 
 # install PostgreSQL
-psycopg2-binary==2.9.1  ##  # is equal to PostgreSQl version 14.8
+psycopg2-binary==2.9.1  ##  # is the PostgreSQl version 14.8
 pycparser==2.21  ##
 
 PyJWT==2.6.0  ##

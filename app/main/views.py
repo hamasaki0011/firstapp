@@ -20,15 +20,9 @@ from .forms import FileUploadForm
 from main import drawChart
 
 # from .forms import UploadFileForm
-
-# 2023.11.1 below chart drawing function was relocated in external application file named drawChart.py
-# import plotly.graph_objects as go
-# from plotly.subplots import make_subplots
-
 # ajax trial
 # 2023.9.29 from django.conf import settings
 from django.http import JsonResponse
-
 
 # import dateutil
 # from dateutil import tz
@@ -54,12 +48,15 @@ logger = logging.getLogger('development')
 # logger = logging.getLogger(__name__)
 
 # 2023.11.1 below chart drawing function was relocated in external application file named drawChart.py
+# import plotly.graph_objects as go
+# from plotly.subplots import make_subplots
 # Color palette for chart drawing which prepared 10 colors
 # COLOR=['darkturquoise','orange','green','red','blue','brown','violet','magenta','gray','black']
+# ~ 2023.11.1
 
 class OwnerOnly(UserPassesTestMixin):
     # 2023.10.23 Check whether user who logged in is the owner or not.
-    # If that is owner, test_func() will return 'True'.
+    # If owner case, test_func() will return 'True'.
     def test_func(self):
         # Compare self.request.user and location_instance.user
         location_instance = self.get_object() # type: ignore
@@ -92,7 +89,8 @@ class IndexView(LoginRequiredMixin, generic.ListView):
                 location_list = Location.objects.all()
             else:
                 location_list = Location.objects.filter(name=login_user.profile.belongs) # type: ignore
-                # location_list = Location.objects.filter(location.id = user.profile) # type: ignore
+                print('view#92_location_list = ', location_list)
+        # 2023.11.6 Is it ok to use "location.id" for the display site list with ordering?
         return location_list.order_by('location.id')
 
 # --- Registered users' view --------------------------------------------------------------
@@ -221,320 +219,133 @@ class LocationDeleteView(OwnerOnly,generic.DeleteView):
     # form_class=LocationForm
     success_url = reverse_lazy('main:location_list')
 
-# 2023.11.1 below chart drawing function was relocated in external application file named drawChart.py  
-# --- Chart drawing function --------------------------------------------------------------
-# Draw chart!!
-# def line_charts(x_data,y_data,start,points,legend):
-#     # fig=go.Figure()    
-#     fig = make_subplots(
-#         # rows=2, cols=1,
-#         rows=1, cols=1,
-#         shared_xaxes=True,
-#         vertical_spacing=0.2,
-#         specs=[[{"secondary_y": True}]]
-#         # specs=[[{"type": "scatter"}]]
-#         # specs=[[{"type": "scatter"}], [{"type": "scatter"}]]
-#     )
-    
-#     fig.update_layout(
-#         title='直近30分(*30)間のデータ推移',
-#         grid=dict(
-#             rows=1,
-#             columns=1,
-#             pattern='independent',
-#             roworder='top to bottom',
-#         ),
-        
-#         xaxis=dict(
-#             title='時間経過[minutes]',
-#             showline=True,
-#             showgrid=True,
-#             zeroline=True,
-#             showticklabels=True,
-#             linecolor='rgb(204,204,204)',
-#             linewidth=2,
-#             ticks='outside',
-#             tickcolor='rgb(204,204,204)',
-#             tickwidth=2,
-#             ticklen=5,
-#             tickfont=dict(
-#                 family='Arial',
-#                 size=12,
-#                 color='rgb(82,82,82)',
-#             )  
-#         ),
-        
-#         yaxis=dict(
-#             title='温度[℃]',
-#             showline=True,
-#             showgrid=True,
-#             zeroline=False,
-#             showticklabels=True,
-#             linecolor='rgb(204,204,204)',
-#             linewidth=2,
-#             autoshift=True,
-#             ticks='outside',
-#             tickcolor='rgb(204,204,204)',
-#             tickwidth=2,
-#             ticklen=5,
-#             tickfont=dict(
-#                 family='Arial',
-#                 size=12,
-#                 color='rgb(82,82,82)',
-#             )  
-#         ),
-        
-#         # xaxis2=dict(
-#         #     title='時間経過[minutes]',
-#         #     showline=True,
-#         #     showgrid=True,
-#         #     zeroline=True,
-#         #     showticklabels=True,
-#         #     linecolor='rgb(204,204,204)',
-#         #     linewidth=2,
-#         #     ticks='outside',
-#         #     tickcolor='rgb(204,204,204)',
-#         #     tickwidth=2,
-#         #     ticklen=5,
-#         #     tickfont=dict(
-#         #         family='Arial',
-#         #         size=12,
-#         #         color='rgb(82,82,82)',
-#         #     )  
-#         # ),
-        
-#         yaxis2=dict(
-#             title='圧力[Pa]',
-#             showline=True,
-#             showgrid=True,
-#             zeroline=False,
-#             showticklabels=True,
-#             linecolor='rgb(204,204,204)',
-#             linewidth=2,
-#             autoshift=True,
-#             ticks='outside',
-#             tickcolor='rgb(204,204,204)',
-#             tickwidth=2,
-#             ticklen=5,
-#             tickfont=dict(
-#                 family='Arial',
-#                 size=12,
-#                 color='rgb(82,82,82)',
-#             )  
-#         ),        
-        
-#         hovermode='closest',
-#         autosize=True,
-#         showlegend=True,
-#         legend=dict(
-#             x=0.02,
-#             y=1.16,
-#             xanchor='left',
-#             yanchor='top',
-#             orientation='h',
-#         )
-#     )
-#     """_summary_ グラフ描画
-#         左軸：温度[℃]、マーカー● と 右軸：温度以外(以下のところ圧力[Pa]を準備)、マーカー■の2軸描画
-#         色分けが9色のみ、場合分けで20個まで描画可能
-#         Returns:
-#         _type_: _description_
-#     """
-#     for i in range(0,points):
-#         if(i<=9):
-#             # 温度 [℃]軸
-#             if('[℃]' in str(legend[i])):
-#                 fig.add_trace(
-#                     go.Scatter(
-#                         x=x_data,
-#                         y=y_data[start-1+i],   
-#                         name=str(legend[i]),        # legend table
-#                         mode='lines+markers',
-#                         connectgaps=True,
-#                         line=dict(
-#                             color=COLOR[i],         # color palette
-#                             width=2,
-#                         ),
-#                         line_dash='solid',          # 
-#                         marker=dict(
-#                             symbol='circle',
-#                             color=COLOR[i],         # color palette
-#                             size=10,
-#                         ),   
-#                     )
-#                 )
-#             # 圧力軸
-#             else:
-#                 fig.add_trace(
-#                     go.Scatter(
-#                         x=x_data,
-#                         y=y_data[start-1+i],
-#                         # name='trace'+str(i+1),      
-#                         name='右軸: '+str(legend[i]),   # legend table
-#                         mode='lines+markers',
-#                         connectgaps=True,
-#                         line=dict(
-#                             color=COLOR[i],             # color pallet
-#                             width=2,
-#                         ),
-#                         line_dash='solid',
-#                         marker=dict(
-#                             symbol='square',
-#                             color=COLOR[i],             # color pallet
-#                             size=10,
-#                         ),   
-#                     ),
-#                     secondary_y=True,
-#                 )                    
-#         elif(i<=19):
-#             # 温度軸
-#             if('[℃]' in str(legend[i])):
-#                 fig.add_trace(
-#                     go.Scatter(
-#                         x=x_data,
-#                         y=y_data[start-1+i],
-#                         name=str(legend[i]),        # legend table
-#                         mode='lines+markers',
-#                         connectgaps=True,
-#                         line=dict(
-#                         color=COLOR[i-10],      # color pallet
-#                             width=2,
-#                         ),
-#                         line_dash="dot",
-#                         marker=dict(
-#                             symbol='circle',
-#                             color=COLOR[i-10],      # color pallet
-#                             size=10,
-#                         ),
-#                     )
-#                 )
-#             # 圧力軸
-#             else:
-#                 fig.add_trace(
-#                     go.Scatter(
-#                         x=x_data,
-#                         y=y_data[start-1+i],
-#                         # name='trace'+str(i+1),      
-#                         name='右軸: '+str(legend[i]),        # legend table
-#                         mode='lines+markers',
-#                         connectgaps=True,
-#                         line=dict(
-#                             color=COLOR[i-10],      # color pallet
-#                             width=2,
-#                             ),
-#                         line_dash="dot",
-#                         marker=dict(
-#                             symbol='square',
-#                             color=COLOR[i-10],      # color pallet
-#                             size=10,
-#                         ),
-#                     ),
-#                     secondary_y=True,
-#                 )          
-#     return fig.to_html(include_plotlyjs='cdn',full_html=False).encode().decode('unicode-escape')
 # --- Main detail view --------------------------------------------------------------
 # View detail information of sensor devices at each location'. 
-class DetailView(generic.ListView):
+# class DetailView(generic.ListView):
+class DetailView(generic.DetailView):
+# class DetailView(LoginRequiredMixin, generic.ListView):
     template_name='main/detail.html'
     model=Result
 
     def get(self, request, *args, **kwargs):
-        # Get 'pk' which indicates the monitoring site information
-        id=Location.objects.get(pk=self.kwargs['pk'])
-        # Get the name of monitoring site
-        location=Location.objects.get(pk=id.pk)
+        # 2023.11.2 Solve the selected location information from url.
+        location=Location.objects.get(pk = self.kwargs['pk'])
+        # 2023.11.2 Get the latest results
+        today = datetime.datetime.now()
+        # 2023.11.6 Set the display period.
+        # 注意：最終的にはtimedeltaで1分前のデータを表示するように調整する
+        # start_date=today - datetime.timedelta(minutes = 30)
+        start_date=today - datetime.timedelta(hours = 3)
         
-        # Get queryset for Measured_data, result
-        # Horizontal point's number
-        latest=30
-        # Get sensor device point's number
-        sensor_list=Sensors.objects.filter(site_id=id.pk)
-        
-        # Get the number of sensor device point's 
-        pointNum = len(sensor_list)
-
-        # Get the smallest number of the point_id
-        # 23.7.4 change 'sensor.id' to 'id' for django' revision up 3.2.17 to 4.2.3
-        # startPoint=sensor_list.order_by('sensor.id').first().id
-        if pointNum > 0:
+        # 2023.11.6 Are there any sensor setting at first?n
+        sensors = Sensors.objects.filter(site_id = location.pk)
+        # 2023.11.6 Judge to alert there are no sensor settings
+        recent_data = []
+        # 2023.11.7 Firstly, check whether Sensors.objects have valid settings or not.
+        if sensors.first() is not None:
             error = False
-            # If there were some data, 
-            startPoint=sensor_list.order_by('id').first().id # type: ignore
-            #startPoint=sensor_list.order_by('id').first().id
-            # Generate a graph data from sensor's measured_value   
-            # Generate the table data including the device name and the most recent measured_data
-            # recent_update=datetime.date(2023,2,27)
-            # TD=9    # time differences
-            # today = datetime.datetime.now() + datetime.timedelta(hours=TD)
-            # 注意：最終的にはtimedeltaで1分前のデータを表示するように調整する
-            today = datetime.datetime.now()
-            start_date=today-datetime.timedelta(hours=1)
-            results=Result.objects.all().filter(place_id=id.pk, created_date__range=(start_date,today))
-            # results=Result.objects.all().filter(place_id=id.pk)
+            # 2023.11.7 Choose the satisfied data for selected location
+            results = Result.objects.filter(place_id = location.pk)
             if results.first() is None:
-                message="最新の測定データが取得できません"
-            else:
-                message="1分毎に更新(工事中は30分毎)"     
-        
-            # Prepare the Legend' array    
-            legend=[]
-            # First of drawing the chart, prepare the legend's list as legend
-            for sensor in sensor_list:
-                legend.append(sensor.device)
-            # Prepare the xAxis data array            
-            xdata=[]
-            # Create the x_axis data
-            n=int(latest)
-            while(n>=0):
-                xdata.append(-n)
-                n-=1
+                message="まだ測定データが取得できていません！"
+            else: 
+                message="1分毎に更新します。(工事中は30分毎に設定)"
 
-            # Create y_Axis data
-            # 2023.5.8 try it later y_tmp=[[]*latest for j in range(6)]
-            y_tmp=[[] for j in range(latest)]
-            """ this means followings; 
-                device0 : y_tmp[0][0] ~ y_tmp[0][29]
-                device1 : y_tmp[1][0] ~ y_tmp[1][29]
-                ...
-                device5 : y_tmp[5][0] ~ y_tmp[1][29]
-            """
-            # Prepare the array to memory the y_axis data as ydata[][]
-            ydata=[[] for j in range(latest)]        
-            data_list=Result.objects.all().filter(place_id=id.pk) 
+                # 2023.11.6 Prepare the latest data for each sensor device.
+                latest = results.filter(created_date__range = (start_date,today))                
+                tmp_result = None
+                for sensor in sensors:
+                    latest_chk = latest.filter(point_id = sensor.pk)
+                    if latest_chk.first() is None:
+                        # 2023.11.7 If the latest data does Not exist
+                        tmp_result = results.filter(point_id = sensor.pk).order_by('measured_date').reverse().first()
+                        if tmp_result is None:
+                            # 2023.11.7 This subject would be solved in the future.
+                            message = f"{sensor.device}のデータが取れていません。"
+                    else:
+                        # 2023.11.7 If the latest data does exist  
+                        tmp_result = latest_chk.first()
+                    # 2023.11.7 Finally, get the latest data array as recent_result     
+                    recent_data.append(tmp_result)
 
-            for i in range(pointNum):
-                # 課題：センサー番号がシリーズであることが前提のquery設定
-                y_tmp[startPoint-1+i]=data_list.filter(point_id=startPoint+i).order_by('measured_date')[:latest] # type: ignore
+            # 2023.11.7 Prepare the chart drawing data.
+            # The first, produce a x-axis data -30 from 0
+            X_MAX = 30
+            # 2023.11.2 Prepare x and y axis data array and legend array
+            xdata = []         
+            # 2023.11.2 Create the x_axis series data
+            
+            # 2023.11.6 Prepare the y-axis data
+            sensors = Sensors.objects.filter(site_id = location.pk)
+            key_num = []    # 2023.11.6 Prepare series number  
+            s_name =[]      # 2023.11.6 Prepare series name        
+            d_value =[]     # 2023.11.6 Prepare data value
+            
+            s_index =0           
+            for sensor in sensors:
+                # 2023.11.7 Prepare the legend's dictionary. 
+                key_num.append(s_index)
+                s_name.append(sensor)
+                s_index += 1
+                
+                # 2023.11.8 Generate a xdata from all sensors at the location.
+                r_list = results.filter(point_id = sensor.pk)
+                for m_data in r_list:
+                    if m_data.measured_date not in xdata:
+                        xdata.append(m_data.measured_date)  
+            
+            legend = dict(zip(key_num, s_name))
 
-                for data in y_tmp[startPoint-1+i]:
-                    ydata[startPoint-1+i].append(data.measured_value)
-                """
-                'if' and 'for' Statements both do not form scopes in Python. 
-                Therefore, the variable if inside the sentence is the same as the variable outside.
-                Variables, 'start_at' and 'd_tmp' later appeared are effective both inside and outside.
-                """
-        
+            dot_max = 0            
+            for sensor in sensors:
+                r_list = results.filter(point_id = sensor.pk)
+                if dot_max < len(r_list):
+                    dot_max = len(r_list)
+                                        
+                d_arry = [0.0 for i in range(dot_max)]
+                for m_data in r_list:
+                    dot_num = 0
+                    for date in xdata:
+                        if m_data.measured_value is not None and date == m_data.measured_date:
+                            d_arry[dot_num] = m_data.measured_value
+                        dot_num += 1
+                d_value.append(d_arry)
+
+            ydata = dict(zip(key_num, d_value))
+
             context={
-                # for confirmation
-                # For the latest measured value table
-                "error":error, 
-                "location":location,
-                "results":results,
+                # 2023.11.6 Judge to display alert or not
+                "error": error, 
+                "location": location,
+                "results": recent_data,
+                # "remark": remark,
+                'sensors': sensors.order_by('pk'),
+                
+                "xdata": xdata,
+                "series_name": legend,
+                "ydata": ydata,
+
                 "message":message,
-                # For chart drawing
-                "plot":drawChart.line_charts(xdata,ydata,startPoint,pointNum,legend), 
+                
+                # 2023.11.2 tentatively comment out For chart drawing
+                "plot":drawChart.line_charts(xdata, ydata, 0, len(legend), legend), 
             }
-            return render(request, "main/detail.html", context)
+            
         else:
+            # 2023.11.6 No sensor settings
             error = True
-            # There are no data
+            
+            # 2023.11.7 Put the alert message there are no sensor settings' data.
             message = "デバイス(センサー)登録が未了で、まだ表示できるものがありません！"
+            
             context = {
-                "error":error, 
+                "error":error,
                 "location":location,
-                "message" :message
+                "message" :message,
             }
-        return render(request, 'main/detail.html', context)
+                        
+        return render(request, "main/detail.html", context)
+
 
 # --- All sensors' view --------------------------------------------------------------
 # 2023.10.27 If you have signed in, you can view the all sensors' list
@@ -921,3 +732,6 @@ def ajax_number(request):
         'minus': minus,
     }
     return JsonResponse(d)
+
+# 2023.11.1 The chart drawing function was relocated in external application file named drawChart.py  
+

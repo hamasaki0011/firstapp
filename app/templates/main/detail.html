@@ -1,10 +1,11 @@
 {% extends 'main/main_base.html' %}
 
 {% block content %}
-{% if error %}
-<!--　Because ｔhere are None data at this site, it will jump to sensor setting page -->
 <div class = "container"><br>
-    <h2 align = "center"><u>{{ location.name }} 様現場 (Location.pk: {{location.pk}})</u></h2>
+    <h2 align = "center"><u>{{ location.name }} 様現場</u></h2>
+
+{% if error %}
+    <!--　Because there are None data at this site, it will jump to sensor setting page -->
     <br>
     <h4>
         <font color = "red"><p align = "center">{{ message }}</p></font><br>
@@ -12,12 +13,11 @@
     </h4><br>
 </div>
 {% else %}
-<div class="container"><br>
-    <h2 align = "center"><u>{{ location.name }} 様現場 (Location.id: {{location.pk}})</u></h2>
     <table class="table caption-top table-bordered borderless">
         <caption>各センサー毎の最新測定値</caption>
         <thead class="table-primary table-bordered border-dark">
             <tr align="center">
+                <th scope="col">センサーID</th>
                 <th scope="col">センサー名</th>
                 <th scope="col">測定値</th>
                 <th scope="col">測定日時</th>
@@ -26,42 +26,51 @@
         </thead>
         <tbody class="table-warning table-bordered border-dark">
             {% for result in results %}
+            {%if result is not None%}
             <tr>
+                <td colspan="1" align="center">{{ result.pk }}</td>
                 <td colspan="1">{{ result.point }}</td>
                 <td colspan="1" align="right">{{ result.measured_value }}</td>
                 <td colspan="1" align="right">{{ result.measured_date }}</td>
-                <td colspan="1">{{ result.point.note }}</td>
+                <td colspan="1">{{result.point.note}}</td>
             </tr>
+            {%else%}
+            <tr>
+                <td colspan="1" align="center">{{ result.pk }}</td>
+                <td colspan="1" align="center"><p>N/A</P></td>
+                <td colspan="1" align="center"><p>N/A</P></td>
+                <td colspan="1" align="center"><p>N/A</P></td>
+                <td colspan="1" align="center"><p>N/A</P></td>
+            </tr>
+            {%endif%}
             {% endfor %}
         </tbody>
         <tfoot class="table-bordered borderless">
-            <td colspan="3"></td>
-            <td colspan="1">※{{ message }}</td>
+            <td colspan="2"></td>
+            <td colspan="3"><small>【注】{{ message }}</small></td>
         </tfoot>
     </table>
-</div>
 
-<br>
-<div class="container">
-    <!-- <h5 align="center">直近30分間のデータ推移</h5> -->
-    <!-- ここにグラフを描画する -->
-    <div class="graph">{{plot|safe}}</div>
-    <script>
-        // ページをreloadする:reloadの基本的な使い方
-        function doReload() {
-            // reloadメソッドによりページをリロード
-            // reloadの引数にfalseを指定してキャッシュを利用して再描画する
-            // ただし、キャッシュがある場合
-            window.location.reload(false);
-        }
-        window.addEventListener('load', function () {
-            // ページ表示完了した30秒後にリロード
-            setTimeout(doReload, 30000);
-        });
-    </script>
+    <div class="container">
+        <!-- ここにグラフを描画する -->
+        <div class="graph">{{plot|safe}}</div>
+        <script>
+            // ページをreloadする:reloadの基本的な使い方
+            function doReload() {
+                // reloadメソッドによりページをリロード
+                // reloadの引数にfalseを指定してキャッシュを利用して再描画する
+                // ただし、キャッシュがある場合
+                window.location.reload(false);
+            }
+            window.addEventListener('load', function () {
+                // ページ表示完了した30秒後にリロード
+                setTimeout(doReload, 60000);
+            });
+        </script>
+    </div>
 </div>
-<br>
-<div class="container">
+{% endif %}
+<br><div class="container">
     <h5>■工事計画: Ajax通信機能確認中!</h5>
     <p><u>数値入力</u></p>
     <form id="ajax-number" action="{% url 'main:ajax_number' %}" method="POST">
@@ -126,6 +135,4 @@
         });
     </script>
 </div>
-{% endif %}
-
 {% endblock %}
