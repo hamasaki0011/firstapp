@@ -1,10 +1,15 @@
 {% extends 'main/main_base.html' %}
 
 {% block content %}
+{% if error == "not_allowed_user" %}
+<div class = "container"><br>
+    <h2 align = "center">
+        <font color = "red"><u>{{message}}</u></font></h2>
+    <br>
+ </div>
+{% elif error == "no_data" %}
 <div class = "container"><br>
     <h2 align = "center"><u>{{location.name}} 様現場</u></h2>
-
-{% if error %}
     <!--　Because there are None data at this site, it will jump to sensor setting page -->
     <br>
     <h4>
@@ -13,6 +18,8 @@
     </h4><br>
 </div>
 {% else %}
+<div class = "container"><br>
+    <h2 align = "center"><u>{{location.name}} 様現場</u></h2>
     <table class="table caption-top table-bordered borderless">
         <caption>各センサー毎の最新測定値</caption>
         <thead class="table-primary table-bordered border-dark">

@@ -31,28 +31,22 @@ from django.http import JsonResponse
 # from django.shortcuts import get_object_or_404
 # from django.http import HttpResponseRedirect
 # from .application import data_rw
-# for CSV file uploading
-# import csv, io
 # from django.http import HttpResponse 
 # from sensor.forms import FileUploadForm
 # import sys
 # import time
-# from watchdog.observers import Observer
-# from watchdog.events import RegexMatchingEventHandler
-# from watchdog.events import LoggingEventHandler
 
 # directory to store the uploading files
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'static/uploads/')
 # Define debug log-file
 logger = logging.getLogger('development')
 # logger = logging.getLogger(__name__)
-
-# 2023.11.1 below chart drawing function was relocated in external application file named drawChart.py
-# import plotly.graph_objects as go
-# from plotly.subplots import make_subplots
-# Color palette for chart drawing which prepared 10 colors
-# COLOR=['darkturquoise','orange','green','red','blue','brown','violet','magenta','gray','black']
-# ~ 2023.11.1
+# logger.setLevel(logging.DEBUG)
+# handler = logging.FileHandler("./test.log")
+# handler.setLevel(logging.DEBUG)
+# formatter = logging.Formatter('%(levelname)s  %(asctime)s  [%(name)s] %(message)s')
+# handler.setFormatter(formatter)
+# logger.addHandler(handler)
 
 class OwnerOnly(UserPassesTestMixin):
     # 2023.10.23 Check whether user who logged in is the owner or not.
@@ -65,9 +59,6 @@ class OwnerOnly(UserPassesTestMixin):
     def handle_no_permission(self):
         # 2023.10.24 tentative
         pk=self.kwargs["pk"] # type: ignore
-        # print("views#68_pk = ", pk)
-        # print("views#69_user = ", self.request.user) # type: ignore
-        # print("views#70_user.pk = ", self.request.user.pk) # type: ignore
         messages.error(self.request,f"情報の更新および削除ができるのは所有者のみです！: {pk}") # type: ignore
         # return redirect("main:location_detail", pk=self.kwargs["pk"])  # type: ignore
         return redirect("main:location_detail", pk)
@@ -89,35 +80,153 @@ class IndexView(LoginRequiredMixin, generic.ListView):
                 location_list = Location.objects.all()
             else:
                 location_list = Location.objects.filter(name=login_user.profile.belongs) # type: ignore
-                print('view#92_location_list = ', location_list)
         # 2023.11.6 Is it ok to use "location.id" for the display site list with ordering?
         return location_list.order_by('location.id')
 
-# --- Registered users' view --------------------------------------------------------------
-# 2023.10.23 display the user's profile
-class RegistUserView(LoginRequiredMixin, generic.ListView):
-    template_name = 'main/regist_user.html'
-    model = User
-    
-    def get_queryset(self):
-        login_user=self.request.user
-        user_list = User.objects.none()
-        
+# --- Main detail view --------------------------------------------------------------
+# 2023.11.13 Detail information view for each location's. 
+class DetailView(LoginRequiredMixin, generic.ListView):
+    template_name='main/detail.html'
+    model=Result
+
+    def get(self, request, *args, **kwargs):
+        # 2023.11.2 Solve the selected location information from url.
+        location=Location.objects.get(pk = self.kwargs['pk'])
+        login_user = self.request.user
+        login_user_group = login_user.profile.belongs # type: ignore
+        status = "not_allowed_user"
+        # 2023.11.2 Get the latest results
+        today = datetime.datetime.now()
+        # 2023.11.6 Set the display period.
+        # 注意：最終的にはtimedeltaで1分前のデータを表示するように調整する
+        # start_date=today - datetime.timedelta(minutes = 10)
+        start_date=today - datetime.timedelta(hours = 1)
+                    
         if login_user.is_authenticated:
-            if('fujico@kfjc.co.jp' in login_user.email): # type: ignore
-                # 2023.10.23 users list display with being ordered by user.pk (=id) 
-                user_list=User.objects.all().order_by('pk').reverse()
+            if('fujico@kfjc.co.jp' in login_user.email) or login_user_group in location.name: # type: ignore
+                # 2023.11.6 Are there any sensor setting at first?n
+                sensors = Sensors.objects.filter(site_id = location.pk).order_by('pk')
+                # 2023.11.6 Judge to alert there are no sensor settings
+                recent_data = []
+                # 2023.11.7 Firstly, check whether Sensors.objects have valid settings or not.
+                if sensors.first() is not None:
+                    status = "allowed_user"
+                    # 2023.11.7 Choose the satisfied data for selected location
+                    results = Result.objects.filter(place_id = location.pk)
+                    if results.first() is None:
+                        message="まだ測定データが取得できていません！"
+                    else: 
+                        message="1分毎に更新します。(工事中は30分毎に設定)"
+
+                        # 2023.11.6 Prepare the latest data for each sensor device.
+                        latest = results.filter(created_date__range = (start_date,today))            
+                        tmp_result = None
+                        for sensor in sensors:
+                            latest_chk = latest.filter(point_id = sensor.pk)
+                            if latest_chk.first() is None:
+                                # 2023.11.7 If the latest data does Not exist
+                                tmp_result = results.filter(point_id = sensor.pk).order_by('measured_date').reverse().first()
+                                if tmp_result is None:
+                                    # 2023.11.7 This subject would be solved in the future.
+                                    message = f"{sensor.device}のデータが取れていません。"
+                            else:
+                                # 2023.11.7 If the latest data does exist  
+                                tmp_result = latest_chk.first()
+                            # 2023.11.7 Finally, get the latest data array as recent_result     
+                            recent_data.append(tmp_result)
+
+                    # 2023.11.7 Prepare the chart drawing data.
+                    X_MAX = 30
+                    xdata = []
+                    key_num = []    # 2023.11.6 Prepare series number  
+                    s_name =[]      # 2023.11.6 Prepare series name        
+                    d_value =[]     # 2023.11.6 Prepare data value
+                    d_unit = []            
+                    s_index =0
+            
+                    for sensor in sensors:
+                        # 2023.11.7 Prepare the legend's dictionary.
+                        key_num.append(s_index)
+                        s_name.append(sensor.device)
+                        s_index += 1
+                        d_unit.append(sensor.measure_unit)
+                
+                        # 2023.11.8 Generate a xdata from all sensors at the location.
+                        r_list = results.filter(point_id = sensor.pk)
+                        for m_data in r_list:
+                            if m_data.measured_date not in xdata:
+                                xdata.append(m_data.measured_date)  
+            
+                    legend = dict(zip(key_num, s_name))
+                    units = dict(zip(key_num, d_unit))
+
+                    dot_max = 0            
+                    for sensor in sensors:
+                        r_list = results.filter(point_id = sensor.pk)
+                        if dot_max < len(r_list):
+                            dot_max = len(r_list)
+                                        
+                        d_arry = [0.0 for i in range(dot_max)]
+                        for m_data in r_list:
+                            dot_num = 0
+                            for date in xdata:
+                                if m_data.measured_value is not None and date == m_data.measured_date:
+                                    d_arry[dot_num] = m_data.measured_value
+                                dot_num += 1
+                        d_value.append(d_arry)
+
+                    ydata = dict(zip(key_num, d_value))
+                        
+                    context={
+                        # 2023.11.6 Judge to display alert or not
+                        "error": status, 
+                        "location": location,
+                        "results": recent_data,
+                        'sensors': sensors.order_by('pk'),
+                
+                        'unit': units,
+                        "xdata": xdata,
+                        "series_name": legend,
+                        "ydata": ydata,
+
+                        "message":message,
+                
+                        # 2023.11.2 tentatively comment out For chart drawing
+                        "plot":drawChart.line_charts(xdata, ydata, 0, len(legend), legend), 
+                    }
+            
+                else:
+                    # 2023.11.6 No sensor settings
+                    status = "no_data"
+                    # 2023.11.7 Put the alert message there are no sensor settings' data.
+                    message = "デバイス(センサー)登録が未了で、まだ表示できるものがありません！"
+            
+                    context = {
+                        "error":status,
+                        "location":location,
+                        "message" :message,
+                    }
+
             else:
-                # 2023.10.23 Modify only for the logged in user's profile information  
-                user_list=User.objects.filter(pk = login_user.pk)
-                # user_list=User.objects.all().order_by('pk').reverse()
-                print('view#_user.pk' ,login_user.pk)
-                print('view#_user.belongs' ,login_user.profile.belongs) # type: ignore
-        
-        return user_list
+                sensors = Sensors.objects.none()
+                status = "not_allowed_user"
+                # 2023.11.7 Put the alert message there are no sensor settings' data.
+                message = "不正なアクセスです。表示可能なページがありません！"
+
+                context = {
+                    "error":status,
+                    "location":location,
+                    "message" :message,
+                }
+        else:
+            message = 'ユーザー登録とログインが必要です。'
+            context = {
+                'message'; message,
+            }        
+        return render(request, "main/detail.html", context)
 
 # --- Location List view --------------------------------------------------------------
-# View of Locations' list 
+# 2023.11.9 Locations' list view 
 class LocationListView(LoginRequiredMixin, generic.ListView):
     template_name='main/location_list.html'
     model=Location
@@ -147,7 +256,7 @@ class LocationListView(LoginRequiredMixin, generic.ListView):
         return context
 
 # --- Location' detail view --------------------------------------------------------------
-# Display the detail information for each location'
+# 2023.11.8 The location's detail information view.
 class LocationDetailView(LoginRequiredMixin, generic.DetailView):
     template_name='main/location_detail.html'
     model=Location
@@ -178,7 +287,7 @@ class LocationDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
 # --- Location Update view --------------------------------------------------------------
-# Update location's information
+# 2023.11.9 Update location's information
 class LocationUpdateModelFormView(OwnerOnly,generic.UpdateView):
     template_name = "main/location_form.html"
     form_class = LocationForm
@@ -196,8 +305,16 @@ class LocationUpdateModelFormView(OwnerOnly,generic.UpdateView):
         location.save()
         return super().form_valid(form)
 
+# --- Location delete view --------------------------------------------------------------
+# 2023.11.9 Delete location' information view
+class LocationDeleteView(OwnerOnly,generic.DeleteView):
+    template_name = 'main/location_delete.html'
+    model = Location
+    # form_class=LocationForm
+    success_url = reverse_lazy('main:location_list')
+
 # --- Location create view --------------------------------------------------------------
-# Create a new location's information
+# 2023.11.9 Create a new location's information
 class LocationCreateModelFormView(LoginRequiredMixin, generic.CreateView):
     template_name = "main/location_form.html"
     form_class = LocationForm
@@ -211,141 +328,6 @@ class LocationCreateModelFormView(LoginRequiredMixin, generic.CreateView):
         # 2023.10.24 at this moment, it doesn't have any location objects
         return kwgs
     
-# --- Location delete view --------------------------------------------------------------
-# Delete location' information view
-class LocationDeleteView(OwnerOnly,generic.DeleteView):
-    template_name = 'main/location_delete.html'
-    model = Location
-    # form_class=LocationForm
-    success_url = reverse_lazy('main:location_list')
-
-# --- Main detail view --------------------------------------------------------------
-# View detail information of sensor devices at each location'. 
-# class DetailView(generic.ListView):
-class DetailView(generic.DetailView):
-# class DetailView(LoginRequiredMixin, generic.ListView):
-    template_name='main/detail.html'
-    model=Result
-
-    def get(self, request, *args, **kwargs):
-        # 2023.11.2 Solve the selected location information from url.
-        location=Location.objects.get(pk = self.kwargs['pk'])
-        # 2023.11.2 Get the latest results
-        today = datetime.datetime.now()
-        # 2023.11.6 Set the display period.
-        # 注意：最終的にはtimedeltaで1分前のデータを表示するように調整する
-        # start_date=today - datetime.timedelta(minutes = 10)
-        start_date=today - datetime.timedelta(hours = 1)
-        # 2023.11.6 Are there any sensor setting at first?n
-        sensors = Sensors.objects.filter(site_id = location.pk).order_by('pk')
-        # 2023.11.6 Judge to alert there are no sensor settings
-        recent_data = []
-        # 2023.11.7 Firstly, check whether Sensors.objects have valid settings or not.
-        if sensors.first() is not None:
-            error = False
-            # 2023.11.7 Choose the satisfied data for selected location
-            results = Result.objects.filter(place_id = location.pk)
-            if results.first() is None:
-                message="まだ測定データが取得できていません！"
-            else: 
-                message="1分毎に更新します。(工事中は30分毎に設定)"
-
-                # 2023.11.6 Prepare the latest data for each sensor device.
-                latest = results.filter(created_date__range = (start_date,today))            
-                tmp_result = None
-                for sensor in sensors:
-                    latest_chk = latest.filter(point_id = sensor.pk)
-                    if latest_chk.first() is None:
-                        # 2023.11.7 If the latest data does Not exist
-                        tmp_result = results.filter(point_id = sensor.pk).order_by('measured_date').reverse().first()
-                        if tmp_result is None:
-                            # 2023.11.7 This subject would be solved in the future.
-                            message = f"{sensor.device}のデータが取れていません。"
-                    else:
-                        # 2023.11.7 If the latest data does exist  
-                        tmp_result = latest_chk.first()
-                    # 2023.11.7 Finally, get the latest data array as recent_result     
-                    recent_data.append(tmp_result)
-
-            # 2023.11.7 Prepare the chart drawing data.
-            X_MAX = 30
-            xdata = []
-            key_num = []    # 2023.11.6 Prepare series number  
-            s_name =[]      # 2023.11.6 Prepare series name        
-            d_value =[]     # 2023.11.6 Prepare data value
-            d_unit = []
-            
-            s_index =0
-            
-            for sensor in sensors:
-                # 2023.11.7 Prepare the legend's dictionary.
-                key_num.append(s_index)
-                s_name.append(sensor.device)
-                s_index += 1
-                d_unit.append(sensor.measure_unit)
-                
-                # 2023.11.8 Generate a xdata from all sensors at the location.
-                r_list = results.filter(point_id = sensor.pk)
-                # print(f'view#289_r_list = {r_list}')
-                for m_data in r_list:
-                    if m_data.measured_date not in xdata:
-                        xdata.append(m_data.measured_date)  
-            
-            legend = dict(zip(key_num, s_name))
-            units = dict(zip(key_num, d_unit))
-
-            dot_max = 0            
-            for sensor in sensors:
-                r_list = results.filter(point_id = sensor.pk)
-                if dot_max < len(r_list):
-                    dot_max = len(r_list)
-                                        
-                d_arry = [0.0 for i in range(dot_max)]
-                for m_data in r_list:
-                    dot_num = 0
-                    for date in xdata:
-                        if m_data.measured_value is not None and date == m_data.measured_date:
-                            d_arry[dot_num] = m_data.measured_value
-                        dot_num += 1
-                d_value.append(d_arry)
-
-            ydata = dict(zip(key_num, d_value))
-                        
-            context={
-                # 2023.11.6 Judge to display alert or not
-                "error": error, 
-                "location": location,
-                "results": recent_data,
-                # "remark": remark,
-                'sensors': sensors.order_by('pk'),
-                
-                'unit': units,
-                "xdata": xdata,
-                "series_name": legend,
-                "ydata": ydata,
-
-                "message":message,
-                
-                # 2023.11.2 tentatively comment out For chart drawing
-                "plot":drawChart.line_charts(xdata, ydata, 0, len(legend), legend), 
-            }
-            
-        else:
-            # 2023.11.6 No sensor settings
-            error = True
-            
-            # 2023.11.7 Put the alert message there are no sensor settings' data.
-            message = "デバイス(センサー)登録が未了で、まだ表示できるものがありません！"
-            
-            context = {
-                "error":error,
-                "location":location,
-                "message" :message,
-            }
-                        
-        return render(request, "main/detail.html", context)
-
-
 # --- All sensors' view --------------------------------------------------------------
 # 2023.10.27 If you have signed in, you can view the all sensors' list
 class SensorsAllListView(LoginRequiredMixin, generic.ListView):
@@ -389,96 +371,11 @@ class SensorsAllListView(LoginRequiredMixin, generic.ListView):
             'location': locations.get(id = location_key),
             'location_key': location_key,
         }
-        # return sensors_list.order_by("site")
-        return context
-    
-# --- Sensor list view --------------------------------------------------------------
-# You can view the each site' sensors list
-# class SensorsEachListView(generic.ListView):
-#     template_name='main/sensors_each_list.html'
-#     model=Sensors
 
-#     # urlのpkを取得してクエリを生成する
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         pk = self.kwargs['pk']  # This "pk" indicates the site_id and also location.id 
-#         sensors_list = Sensors.objects.filter(site_id = pk) # pkを指定してデータを絞り込む
-        
-#         # Put message whether adapt query is there or not
-#         if sensors_list.first() is not None:
-#             message = "There are some query data"
-#         else:
-#             message = "センサーを追加してください！"
-            
-#         context = {
-#             'sensors_list': sensors_list,
-#             'location': Location.objects.get(id = pk),
-#             'msg': message,
-#         }
-#         return context
-    
-#     # Queryを取得する
-#     # def get_queryset(self, **kwargs): 
-#     #     context = super().get_context_data(**kwargs)
-#     #     pk = self.kwargs['pk']
-#     #     print("pk = ", pk)
-#     #     object_list = Sensors.objects.filter(id = pk)
-#     #     login_user = self.request.user
-#     #     print("login_user =", login_user)
-        
-#     #     if object_list is None:
-#     #         print("オブジェクトが登録されていません\r\n代わりにすべて表示します。")
-            
-#     #     else:
-#     #         print("なぜかオブジェクトがあります")
-        
-#     #     # # ユーザーがログインしていれば、リストを表示する
-#     #     # if self.request.user.is_authenticated:
-#     #     #     # print("site =", Sensors.site(user.id))  
-#     #     #     qs = qs.filter(id = context['pk'])
-#     #     #     print("qs =", qs)
-#     #     #     # qs = qs.filter(Q(public=True)|Q(user=self.request.user))
-#     #     # else:
-#     #     #     print("user =", self.request.user)
-#     #     #     # print("Sensors.site =", Sensors.site.location)
-#     #     #     # qs = qs.filter(public=True)
-#     #     # # # the selected records are re-ordered  by "created_date"         
-#     #     # qs = qs.order_by("created_date")[:7]
-#     #     qs = Sensors.objects.all()
-#     #     return qs
-
-# --- sensor create view --------------------------------------------------------------
-# Create sensor'
-class SensorsCreateModelFormView(LoginRequiredMixin, generic.CreateView):
-    template_name = "main/sensors_create.html"
-    form_class = SensorsForm
-    # SensorsForm.fields['site'].queryset = Sensors.objects.filter(pk=3)
-    success_url = reverse_lazy("main:sensors_all_list")
-    
-    # 2023.10.11　site情報をview関数から取得する必要がある
-    # place/user情報を取得する
-    # def get_form_kwargs(self, place = None, **kwargs):
-    def get_form_kwargs(self, *args, **kwargs):
-        kwgs=super().get_form_kwargs(*args, **kwargs)
-        login_user = self.request.user
-        kwgs['login_user'] = login_user
-        
-        if 'fujico@kfjc.co.jp' not in login_user.email: # type: ignore
-            # 2023.10.26 The number of location where request user is belonging. 
-            location_id = Location.objects.filter(name = login_user.profile.belongs).first().id # type: ignore
-            # 2023.10.26 Initialize site form with the above location_id number.
-            kwgs['initial'] = {'site': location_id} # type: ignore
-
-        return kwgs
-    
-    def get_context_data(self, **kwargs):
-        # Add user information for page context.
-        context = super().get_context_data(**kwargs)
-        context['login_user'] = self.request.user
         return context
     
 # --- Sensors' detail view  --------------------------------------------------------------
-# You can view the each site' sensors detail
+# 2023.11.9 The sensor's detail view.
 class SensorsDetailView(generic.DetailView):
     template_name='main/sensors_detail.html'
     model=Sensors
@@ -487,28 +384,8 @@ class SensorsDetailView(generic.DetailView):
         sensors = super().get_object()
         return sensors
         
-# class SensorDeviceDetailView(generic.DetailView):
-#     def get(self,request, *args,**kwargs):
-#         id=SensorDevice.objects.get(pk=self.kwargs['pk'])
-#         site=SensorDevice.objects.get(id=id.pk)
-#         data=MeasureData.objects.filter(point_id=id.pk)
-#         # # as following if you use "filter", you can get all contents of DB
-#         # memo=SensorDevice.objects.get(pk=sensor_device_id) 
-#         context={
-#             "id":id,
-#             "site":site,
-#             "data":data
-#         }
-#         return render(request, 'sensor/detail.html', context)
-#     #  model=SensorDevice
-#     #  template_name= 'sensor/detail.html'    
-
-# # class SensorDeviceDetailView(generic.DetailView):
-# #     template_name='sensor/sensor_device_detail.html'
-# #     model=SensorDevice
-
 # --- Sensor update view --------------------------------------------------------------
-# Update sensor' information
+# 2023.11.9 Update sensor' information
 class SensorsUpdateModelFormView(generic.UpdateView):
     template_name = "main/sensors_update.html"
     form_class = SensorsForm
@@ -540,48 +417,42 @@ class SensorsUpdateModelFormView(generic.UpdateView):
         return super().form_valid(form)
 
 # --- Senor delete view --------------------------------------------------------------
-# Delete Sensor information
+# 2023.11.9 Delete Sensor information
 class SensorsDeleteView(generic.DeleteView):
     template_name = 'main/sensors_delete.html'
     model = Sensors
     # form_class=LocationForm
     success_url = reverse_lazy('main:sensors_all_list')
-# -----------------------------------------------------------------
-# 2022/11/8 CSV file uploading
-# it does need as reverse url path, does not it need? at 2022/11/11  
-# def index(req):
-#     return render(req, 'main/index.html')
 
-# class DetailView(generic.DetailView):
-#     def get(self,request, *args,**kwargs):
-#         # in this case, "pk" indicates the point_id
-#         id=SensorDevice.objects.get(pk=self.kwargs['pk'])
-#         site=SensorDevice.objects.get(id=id.pk)
-#         data=MeasureData.objects.filter(point_id=id.pk)
-#         # # as following if you use "filter", you can get all contents of DB
-#         # memo=SensorDevice.objects.get(pk=sensor_device_id) 
-#         context={
-#             "id":id,
-#             "site":site,
-#             "data":data
-#         }
-#         return render(request, 'sensor/detail.html', context)
-#     #  model=SensorDevice
-#     #  template_name= 'sensor/detail.html'
+# --- sensor create view --------------------------------------------------------------
+# 2023.11.9 Create sensor'
+class SensorsCreateModelFormView(LoginRequiredMixin, generic.CreateView):
+    template_name = "main/sensors_create.html"
+    form_class = SensorsForm
+    # SensorsForm.fields['site'].queryset = Sensors.objects.filter(pk=3)
+    success_url = reverse_lazy("main:sensors_all_list")
+    
+    # 2023.10.11　site情報をview関数から取得する必要がある
+    # place/user情報を取得する
+    # def get_form_kwargs(self, place = None, **kwargs):
+    def get_form_kwargs(self, *args, **kwargs):
+        kwgs=super().get_form_kwargs(*args, **kwargs)
+        login_user = self.request.user
+        kwgs['login_user'] = login_user
+        
+        if 'fujico@kfjc.co.jp' not in login_user.email: # type: ignore
+            # 2023.10.26 The number of location where request user is belonging. 
+            location_id = Location.objects.filter(name = login_user.profile.belongs).first().id # type: ignore
+            # 2023.10.26 Initialize site form with the above location_id number.
+            kwgs['initial'] = {'site': location_id} # type: ignore
 
-# def detail(request, sensor_device_id):
-#     device=get_object_or_404(SensorDevice, pk=sensor_device_id)
-#     # # as following if you use "filter", you can get all contents of DB
-#     # memo=SensorDevice.objects.get(pk=sensor_device_id) 
-#     context={
-#         "device":device,
-#     }
-#     return render(request, 'sensor/detail.html', context)
-#     # try:
-#     #     device = SensorDevice.objects.get(pk=sensor_device_id)
-#     # except SensorDevice.DoesNotExist:
-#     #     raise Http404("SensorDevice does not exist")
-#     # return render(request, 'sensor/detail.html', {'device': device })
+        return kwgs
+    
+    def get_context_data(self, **kwargs):
+        # Add user information for page context.
+        context = super().get_context_data(**kwargs)
+        context['login_user'] = self.request.user
+        return context
 
 # --- handle uploading function --------------------------------------------------------------
 # handling the uploading file
@@ -602,13 +473,24 @@ def handle_uploaded_file(f):
             読みだす。chunk_sizeのデフォールトは64KB。
         """
         for chunk in f.chunks():
+            # 2023.11.13
+            # chunk = b'measured_date,measured_value,point_id,place_id\r\n
+            # 2023-3-20 15:01:00,18.0,19,1\r\n
+            # 2023-3-20 15:01:00,22.5,22,1\r\n
+            # 2023-3-20 15:01:00,120.5,27,1\r\n
+            # 2023-3-20 15:01:00,25.2,18,2\r\n
+            # 2023-3-20 15:01:00,15.6,24,2\r\n
+            # 2023-3-20 15:01:00,14.0,26,2\r\n
+            # 2023-3-20 15:01:00,20.0,25,4\r\n'
             destination.write(chunk)
+            # 2023.11.13 destination is upload path and file name 
+            # destination = <_io.BufferedRandom name='/usr/src/app/main/static/uploads/testNew_14.csv'> 
     
     try:
         addCsv.insert_csv_data(path)        # register the contents of csv file' to DB
     except Exception as exc:
         logger.error(exc)
-    # Delete the uploaded file
+    # Delete the uploaded file after uploading.
     os.remove(path)                         
 
 # --- Upload view --------------------------------------------------------------
@@ -663,6 +545,28 @@ def upload_complete(request):
     return render(request, 'main/upload_complete.html')
     return render(request, 'main/upload.html')
 """
+
+# --- Registered users' view --------------------------------------------------------------
+# 2023.10.23 display the user's profile
+class RegistUserView(LoginRequiredMixin, generic.ListView):
+    template_name = 'main/regist_user.html'
+    model = User
+    
+    def get_queryset(self):
+        login_user=self.request.user
+        user_list = User.objects.none()
+        
+        if login_user.is_authenticated:
+            if('fujico@kfjc.co.jp' in login_user.email): # type: ignore
+                # 2023.10.23 users list display with being ordered by user.pk (=id) 
+                user_list=User.objects.all().order_by('pk').reverse()
+            else:
+                # 2023.10.23 Modify only for the logged in user's profile information  
+                user_list=User.objects.filter(pk = login_user.pk)
+                # user_list=User.objects.all().order_by('pk').reverse()
+        
+        return user_list
+
 # -----------------------------------------------------------------
 # class Load(generic.FormView):
 #     template_name = 'load.html'
@@ -689,6 +593,12 @@ def upload_complete(request):
 #         return redirect('sensor:load')
 #         # 2022.12.21 why can not return to index page from here
 #         # return redirect('index(req)')
+    
+# -----------------------------------------------------------------
+# 2022/11/8 CSV file uploading
+# it does need as reverse url path, does not it need? at 2022/11/11  
+# def index(req):
+#     return render(req, 'main/index.html')
 
 # 2022/12/21 Download csv file 
 # def download(request):
@@ -731,6 +641,3 @@ def ajax_number(request):
         'minus': minus,
     }
     return JsonResponse(d)
-
-# 2023.11.1 The chart drawing function was relocated in external application file named drawChart.py  
-
