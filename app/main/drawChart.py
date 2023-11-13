@@ -125,7 +125,6 @@ def line_charts(x_data,y_data,start,points,legend):
     for i in range(0, points):
         # 温度 [℃]軸        
         if('[℃]' in str(legend[i])):
-            print(f'draw#133_legend[{i}] = ', legend[i])
             fig.add_trace(
                 go.Scatter(
                     x = x_data,

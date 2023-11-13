@@ -2,13 +2,13 @@
 
 {% block content %}
 <div class = "container"><br>
-    <h2 align = "center"><u>{{ location.name }} 様現場</u></h2>
+    <h2 align = "center"><u>{{location.name}} 様現場</u></h2>
 
 {% if error %}
     <!--　Because there are None data at this site, it will jump to sensor setting page -->
     <br>
     <h4>
-        <font color = "red"><p align = "center">{{ message }}</p></font><br>
+        <font color = "red"><p align = "center">{{message}}</p></font><br>
         <P align = center ><a class="btn btn-secondary" href="{% url 'main:sensors_create' location.pk %}"><span class="glyphicon glyphicon-list"></span>>>ここから登録できます。</a></p>
     </h4><br>
 </div>
@@ -17,10 +17,12 @@
         <caption>各センサー毎の最新測定値</caption>
         <thead class="table-primary table-bordered border-dark">
             <tr align="center">
-                <th scope="col">センサーID</th>
+                <th scope="col">point_id</th>
                 <th scope="col">センサー名</th>
                 <th scope="col">測定値</th>
-                <th scope="col">測定日時</th>
+                <th scope="col">単位</th>
+                <th scope="col">測定日</th>
+                <th scope="col">測定時刻</th>
                 <th scope="col">備考(メモ)</th>
             </tr>
         </thead>
@@ -28,10 +30,12 @@
             {% for result in results %}
             {%if result is not None%}
             <tr>
-                <td colspan="1" align="center">{{ result.pk }}</td>
+                <td colspan="1" align="center">{{ result.point_id }}</td>
                 <td colspan="1">{{ result.point }}</td>
                 <td colspan="1" align="right">{{ result.measured_value }}</td>
-                <td colspan="1" align="right">{{ result.measured_date }}</td>
+                <td colspan="1" align="right">{{ result.sensors.unit }}</td>
+                <td colspan="1" align="right">{{ result.measured_date.date }}</td>
+                <td colspan="1" align="right">{{ result.measured_date.time }}</td>
                 <td colspan="1">{{result.point.note}}</td>
             </tr>
             {%else%}
@@ -39,14 +43,16 @@
                 <td colspan="1" align="center">{{ result.pk }}</td>
                 <td colspan="1" align="center"><p>N/A</P></td>
                 <td colspan="1" align="center"><p>N/A</P></td>
-                <td colspan="1" align="center"><p>N/A</P></td>
-                <td colspan="1" align="center"><p>N/A</P></td>
+                <td colspan="1" align="center"><p>--</P></td>
+                <td colspan="1" align="center"><p>--</P></td>
+                <td colspan="1" align="center"><p>--</P></td>
+                <td colspan="1" align="center"><p>--</P></td>
             </tr>
             {%endif%}
             {% endfor %}
         </tbody>
         <tfoot class="table-bordered borderless">
-            <td colspan="2"></td>
+            <td colspan="4"></td>
             <td colspan="3"><small>【注】{{ message }}</small></td>
         </tfoot>
     </table>

@@ -35,10 +35,10 @@
           <tbody>
           {% for location in location_list %}
             <tr class="table-warning table-bordered border-dark">
-              <td colspan="1"><a href="{% url 'main:location_detail' location.pk %}">{{ location.name}}</a></td>
+              <td colspan="1" align = center ><a href="{% url 'main:location_detail' location.pk %}">{{ location.name}}</a></td>
               <td colspan="1">{{ location.memo }}</td>
-              <td colspan="1">{{ location.updated_date }}</td>
-              <td colspan="1">{{ location.created_date }}</td>
+              <td colspan="1" align = right >{{ location.updated_date.date }}</td>
+              <td colspan="1" align = right >{{ location.created_date.date }}</td>
               <td>
                 {%if "fujico@kfjc.co.jp" in login_user.email%}
                   <a href="{% url 'main:location_update' location.pk %}" class="btn btn-primary btn-sm">更新する</a>

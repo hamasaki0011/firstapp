@@ -234,11 +234,10 @@ class DetailView(generic.DetailView):
         today = datetime.datetime.now()
         # 2023.11.6 Set the display period.
         # 注意：最終的にはtimedeltaで1分前のデータを表示するように調整する
-        # start_date=today - datetime.timedelta(minutes = 30)
-        start_date=today - datetime.timedelta(hours = 3)
-        
+        # start_date=today - datetime.timedelta(minutes = 10)
+        start_date=today - datetime.timedelta(hours = 1)
         # 2023.11.6 Are there any sensor setting at first?n
-        sensors = Sensors.objects.filter(site_id = location.pk)
+        sensors = Sensors.objects.filter(site_id = location.pk).order_by('pk')
         # 2023.11.6 Judge to alert there are no sensor settings
         recent_data = []
         # 2023.11.7 Firstly, check whether Sensors.objects have valid settings or not.
@@ -252,7 +251,7 @@ class DetailView(generic.DetailView):
                 message="1分毎に更新します。(工事中は30分毎に設定)"
 
                 # 2023.11.6 Prepare the latest data for each sensor device.
-                latest = results.filter(created_date__range = (start_date,today))                
+                latest = results.filter(created_date__range = (start_date,today))            
                 tmp_result = None
                 for sensor in sensors:
                     latest_chk = latest.filter(point_id = sensor.pk)
@@ -269,32 +268,31 @@ class DetailView(generic.DetailView):
                     recent_data.append(tmp_result)
 
             # 2023.11.7 Prepare the chart drawing data.
-            # The first, produce a x-axis data -30 from 0
             X_MAX = 30
-            # 2023.11.2 Prepare x and y axis data array and legend array
-            xdata = []         
-            # 2023.11.2 Create the x_axis series data
-            
-            # 2023.11.6 Prepare the y-axis data
-            sensors = Sensors.objects.filter(site_id = location.pk)
+            xdata = []
             key_num = []    # 2023.11.6 Prepare series number  
             s_name =[]      # 2023.11.6 Prepare series name        
             d_value =[]     # 2023.11.6 Prepare data value
+            d_unit = []
             
-            s_index =0           
+            s_index =0
+            
             for sensor in sensors:
-                # 2023.11.7 Prepare the legend's dictionary. 
+                # 2023.11.7 Prepare the legend's dictionary.
                 key_num.append(s_index)
-                s_name.append(sensor)
+                s_name.append(sensor.device)
                 s_index += 1
+                d_unit.append(sensor.measure_unit)
                 
                 # 2023.11.8 Generate a xdata from all sensors at the location.
                 r_list = results.filter(point_id = sensor.pk)
+                # print(f'view#289_r_list = {r_list}')
                 for m_data in r_list:
                     if m_data.measured_date not in xdata:
                         xdata.append(m_data.measured_date)  
             
             legend = dict(zip(key_num, s_name))
+            units = dict(zip(key_num, d_unit))
 
             dot_max = 0            
             for sensor in sensors:
@@ -312,7 +310,7 @@ class DetailView(generic.DetailView):
                 d_value.append(d_arry)
 
             ydata = dict(zip(key_num, d_value))
-
+                        
             context={
                 # 2023.11.6 Judge to display alert or not
                 "error": error, 
@@ -321,6 +319,7 @@ class DetailView(generic.DetailView):
                 # "remark": remark,
                 'sensors': sensors.order_by('pk'),
                 
+                'unit': units,
                 "xdata": xdata,
                 "series_name": legend,
                 "ydata": ydata,

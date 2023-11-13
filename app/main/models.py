@@ -9,6 +9,8 @@ from django.utils import timezone
 #23.7.6 from django.urls import reverse
 
 User=get_user_model()
+
+# --- Location Model --------------------------------------------------------------
 # Location model
 class Location(models.Model):
     """ Location model
@@ -50,6 +52,7 @@ class Location(models.Model):
     # def get_absolute_url(self):
     #     return reverse('main/index')
 
+# --- Sensors Model --------------------------------------------------------------
 # Sensors model
 class Sensors(models.Model):
     """ Sensors model
@@ -62,6 +65,7 @@ class Sensors(models.Model):
     
     site=models.ForeignKey(Location, verbose_name='現場', on_delete=models.CASCADE)
     device=models.CharField(verbose_name='センサー', max_length=127, default='',blank=True,null=True)
+    measure_unit=models.CharField(verbose_name='測定単位', max_length=4, default='℃',blank=True,null=True)
     note=models.CharField(verbose_name='補足', max_length=255,default='',blank=True,null=True)
     created_date=models.DateTimeField(verbose_name='作成日', auto_now_add=True)
     updated_date=models.DateTimeField(verbose_name='更新日', blank=True, null=True)
@@ -69,6 +73,8 @@ class Sensors(models.Model):
     def __str__(self):
         return self.device 
 
+# --- Result Model --------------------------------------------------------------
+# Result model
 class Result(models.Model):
     """ Result model
         各ポイントの測定結果を定義 """
@@ -77,13 +83,13 @@ class Result(models.Model):
         unique_together=(('point','measured_date',),)
         verbose_name='測定結果'
         verbose_name_plural='測定結果一覧'
+        
     place=models.ForeignKey(Location, verbose_name='場所', on_delete=models.CASCADE, default = None)
     point=models.ForeignKey(Sensors, verbose_name='センサー', on_delete=models.CASCADE, default = None)
     measured_date=models.DateTimeField(verbose_name='測定日時', default=dt.strptime('2001-01-01 00:00:00','%Y-%m-%d %H:%M:%S'))
     measured_value=models.FloatField(verbose_name='測定値', default=0.0, blank=True, null=True)
     created_date=models.DateTimeField(verbose_name='作成日', auto_now_add=True)
     updated_date=models.DateTimeField(verbose_name='更新日', blank=True, null=True)
-
 
     def __str__(self):
         res: str

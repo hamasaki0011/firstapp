@@ -100,7 +100,7 @@ class ResultForm(forms.ModelForm):
     class Meta:
         model=Result
         fields=(
-            'place','point', 'measured_date', 'measured_value',
+            'place','point', 'measured_date', 'measured_value', 
         )
 
 # 2022/11/8 generate a button for CSV file uploading

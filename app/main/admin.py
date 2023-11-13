@@ -8,9 +8,11 @@ class SensorsInline(admin.TabularInline):
     extra=0
 
 class LocationAdmin(admin.ModelAdmin):
-    fields = ['id', 'name', 'memo',]
+    # fields = ['id', 'name', 'memo',]
+    fields = ['name', 'memo',]
     inlines=[SensorsInline]
-    list_display = ('id', 'name', 'memo',)
+    # list_display = ('id', 'name', 'memo',)
+    list_display = ('name', 'memo',)
     list_filter=['name']
     # search_fields=['name']
 
@@ -29,7 +31,7 @@ class ResultInline(admin.TabularInline):
     extra=0
 
 class ResultAdmin(admin.ModelAdmin):
-    fields = ['place','point', 'measured_value', 'measured_date', 'created_date',]
+    fields = ['place','point', 'measured_value', 'measured_date',]
     # fieldsets = [
     #     ('現場', {'fields': ['place']}),
     #     ('センサー', {'fields': ['point']}),
