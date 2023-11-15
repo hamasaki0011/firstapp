@@ -83,6 +83,94 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         # 2023.11.6 Is it ok to use "location.id" for the display site list with ordering?
         return location_list.order_by('location.id')
 
+def set_latest_table(results, sensors):
+    table_data = []
+    recent_data = None
+    no_data_list = []
+    
+    comment = "※ 1分毎に更新します。(工事中は30分毎に設定)"    
+    
+    # 2023.11.2 In order to get the latest results, set the time which it go back in time for a time difference. 
+    today = datetime.datetime.now()
+    start_date=today - datetime.timedelta(minutes = 10)
+    # 2023.11.6 Pick up the data which get within 1 minutes. 
+    latest_group = results.filter(created_date__range = (start_date,today))
+    
+    for sensor in sensors:
+        # 2023.11.14 Pick up the latest data.
+        latest = latest_group.filter(point_id = sensor.pk).order_by('-measured_date')
+        
+        if latest.first() is None:
+            # 2023.11.7 If the latest data does Not exist
+            recent_data = results.filter(point_id = sensor.pk).order_by('-measured_date').first()
+            
+            if recent_data is None:
+                recent_data = None
+                no_data_list.append(sensor.device)
+                # 2023.11.7 This subject would be solved in the future.
+                comment = f"【警告】{', '.join(map(str, no_data_list))}のデータが取れていません。"
+        
+        else:
+            # 2023.11.7 If the latest data does exist  
+            recent_data = latest.first()
+        
+        # 2023.11.7 Finally, get the latest data array as recent_result     
+        table_data.append(recent_data)
+        
+    return (table_data, comment)
+
+def set_chart_data(results, sensors):
+    # 2023.11.7 Prepare the chart drawing data.
+    xdata = []
+    index_key = []
+    sensor_name = []
+    data_value =[]
+    data_unit = []
+    
+    # 2023.11.15 将来、グラフ描画点数を制御するためにX_MAXをキープ
+    X_MAX = 30
+
+    # 2023.11.15 将来、別の方法でグラフの描画点数を決める
+    dot_max = 0
+    for sensor in sensors:
+        result_list = results.filter(point_id = sensor.pk)
+        if dot_max < len(result_list):
+            dot_max = len(result_list)
+
+    sensor_index = 0    
+    for sensor in sensors:
+        index_key.append(sensor_index)
+        sensor_name.append(sensor.device)
+        # 2023.11.15 unitデータの取得方法はデータベース改造を含めて再考要
+        data_unit.append(sensor.measure_unit)
+        
+        # 2023.11.8 Generate a xdata from all sensors at the location.
+        result_list = results.filter(point_id = sensor.pk)
+        d_arry = [0.0 for i in range(dot_max)]
+        for data in result_list:
+            if data.measured_date not in xdata:
+                xdata.append(data.measured_date)
+                            
+            dot_num = 0
+            for date in xdata:                
+                if data.measured_value is not None and date == data.measured_date:
+                    d_arry[dot_num] = data.measured_value
+                dot_num += 1
+
+        data_value.append(d_arry)
+        sensor_index += 1
+
+    legend = dict(zip(index_key, sensor_name))
+    units = dict(zip(index_key, data_unit))
+    ydata = dict(zip(index_key, data_value))
+    
+    context = {
+        'unit': units,
+        "plot":drawChart.line_charts(xdata, ydata, 0, len(legend), legend), 
+        }
+    
+    return context 
+
 # --- Main detail view --------------------------------------------------------------
 # 2023.11.13 Detail information view for each location's. 
 class DetailView(LoginRequiredMixin, generic.ListView):
@@ -90,139 +178,82 @@ class DetailView(LoginRequiredMixin, generic.ListView):
     model=Result
 
     def get(self, request, *args, **kwargs):
-        # 2023.11.2 Solve the selected location information from url.
+        # 2023.11.2 Solve the selected location and registered_user information from url.
         location=Location.objects.get(pk = self.kwargs['pk'])
         login_user = self.request.user
         login_user_group = login_user.profile.belongs # type: ignore
-        status = "not_allowed_user"
-        # 2023.11.2 Get the latest results
-        today = datetime.datetime.now()
-        # 2023.11.6 Set the display period.
-        # 注意：最終的にはtimedeltaで1分前のデータを表示するように調整する
-        # start_date=today - datetime.timedelta(minutes = 10)
-        start_date=today - datetime.timedelta(hours = 1)
-                    
+        # 2023.11.14 Get all sensor devices data at this location. 
+        sensors = Sensors.objects.filter(site_id = location.pk).order_by('pk')
+        # print(f'view#100_sensors = {sensors}')
+        
+        # 2023.11.15 Keep status variable as string and latest data table array. 
+        latest_data = []
+        status = ""
+        message = "" 
+        context = {"error": status, "location": location, "message": message,}
         if login_user.is_authenticated:
+            status = 'registered_user'
+            
             if('fujico@kfjc.co.jp' in login_user.email) or login_user_group in location.name: # type: ignore
-                # 2023.11.6 Are there any sensor setting at first?n
-                sensors = Sensors.objects.filter(site_id = location.pk).order_by('pk')
-                # 2023.11.6 Judge to alert there are no sensor settings
-                recent_data = []
-                # 2023.11.7 Firstly, check whether Sensors.objects have valid settings or not.
+                status = "allowed_user"
+            
+                # 2023.11.7 Firstly, check whether at least one of Sensors.objects' data is valid or not.
                 if sensors.first() is not None:
-                    status = "allowed_user"
-                    # 2023.11.7 Choose the satisfied data for selected location
+                    
+                    # 2023.11.7 Choose the satisfied data for the selected location
                     results = Result.objects.filter(place_id = location.pk)
+                    
                     if results.first() is None:
-                        message="まだ測定データが取得できていません！"
+                        message="【状況】まだ、測定データの取得ができていません！"
+                        latest_data = None
+                    
                     else: 
-                        message="1分毎に更新します。(工事中は30分毎に設定)"
-
-                        # 2023.11.6 Prepare the latest data for each sensor device.
-                        latest = results.filter(created_date__range = (start_date,today))            
-                        tmp_result = None
-                        for sensor in sensors:
-                            latest_chk = latest.filter(point_id = sensor.pk)
-                            if latest_chk.first() is None:
-                                # 2023.11.7 If the latest data does Not exist
-                                tmp_result = results.filter(point_id = sensor.pk).order_by('measured_date').reverse().first()
-                                if tmp_result is None:
-                                    # 2023.11.7 This subject would be solved in the future.
-                                    message = f"{sensor.device}のデータが取れていません。"
-                            else:
-                                # 2023.11.7 If the latest data does exist  
-                                tmp_result = latest_chk.first()
-                            # 2023.11.7 Finally, get the latest data array as recent_result     
-                            recent_data.append(tmp_result)
-
-                    # 2023.11.7 Prepare the chart drawing data.
-                    X_MAX = 30
-                    xdata = []
-                    key_num = []    # 2023.11.6 Prepare series number  
-                    s_name =[]      # 2023.11.6 Prepare series name        
-                    d_value =[]     # 2023.11.6 Prepare data value
-                    d_unit = []            
-                    s_index =0
-            
-                    for sensor in sensors:
-                        # 2023.11.7 Prepare the legend's dictionary.
-                        key_num.append(s_index)
-                        s_name.append(sensor.device)
-                        s_index += 1
-                        d_unit.append(sensor.measure_unit)
-                
-                        # 2023.11.8 Generate a xdata from all sensors at the location.
-                        r_list = results.filter(point_id = sensor.pk)
-                        for m_data in r_list:
-                            if m_data.measured_date not in xdata:
-                                xdata.append(m_data.measured_date)  
-            
-                    legend = dict(zip(key_num, s_name))
-                    units = dict(zip(key_num, d_unit))
-
-                    dot_max = 0            
-                    for sensor in sensors:
-                        r_list = results.filter(point_id = sensor.pk)
-                        if dot_max < len(r_list):
-                            dot_max = len(r_list)
-                                        
-                        d_arry = [0.0 for i in range(dot_max)]
-                        for m_data in r_list:
-                            dot_num = 0
-                            for date in xdata:
-                                if m_data.measured_value is not None and date == m_data.measured_date:
-                                    d_arry[dot_num] = m_data.measured_value
-                                dot_num += 1
-                        d_value.append(d_arry)
-
-                    ydata = dict(zip(key_num, d_value))
-                        
-                    context={
+                        latest_data, message = set_latest_table(results, sensors)
+                    
+                    ctx = {
                         # 2023.11.6 Judge to display alert or not
-                        "error": status, 
+                        "error": status,
                         "location": location,
-                        "results": recent_data,
-                        'sensors': sensors.order_by('pk'),
-                
-                        'unit': units,
-                        "xdata": xdata,
-                        "series_name": legend,
-                        "ydata": ydata,
-
                         "message":message,
-                
-                        # 2023.11.2 tentatively comment out For chart drawing
-                        "plot":drawChart.line_charts(xdata, ydata, 0, len(legend), legend), 
-                    }
+                        
+                        "results": latest_data,
+                        } | set_chart_data(results, sensors)
+                    context = context | ctx 
             
                 else:
                     # 2023.11.6 No sensor settings
-                    status = "no_data"
+                    status = "allowed_user_but_no_data"
+                    # sensors = Sensors.objects.none()
                     # 2023.11.7 Put the alert message there are no sensor settings' data.
-                    message = "デバイス(センサー)登録が未了で、まだ表示できるものがありません！"
+                    message = "【注意】まだ、センサーデバイスの設定ができていません！"
             
-                    context = {
+                    ctx = {
                         "error":status,
                         "location":location,
                         "message" :message,
                     }
+                    context = context | ctx
 
             else:
-                sensors = Sensors.objects.none()
                 status = "not_allowed_user"
+                # sensors = Sensors.objects.none()
                 # 2023.11.7 Put the alert message there are no sensor settings' data.
-                message = "不正なアクセスです。表示可能なページがありません！"
+                message = "【警告】このページを閲覧することはできません！"
 
-                context = {
+                ctx = {
                     "error":status,
                     "location":location,
                     "message" :message,
+                    
+                    "login_user": login_user.profile.username, # type: ignore
                 }
+                context = context | ctx
         else:
+            # 2023.11.15 It 
+            status = 'not_authenticated__user'
             message = 'ユーザー登録とログインが必要です。'
-            context = {
-                'message'; message,
-            }        
+            context = context
+            
         return render(request, "main/detail.html", context)
 
 # --- Location List view --------------------------------------------------------------
@@ -518,33 +549,14 @@ class Upload(generic.FormView):
     def form_valid(self, form):
         handle_uploaded_file(self.request.FILES['file'])
         # Redirect to upload complete view
-        return redirect('main:upload_complete')  
-"""
-Another way
-def upload(request):
-    if request.method == 'POST':
-        # form = UploadFileForm(request.POST, request.FILES)
-        form = FileUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            handle_uploaded_file(request.FILES['file'])
-            return redirect('main:upload_complete')  # アップロード完了画面にリダイレクト
-    else:
-        # form = UploadFileForm()
-        form = FileUploadForm()
-    return render(request, 'main/upload.html', {'form': form})
-"""
+        return redirect('main:upload_complete')
+        # return redirect('main:upload')
 
 # --- Upload complete view --------------------------------------------------------------
-# Complete the file uploading
+# 2023.11.14 Complete the file uploading
 class UploadComplete(generic.FormView):
     template_name = 'main/upload_complete.html'
     form_class = FileUploadForm
-"""
-Another way
-def upload_complete(request):
-    return render(request, 'main/upload_complete.html')
-    return render(request, 'main/upload.html')
-"""
 
 # --- Registered users' view --------------------------------------------------------------
 # 2023.10.23 display the user's profile
@@ -567,39 +579,6 @@ class RegistUserView(LoginRequiredMixin, generic.ListView):
         
         return user_list
 
-# -----------------------------------------------------------------
-# class Load(generic.FormView):
-#     template_name = 'load.html'
-#     form_class = FileUploadForm
-    
-#     def get_form_kwargs(self):
-#         # set prefix of correct csv file's name into variables
-#         variables='test'    # variable to pass to form
-#         kwargs=super(Load,self).get_form_kwargs()
-#         kwargs.update({'variables':variables})
-#         return kwargs
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         form = self.get_form()
-#         context = {
-#             'form': form,
-#         }
-#         return context
-
-#     def form_valid(self, form):
-#         handle_uploaded_file(self.request.FILES['file'])
-#         # return redirect('sensor:upload_complete')  # to redirect to upload complete view
-#         return redirect('sensor:load')
-#         # 2022.12.21 why can not return to index page from here
-#         # return redirect('index(req)')
-    
-# -----------------------------------------------------------------
-# 2022/11/8 CSV file uploading
-# it does need as reverse url path, does not it need? at 2022/11/11  
-# def index(req):
-#     return render(req, 'main/index.html')
-
 # 2022/12/21 Download csv file 
 # def download(request):
 #     # To produce csv file to download
@@ -614,20 +593,6 @@ class RegistUserView(LoginRequiredMixin, generic.ListView):
 #     writer.writerow(['C','as 4th letter'])
 #     writer.writerow(['O','as 5th letter'])
 #     return response
-
-# def call_write_data(req):
-#     if req.method == 'GET':
-#         # write_data.pyのwrite_csv()メソッドを呼び出す。
-#         # ajaxで送信したデータのうち"input_data"を指定して取得する。
-#         data_rw.write_csv_1(req.GET.get("input_data"))
-#         data_rw.write_csv_1(req.GET.get("input_data1"))
-#         # 読み出し、write_data.pyの中に新たに記述したメソッド(return_text())を呼び出す。
-#         data = data_rw.return_text(req.GET.get("input_data"))
-#         data1 = data_rw.return_text(req.GET.get("input_data1"))
-#         # 受け取ったデータをhtmlに渡す。
-#         return HttpResponse(data)
-#         # writeの場合のリターン
-#         #return HttpResponse()
 
 # --- Ajax number function --------------------------------------------------------------
 # Testing an ajax function

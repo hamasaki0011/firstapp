@@ -3,7 +3,7 @@ import logging
 import csv
 from datetime import datetime as dt
 
-logger=logging.getLogger('./development.log')
+logger=logging.getLogger('development')
 
 # SQL for adding the data
 sql_insert = (
@@ -28,7 +28,7 @@ def entry_data(cursor,file_path):
         with file:
             # 2023.11.14 reader = <csv.DictReader object at 0x7f4d1b0c9a20>
             reader = csv.DictReader(file)
-            
+            print(f'addCsv#31_reader = {reader}')
             for row in reader:
                 str_time = [dt.now().strftime('%Y-%m-%d %H:%M:%S')]
                 add_data = []
@@ -50,7 +50,12 @@ def entry_data(cursor,file_path):
                 # add_data = ['2023-3-20 15:01:00', '20.0', '25', '4', '2023-11-13 15:45:54', '2023-11-13 15:45:54', '25', '2023-3-20 15:01:00']
                 logger.debug('add_data = ' + str(add_data))
                 # 2023.11.13 Insert the record.
-                cursor.execute(sql_insert, add_data)            
+                cursor.execute(sql_insert, add_data)
+                
+            print(f"addCsv#54_add_data = {add_data}")
+            # 2023.11.14 Check location_id
+            location_id = add_data[3]
+            print(f'addCsv#57_location_id = {location_id}')            
             logger.info("=== End DB登録 < ===")
 
 # Register the data in csv file to DataBase
