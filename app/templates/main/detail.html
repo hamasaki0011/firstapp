@@ -84,7 +84,16 @@
     </div>
 </div>
 {% endif %}
-<br><div class="container">
+<div class = "container">
+    <h5>■ディスク使用状況</h5>
+    <p>
+        {{total}}<br>
+        {{used}}<br>
+        {{free}}<br>
+    </p>
+</div>
+<br>
+<div class="container">
     <h5>■工事計画: Ajax通信機能確認中!</h5>
     <p><u>数値入力</u></p>
     <form id="ajax-number" action="{% url 'main:ajax_number' %}" method="POST">

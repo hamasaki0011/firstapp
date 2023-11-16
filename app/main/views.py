@@ -24,6 +24,9 @@ from main import drawChart
 # 2023.9.29 from django.conf import settings
 from django.http import JsonResponse
 
+# 2023.11.15 Show disk capacity
+import shutil
+
 # import dateutil
 # from dateutil import tz
 # from dateutil.relativedelta import relativedelta
@@ -63,6 +66,15 @@ class OwnerOnly(UserPassesTestMixin):
         # return redirect("main:location_detail", pk=self.kwargs["pk"])  # type: ignore
         return redirect("main:location_detail", pk)
 
+def disk_chk():
+    disk_total, disk_used, disk_free = shutil.disk_usage('./')
+    
+    total = f'総容量: {int(disk_total / (2**30))} GiB'
+    used = f'使用済み: {int(disk_used / (2**30))} GiB'
+    free = f'空き容量: {int(disk_free / (2**30))} GiB'
+    
+    return (total, used, free)
+
 # --- Main index view --------------------------------------------------------------
 # Top view, you can select a target site for remote monitoring
 class IndexView(LoginRequiredMixin, generic.ListView):
@@ -80,6 +92,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
                 location_list = Location.objects.all()
             else:
                 location_list = Location.objects.filter(name=login_user.profile.belongs) # type: ignore
+        
         # 2023.11.6 Is it ok to use "location.id" for the display site list with ordering?
         return location_list.order_by('location.id')
 
@@ -217,6 +230,10 @@ class DetailView(LoginRequiredMixin, generic.ListView):
                         "message":message,
                         
                         "results": latest_data,
+                        "total": disk_chk()[0],
+                        "used": disk_chk()[1],
+                        "free": disk_chk()[2],
+                        
                         } | set_chart_data(results, sensors)
                     context = context | ctx 
             
@@ -250,7 +267,7 @@ class DetailView(LoginRequiredMixin, generic.ListView):
                 context = context | ctx
         else:
             # 2023.11.15 It 
-            status = 'not_authenticated__user'
+            status = 'not_authenticated_user'
             message = 'ユーザー登録とログインが必要です。'
             context = context
             
@@ -536,6 +553,7 @@ class Upload(generic.FormView):
         variables='test'    
         kwargs=super(Upload,self).get_form_kwargs()
         kwargs.update({'variables':variables})
+        
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -549,8 +567,8 @@ class Upload(generic.FormView):
     def form_valid(self, form):
         handle_uploaded_file(self.request.FILES['file'])
         # Redirect to upload complete view
-        return redirect('main:upload_complete')
-        # return redirect('main:upload')
+        # return redirect('main:upload_complete')
+        return redirect('main:index')
 
 # --- Upload complete view --------------------------------------------------------------
 # 2023.11.14 Complete the file uploading

@@ -49,13 +49,17 @@ def entry_data(cursor,file_path):
                 # add_data = ['2023-3-20 15:01:00', '14.0', '26', '2', '2023-11-13 15:45:54', '2023-11-13 15:45:54', '26', '2023-3-20 15:01:00']
                 # add_data = ['2023-3-20 15:01:00', '20.0', '25', '4', '2023-11-13 15:45:54', '2023-11-13 15:45:54', '25', '2023-3-20 15:01:00']
                 logger.debug('add_data = ' + str(add_data))
+                
+                location_id =add_data[3]
+                print(f"addCsv#53_add_data = {add_data}")
+                print(f"addCsv#54_location_id = {add_data[3]}")
+                
                 # 2023.11.13 Insert the record.
                 cursor.execute(sql_insert, add_data)
                 
-            print(f"addCsv#54_add_data = {add_data}")
-            # 2023.11.14 Check location_id
-            location_id = add_data[3]
-            print(f'addCsv#57_location_id = {location_id}')            
+            # # 2023.11.14 Check location_id
+            # location_id = add_data[3]
+            # print(f'addCsv#57_location_id = {location_id}')            
             logger.info("=== End DB登録 < ===")
 
 # Register the data in csv file to DataBase
