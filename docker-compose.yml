@@ -4,6 +4,7 @@ services:
   web:
     build: ./app
     command: python manage.py runserver 0.0.0.0:8000
+    
     volumes:
       - ./app/:/usr/src/app/
     ports:
@@ -16,6 +17,7 @@ services:
     image: postgres:14.8-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    
     environment:
       - POSTGRES_USER=fujico
       - POSTGRES_PASSWORD=admin.fujico
