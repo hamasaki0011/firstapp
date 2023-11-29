@@ -18,14 +18,13 @@ import logging
 from main import addCsv
 from .forms import FileUploadForm
 from main import drawChart
+# 2023.11.29 To show the disk capacity
+from main import utilities
 
-# from .forms import UploadFileForm
 # ajax trial
 # 2023.9.29 from django.conf import settings
 from django.http import JsonResponse
 
-# 2023.11.15 Show disk capacity
-import shutil
 
 # import dateutil
 # from dateutil import tz
@@ -35,7 +34,6 @@ import shutil
 # from django.http import HttpResponseRedirect
 # from .application import data_rw
 # from django.http import HttpResponse 
-# from sensor.forms import FileUploadForm
 # import sys
 # import time
 
@@ -66,35 +64,60 @@ class OwnerOnly(UserPassesTestMixin):
         # return redirect("main:location_detail", pk=self.kwargs["pk"])  # type: ignore
         return redirect("main:location_detail", pk)
 
-def disk_chk():
-    disk_total, disk_used, disk_free = shutil.disk_usage('./')
-    
-    total = f'総容量: {int(disk_total / (2**30))} GiB'
-    used = f'使用済み: {int(disk_used / (2**30))} GiB'
-    free = f'空き容量: {int(disk_free / (2**30))} GiB'
-    
-    return (total, used, free)
-
 # --- Main index view --------------------------------------------------------------
 # Top view, you can select a target site for remote monitoring
 class IndexView(LoginRequiredMixin, generic.ListView):
     template_name='main/index.html'
     model=Location
     
-    def get_queryset(self):
+    # 2023.11.29 Add Disk capacity checking. 
+    def get(self, request, *args, **kwargs):
         # 2023.10.26 Get the logged in user's information.
-        login_user=self.request.user
+        login_user = self.request.user
         # 2023.10.26 Set a vacant query as the location_list.
-        location_list = Location.objects.none()        
+        location_list = Location.objects.none()
+        message = ""
+        context = {
+            "message": message,
+        }
+        
         # 2023.10.26 Pass the correct query to logged in user.
         if login_user.is_authenticated:
             if 'fujico@kfjc.co.jp' in login_user.email: # type: ignore
                 location_list = Location.objects.all()
             else:
                 location_list = Location.objects.filter(name=login_user.profile.belongs) # type: ignore
+
+            ctx = {
+                # 2023.11.6 Is it ok to use "location.id" for the display site list with ordering?
+                # "location_list": location_list,
+                "location_list": location_list.order_by('location.id'),
+                "total": utilities.disk_chk()[0],
+                "used": utilities.disk_chk()[1],
+                "free": utilities.disk_chk()[2],
+            }
+            context = context | ctx 
+        else:
+            message = 'ユーザー登録とログインが必要です。'
+            context = context
         
-        # 2023.11.6 Is it ok to use "location.id" for the display site list with ordering?
-        return location_list.order_by('location.id')
+        return render(request, "main/index.html", context)
+    
+    # def get_queryset(self):
+    #     # 2023.10.26 Get the logged in user's information.
+    #     login_user=self.request.user
+    #     # 2023.10.26 Set a vacant query as the location_list.
+    #     location_list = Location.objects.none()        
+    #     # 2023.10.26 Pass the correct query to logged in user.
+    #     if login_user.is_authenticated:
+    #         if 'fujico@kfjc.co.jp' in login_user.email: # type: ignore
+    #             location_list = Location.objects.all()
+    #         else:
+    #             location_list = Location.objects.filter(name=login_user.profile.belongs) # type: ignore
+        
+    #     # 2023.11.6 Is it ok to use "location.id" for the display site list with ordering?
+    #     return location_list.order_by('location.id')
+    
 
 def set_latest_table(results, sensors):
     table_data = []
@@ -230,9 +253,9 @@ class DetailView(LoginRequiredMixin, generic.ListView):
                         "message":message,
                         
                         "results": latest_data,
-                        "total": disk_chk()[0],
-                        "used": disk_chk()[1],
-                        "free": disk_chk()[2],
+                        "total": utilities.disk_chk()[0],
+                        "used": utilities.disk_chk()[1],
+                        "free": utilities.disk_chk()[2],
                         
                         } | set_chart_data(results, sensors)
                     context = context | ctx 
@@ -376,10 +399,10 @@ class LocationCreateModelFormView(LoginRequiredMixin, generic.CreateView):
         # 2023.10.24 at this moment, it doesn't have any location objects
         return kwgs
     
-# --- All sensors' view --------------------------------------------------------------
-# 2023.10.27 If you have signed in, you can view the all sensors' list
-class SensorsAllListView(LoginRequiredMixin, generic.ListView):
-    template_name='main/sensors_all_list.html'
+# --- Sensors' list view --------------------------------------------------------------
+# 2023.11.29 You can see the all of sensors' list
+class SensorsListView(LoginRequiredMixin, generic.ListView):
+    template_name='main/sensors_list.html'
     model=Sensors
         
     # 2023.10.25 get the user information and query, Sensors.objects；
@@ -421,7 +444,7 @@ class SensorsAllListView(LoginRequiredMixin, generic.ListView):
         }
 
         return context
-    
+        
 # --- Sensors' detail view  --------------------------------------------------------------
 # 2023.11.9 The sensor's detail view.
 class SensorsDetailView(generic.DetailView):
@@ -437,7 +460,7 @@ class SensorsDetailView(generic.DetailView):
 class SensorsUpdateModelFormView(generic.UpdateView):
     template_name = "main/sensors_update.html"
     form_class = SensorsForm
-    success_url = reverse_lazy("main:sensors_all_list")
+    success_url = reverse_lazy("main:sensors_list")
     
     def get_form_kwargs(self, *args, **kwargs):
         kwgs=super().get_form_kwargs(*args, **kwargs)
@@ -470,7 +493,7 @@ class SensorsDeleteView(generic.DeleteView):
     template_name = 'main/sensors_delete.html'
     model = Sensors
     # form_class=LocationForm
-    success_url = reverse_lazy('main:sensors_all_list')
+    success_url = reverse_lazy('main:sensors_list')
 
 # --- sensor create view --------------------------------------------------------------
 # 2023.11.9 Create sensor'
@@ -478,7 +501,7 @@ class SensorsCreateModelFormView(LoginRequiredMixin, generic.CreateView):
     template_name = "main/sensors_create.html"
     form_class = SensorsForm
     # SensorsForm.fields['site'].queryset = Sensors.objects.filter(pk=3)
-    success_url = reverse_lazy("main:sensors_all_list")
+    success_url = reverse_lazy("main:sensors_list")
     
     # 2023.10.11　site情報をview関数から取得する必要がある
     # place/user情報を取得する

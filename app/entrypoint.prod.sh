@@ -12,7 +12,7 @@ then
 fi
 
 # しばらくの間、データベースを保存する
-python manage.py flush --no-input
+# python manage.py flush --no-input
 python manage.py migrate
 
 exec "$@"

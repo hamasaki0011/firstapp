@@ -10,6 +10,10 @@ html {
     position:relative;
     padding-bottom:200px;
   }
+  div{
+    margin-left:100px;
+    /* margin-right:10px; */
+  }
   
   footer {
     position: absolute;
@@ -40,9 +44,9 @@ html {
   }
 
   .footer-content a:hover{
-    color:#f4f4f4;
+    color:#5873eb;
   }
 
- .footer-logo{
+.footer-logo{
       color:white;
   }
