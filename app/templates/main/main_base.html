@@ -53,13 +53,12 @@
             {% block content %}
             <!-- ここに主ページが入る -->
         {% endblock %}
-        
-        <!-- </div> -->
-        <!-- </div> -->
-        <!-- </div> -->
-        
-        {% block extra_body %}{% endblock %}
+        <div class="page-footer">
+          <h5>ディスク使用状況: {{total}}, {{used}}, {{free}}</h5>
+        </div>
 
+                
+        {% block extra_body %}{% endblock %}
         {% include "footer.html" %}
         {% include "js.html" %}
     </body>

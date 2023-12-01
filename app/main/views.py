@@ -25,7 +25,6 @@ from main import utilities
 # 2023.9.29 from django.conf import settings
 from django.http import JsonResponse
 
-
 # import dateutil
 # from dateutil import tz
 # from dateutil.relativedelta import relativedelta
@@ -118,13 +117,12 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     #     # 2023.11.6 Is it ok to use "location.id" for the display site list with ordering?
     #     return location_list.order_by('location.id')
     
-
 def set_latest_table(results, sensors):
     table_data = []
     recent_data = None
     no_data_list = []
     
-    comment = "※ 1分毎に更新します。(工事中は30分毎に設定)"    
+    comment = "※ 1分毎に更新。"    
     
     # 2023.11.2 In order to get the latest results, set the time which it go back in time for a time difference. 
     today = datetime.datetime.now()
@@ -155,58 +153,6 @@ def set_latest_table(results, sensors):
         
     return (table_data, comment)
 
-def set_chart_data(results, sensors):
-    # 2023.11.7 Prepare the chart drawing data.
-    xdata = []
-    index_key = []
-    sensor_name = []
-    data_value =[]
-    data_unit = []
-    
-    # 2023.11.15 将来、グラフ描画点数を制御するためにX_MAXをキープ
-    X_MAX = 30
-
-    # 2023.11.15 将来、別の方法でグラフの描画点数を決める
-    dot_max = 0
-    for sensor in sensors:
-        result_list = results.filter(point_id = sensor.pk)
-        if dot_max < len(result_list):
-            dot_max = len(result_list)
-
-    sensor_index = 0    
-    for sensor in sensors:
-        index_key.append(sensor_index)
-        sensor_name.append(sensor.device)
-        # 2023.11.15 unitデータの取得方法はデータベース改造を含めて再考要
-        data_unit.append(sensor.measure_unit)
-        
-        # 2023.11.8 Generate a xdata from all sensors at the location.
-        result_list = results.filter(point_id = sensor.pk)
-        d_arry = [0.0 for i in range(dot_max)]
-        for data in result_list:
-            if data.measured_date not in xdata:
-                xdata.append(data.measured_date)
-                            
-            dot_num = 0
-            for date in xdata:                
-                if data.measured_value is not None and date == data.measured_date:
-                    d_arry[dot_num] = data.measured_value
-                dot_num += 1
-
-        data_value.append(d_arry)
-        sensor_index += 1
-
-    legend = dict(zip(index_key, sensor_name))
-    units = dict(zip(index_key, data_unit))
-    ydata = dict(zip(index_key, data_value))
-    
-    context = {
-        'unit': units,
-        "plot":drawChart.line_charts(xdata, ydata, 0, len(legend), legend), 
-        }
-    
-    return context 
-
 # --- Main detail view --------------------------------------------------------------
 # 2023.11.13 Detail information view for each location's. 
 class DetailView(LoginRequiredMixin, generic.ListView):
@@ -220,7 +166,6 @@ class DetailView(LoginRequiredMixin, generic.ListView):
         login_user_group = login_user.profile.belongs # type: ignore
         # 2023.11.14 Get all sensor devices data at this location. 
         sensors = Sensors.objects.filter(site_id = location.pk).order_by('pk')
-        # print(f'view#100_sensors = {sensors}')
         
         # 2023.11.15 Keep status variable as string and latest data table array. 
         latest_data = []
@@ -257,7 +202,7 @@ class DetailView(LoginRequiredMixin, generic.ListView):
                         "used": utilities.disk_chk()[1],
                         "free": utilities.disk_chk()[2],
                         
-                        } | set_chart_data(results, sensors)
+                        } | drawChart.set_chart_data(results, sensors)
                     context = context | ctx 
             
                 else:
@@ -544,18 +489,7 @@ def handle_uploaded_file(f):
             読みだす。chunk_sizeのデフォールトは64KB。
         """
         for chunk in f.chunks():
-            # 2023.11.13
-            # chunk = b'measured_date,measured_value,point_id,place_id\r\n
-            # 2023-3-20 15:01:00,18.0,19,1\r\n
-            # 2023-3-20 15:01:00,22.5,22,1\r\n
-            # 2023-3-20 15:01:00,120.5,27,1\r\n
-            # 2023-3-20 15:01:00,25.2,18,2\r\n
-            # 2023-3-20 15:01:00,15.6,24,2\r\n
-            # 2023-3-20 15:01:00,14.0,26,2\r\n
-            # 2023-3-20 15:01:00,20.0,25,4\r\n'
             destination.write(chunk)
-            # 2023.11.13 destination is upload path and file name 
-            # destination = <_io.BufferedRandom name='/usr/src/app/main/static/uploads/testNew_14.csv'> 
     
     try:
         addCsv.insert_csv_data(path)        # register the contents of csv file' to DB

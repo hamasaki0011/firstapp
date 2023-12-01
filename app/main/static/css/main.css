@@ -54,7 +54,26 @@ h1, h2, h3, h4 {
 .main h2 a, .main h2 a:visited .main h4 a, .main h4 a:visited{
     color: #000000;
 }
-
+.page-footer {
+    background-color: white;
+    margin-top: 0;
+    margin-left: 40px;
+    padding: 5px 20px 5px 40px;   /* the origin is 20px 20px 20px 40px */
+}
+.page-footer h1, .page-footer h1 a, .page-footer h1 a:visited, .page-footer h1 a:active {
+    /* Display disk capacity */
+    color: black;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 24pt;    /* the origin was 36pt */
+    text-decoration: none;
+}
+.page-footer h5 {
+    /* Embed the real time date and clock */
+    color: black;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12pt;
+    text-decoration: none;
+}
 .record-form textarea, .record-form input {
     width: 100%;
 }
